@@ -273,6 +273,7 @@
   <button class="nav-tab" onclick="showSection('factores')">🔢 Calculadoras</button>
   <button class="nav-tab" onclick="showSection('perdidas')">📉 Factor de Pérdidas</button>
   <button class="nav-tab" onclick="showSection('ejercicios')">✏️ Ejercicios</button>
+  <button class="nav-tab" onclick="showSection('estructuras')">🏗️ Estructuras NT2</button>
   <button class="nav-tab" onclick="showSection('quiz')">🧪 Quiz</button>
 </div>
 
@@ -3737,6 +3738,681 @@
   </div><!-- /inner-content -->
   </div><!-- /inner-layout -->
 </div>
+<!-- ============================= CAP. 9 — DISEÑO ============================= -->
+<div class="section" id="cap9">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selección de Estructuras NT2 — CHEC/EPM</title>
+<style>
+:root{
+  --primary:#1a3a5c;--secondary:#2e6da4;--accent:#e8a020;
+  --green:#2e7d32;--red:#c62828;--border:#d0dae8;
+  --gray:#f5f7fa;--text:#1c2b3a;--muted:#5a6a7a;
+  --blue-light:#e3f0fb;--green-light:#e8f5e9;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#eef2f7;color:var(--text);min-height:100vh;}
+
+.hdr{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;padding:16px 24px;display:flex;align-items:center;gap:14px;box-shadow:0 3px 12px rgba(0,0,0,.2);}
+.hdr-icon{font-size:2rem;}
+.hdr h1{font-size:1.15rem;font-weight:700;line-height:1.3;}
+.hdr p{font-size:.78rem;opacity:.8;margin-top:2px;}
+.badge-norm{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:2px 10px;font-size:.72rem;margin-top:4px;display:inline-block;}
+
+.layout{display:grid;grid-template-columns:400px 1fr;gap:16px;padding:16px;max-width:1400px;margin:0 auto;}
+@media(max-width:880px){.layout{grid-template-columns:1fr;}}
+
+.panel{background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.08);overflow:hidden;}
+.panel-hdr{background:var(--primary);color:#fff;padding:11px 16px;font-size:.88rem;font-weight:700;display:flex;align-items:center;gap:8px;}
+
+.mapa-wrap{padding:10px;overflow-x:auto;background:#fafbfd;}
+.mapa-wrap svg{width:100%;height:auto;display:block;}
+
+.form-body{padding:14px;}
+
+/* STEPS */
+.step{border:1.5px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;transition:border-color .2s,box-shadow .2s;}
+.step.active{border-color:var(--secondary);box-shadow:0 0 0 3px rgba(46,109,164,.12);}
+.step.done{border-color:var(--green);}
+.step.locked{opacity:.42;pointer-events:none;}
+.step-hdr{display:flex;align-items:center;gap:10px;padding:9px 13px;background:var(--gray);}
+.step-num{width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;font-size:.76rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s;}
+.step.done .step-num{background:var(--green);}
+.step.active .step-num{background:var(--secondary);}
+.step-title{font-size:.84rem;font-weight:600;color:var(--primary);flex:1;}
+.step-val{font-size:.75rem;font-weight:700;color:var(--green);white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis;}
+.step-body{padding:10px 13px;background:#fff;}
+
+/* RADIO OPTS */
+.radio-group{display:flex;flex-direction:column;gap:5px;}
+.radio-opt{display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:7px;border:1.5px solid var(--border);cursor:pointer;transition:all .15s;font-size:.84rem;user-select:none;}
+.radio-opt:hover{border-color:var(--secondary);background:var(--blue-light);}
+.radio-opt.selected{border-color:var(--secondary);background:var(--blue-light);font-weight:600;}
+.rdot{width:15px;height:15px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.radio-opt.selected .rdot{border-color:var(--secondary);background:var(--secondary);}
+.radio-opt.selected .rdot::after{content:'';width:5px;height:5px;border-radius:50%;background:#fff;}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+@media(max-width:460px){.g2{grid-template-columns:1fr;}}
+
+/* SLIDER */
+.slider-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.slider-row input[type=range]{flex:1;accent-color:var(--secondary);}
+.slider-val{font-size:1rem;font-weight:700;color:var(--secondary);min-width:52px;text-align:right;}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
+.chip{padding:3px 9px;border-radius:14px;border:1.5px solid var(--border);background:#fff;font-size:.78rem;cursor:pointer;transition:all .15s;}
+.chip:hover{border-color:var(--secondary);color:var(--secondary);}
+.chip.sel{background:var(--secondary);border-color:var(--secondary);color:#fff;font-weight:700;}
+
+/* RESULTADO */
+#resultado{border-radius:12px;padding:16px;margin-top:6px;display:none;}
+.res-titulo{font-size:1rem;font-weight:700;margin-bottom:3px;}
+.res-sub{font-size:.79rem;opacity:.8;margin-bottom:10px;}
+.codigo-grande{font-family:'Courier New',monospace;font-size:1.9rem;font-weight:700;letter-spacing:.07em;padding:8px 16px;border-radius:8px;display:inline-block;margin:6px 0;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);}
+.dec-wrap{background:rgba(255,255,255,.18);border-radius:8px;padding:8px 10px;margin:7px 0;display:flex;flex-wrap:wrap;gap:5px;align-items:flex-end;}
+.dec-item{text-align:center;}
+.dec-seg{font-family:'Courier New',monospace;font-weight:700;font-size:.88rem;background:rgba(255,255,255,.35);padding:2px 8px;border-radius:4px;display:block;}
+.dec-lbl{font-size:.62rem;opacity:.75;display:block;margin-top:2px;}
+.sep-tbl{width:100%;border-collapse:collapse;font-size:.79rem;margin:8px 0;}
+.sep-tbl th{padding:4px 7px;text-align:left;background:rgba(255,255,255,.25);font-weight:600;}
+.sep-tbl td{padding:4px 7px;border-top:1px solid rgba(255,255,255,.15);}
+.sep-tbl .hl{font-weight:700;}
+.res-ul{padding-left:15px;margin:7px 0;font-size:.79rem;line-height:1.7;}
+.res-ul li{margin-bottom:1px;}
+.alerta-box{background:rgba(255,255,255,.25);border-left:4px solid #ffd54f;border-radius:4px;padding:6px 9px;font-size:.78rem;font-weight:600;margin-top:6px;}
+.res-nota{font-size:.7rem;opacity:.6;margin-top:9px;border-top:1px solid rgba(255,255,255,.25);padding-top:7px;}
+.btn-reset{margin-top:10px;padding:7px 16px;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.5);border-radius:7px;color:#fff;font-size:.8rem;font-weight:600;cursor:pointer;transition:background .15s;}
+.btn-reset:hover{background:rgba(255,255,255,.35);}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-icon">🏗️</div>
+  <div>
+    <h1>Selección y Codificación de Estructuras — Nivel de Tensión 2</h1>
+    <p>Redes aéreas de media tensión · MA-DI-02-002-001 V.46 CHEC/EPM</p>
+    <span class="badge-norm">Cap. 6 §6.4 · Cap. 7 §§7.1–7.23</span>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- ══ MAPA CONCEPTUAL ══ -->
+  <div class="panel">
+    <div class="panel-hdr">🗺️ Mapa conceptual de selección</div>
+    <div class="mapa-wrap">
+      <svg id="mapa" viewBox="0 0 390 870" xmlns="http://www.w3.org/2000/svg"
+           style="font-family:'Segoe UI',Arial,sans-serif;">
+        <defs>
+          <marker id="a0" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M1 2L8 5L1 8" fill="none" stroke="#5a6a7a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+          <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M1 2L8 5L1 8" fill="none" stroke="#2e7d32" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M1 2L8 5L1 8" fill="none" stroke="#c62828" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+          <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M1 2L8 5L1 8" fill="none" stroke="#1565c0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+          <marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M1 2L8 5L1 8" fill="none" stroke="#6a1b9a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+
+        <!-- ─── INICIO ─────────────────────────────── -->
+        <rect x="120" y="8" width="150" height="36" rx="18" fill="#1a3a5c"/>
+        <text x="195" y="31" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">INICIO — TRAMO</text>
+
+        <line x1="195" y1="44" x2="195" y2="64" stroke="#5a6a7a" stroke-width="1.5" marker-end="url(#a0)"/>
+
+        <!-- ─── D1: ¿Inicio o fin de línea? ─────────── -->
+        <polygon points="195,68 268,96 195,124 122,96" fill="#fff3e0" stroke="#e8a020" stroke-width="1.5"/>
+        <text x="195" y="91" text-anchor="middle" fill="#5d4037" font-size="9.5" font-weight="600">¿Inicio o fin</text>
+        <text x="195" y="104" text-anchor="middle" fill="#5d4037" font-size="9.5" font-weight="600">de línea?</text>
+
+        <!-- SÍ → Terminal (derecha) -->
+        <line x1="268" y1="96" x2="320" y2="96" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#ag)"/>
+        <text x="291" y="90" text-anchor="middle" fill="#2e7d32" font-size="8.5" font-weight="700">SÍ</text>
+        <rect x="320" y="78" width="66" height="36" rx="7" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+        <text x="353" y="96" text-anchor="middle" fill="#1b5e20" font-size="9" font-weight="700">TERMINAL</text>
+        <text x="353" y="108" text-anchor="middle" fill="#1b5e20" font-size="8">código → T</text>
+
+        <!-- NO ↓ -->
+        <line x1="195" y1="124" x2="195" y2="144" stroke="#5a6a7a" stroke-width="1.5" marker-end="url(#a0)"/>
+        <text x="202" y="138" fill="#1a3a5c" font-size="8.5" font-weight="700">NO</text>
+
+        <!-- ─── D2: ¿Vano pesante negativo? ────────── -->
+        <polygon points="195,148 270,176 195,204 120,176" fill="#fce4ec" stroke="#c62828" stroke-width="1.5"/>
+        <text x="195" y="171" text-anchor="middle" fill="#b71c1c" font-size="9.5" font-weight="600">¿Vano pesante</text>
+        <text x="195" y="184" text-anchor="middle" fill="#b71c1c" font-size="9.5" font-weight="600">negativo?</text>
+
+        <!-- SÍ → izquierda -->
+        <line x1="120" y1="176" x2="68" y2="176" stroke="#c62828" stroke-width="1.5" marker-end="url(#ar)"/>
+        <text x="94" y="170" text-anchor="middle" fill="#c62828" font-size="8.5" font-weight="700">SÍ</text>
+        <rect x="4" y="159" width="64" height="34" rx="6" fill="#ffebee" stroke="#c62828" stroke-width="1.5"/>
+        <text x="36" y="175" text-anchor="middle" fill="#b71c1c" font-size="8.5" font-weight="700">RETENCIÓN</text>
+        <text x="36" y="186" text-anchor="middle" fill="#b71c1c" font-size="7.5">forzada → R</text>
+
+        <!-- NO ↓ -->
+        <line x1="195" y1="204" x2="195" y2="224" stroke="#5a6a7a" stroke-width="1.5" marker-end="url(#a0)"/>
+        <text x="202" y="218" fill="#1a3a5c" font-size="8.5" font-weight="700">NO</text>
+
+        <!-- ─── D3: ¿Alineación recta? ──────────────── -->
+        <polygon points="195,228 268,256 195,284 122,256" fill="#e3f0fb" stroke="#1565c0" stroke-width="1.5"/>
+        <text x="195" y="251" text-anchor="middle" fill="#0d47a1" font-size="9.5" font-weight="600">¿Alineación</text>
+        <text x="195" y="264" text-anchor="middle" fill="#0d47a1" font-size="9.5" font-weight="600">recta?</text>
+
+        <!-- NO → derecha (va a rama ángulo abajo) -->
+        <line x1="268" y1="256" x2="318" y2="256" stroke="#5a6a7a" stroke-width="1.5"/>
+        <line x1="318" y1="256" x2="318" y2="360" stroke="#5a6a7a" stroke-width="1.5" marker-end="url(#a0)"/>
+        <text x="291" y="250" text-anchor="middle" fill="#1a3a5c" font-size="8.5" font-weight="700">NO →</text>
+
+        <!-- SÍ ↓ -->
+        <line x1="195" y1="284" x2="195" y2="304" stroke="#5a6a7a" stroke-width="1.5" marker-end="url(#a0)"/>
+        <text x="202" y="298" fill="#1a3a5c" font-size="8.5" font-weight="700">SÍ</text>
+
+        <!-- ─── D4: ¿Cada 5 apoyos o >500m? ─────────── -->
+        <polygon points="195,308 262,332 195,356 128,332" fill="#e3f0fb" stroke="#1565c0" stroke-width="1.5"/>
+        <text x="195" y="327" text-anchor="middle" fill="#0d47a1" font-size="9" font-weight="600">¿Cada 5 apoyos</text>
+        <text x="195" y="340" text-anchor="middle" fill="#0d47a1" font-size="9" font-weight="600">o &gt; 500 m?</text>
+
+        <!-- SÍ → izquierda (retención recto) -->
+        <line x1="128" y1="332" x2="78" y2="332" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#ag)"/>
+        <text x="103" y="326" text-anchor="middle" fill="#2e7d32" font-size="8.5" font-weight="700">SÍ</text>
+        <rect x="4" y="316" width="74" height="34" rx="6" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+        <text x="41" y="332" text-anchor="middle" fill="#1b5e20" font-size="8.5" font-weight="700">RETENCIÓN</text>
+        <text x="41" y="343" text-anchor="middle" fill="#1b5e20" font-size="7.5">tramo recto → R</text>
+
+        <!-- NO ↓ → Pin sencillo -->
+        <line x1="195" y1="356" x2="195" y2="376" stroke="#5a6a7a" stroke-width="1.5" marker-end="url(#ab)"/>
+        <text x="202" y="370" fill="#1a3a5c" font-size="8.5" font-weight="700">NO</text>
+        <rect x="130" y="379" width="130" height="34" rx="8" fill="#e3f0fb" stroke="#1565c0" stroke-width="1.5"/>
+        <text x="195" y="396" text-anchor="middle" fill="#0d47a1" font-size="9.5" font-weight="700">SUSPENSIÓN PIN</text>
+        <text x="195" y="407" text-anchor="middle" fill="#0d47a1" font-size="8">SENCILLO → P</text>
+
+        <!-- ─── RAMA ÁNGULO (viene de D3 NO) ─────────── -->
+        <!-- D5: ángulo α -->
+        <polygon points="318,364 382,388 318,412 254,388" fill="#fff8e1" stroke="#f9a825" stroke-width="1.5"/>
+        <text x="318" y="383" text-anchor="middle" fill="#5d4037" font-size="9" font-weight="600">Ángulo de</text>
+        <text x="318" y="396" text-anchor="middle" fill="#5d4037" font-size="9" font-weight="600">deflexión α</text>
+
+        <!-- α ≤ 5° → izquierda (pin sencillo pequeño) -->
+        <line x1="254" y1="388" x2="206" y2="388" stroke="#1565c0" stroke-width="1.5" marker-end="url(#ab)"/>
+        <text x="230" y="382" text-anchor="middle" fill="#1565c0" font-size="8">α ≤ 5°</text>
+        <!-- flecha que llega al mismo recuadro de pin sencillo arriba — hacemos un label -->
+        <rect x="130" y="379" width="0" height="0"/><!-- ya existe -->
+
+        <!-- 5° < α ≤ 10° → abajo doble pin -->
+        <line x1="318" y1="412" x2="318" y2="432" stroke="#283593" stroke-width="1.5" marker-end="url(#ab)"/>
+        <text x="325" y="425" fill="#283593" font-size="8">5°&lt;α≤10°</text>
+        <rect x="252" y="434" width="132" height="34" rx="8" fill="#e8eaf6" stroke="#3949ab" stroke-width="1.5"/>
+        <text x="318" y="451" text-anchor="middle" fill="#1a237e" font-size="9.5" font-weight="700">DOBLE PIN → A</text>
+        <text x="318" y="462" text-anchor="middle" fill="#1a237e" font-size="7.5">Deflexión máx. 10°</text>
+
+        <!-- 10° < α < 60° → arriba derecha retención ángulo -->
+        <line x1="382" y1="388" x2="382" y2="490" stroke="#2e7d32" stroke-width="1.5"/>
+        <line x1="382" y1="490" x2="344" y2="490" stroke="#2e7d32" stroke-width="1.5" marker-end="url(#ag)"/>
+        <text x="386" y="443" fill="#2e7d32" font-size="8" transform="rotate(90,386,443)">10°&lt;α&lt;60°</text>
+        <rect x="252" y="476" width="92" height="34" rx="6" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1.5"/>
+        <text x="298" y="492" text-anchor="middle" fill="#1b5e20" font-size="8.5" font-weight="700">RETENCIÓN</text>
+        <text x="298" y="503" text-anchor="middle" fill="#1b5e20" font-size="7.5">ángulo → R</text>
+
+        <!-- α > 60° → doble terminal -->
+        <line x1="318" y1="468" x2="318" y2="520" stroke="#c62828" stroke-width="1.5" marker-end="url(#ar)"/>
+        <text x="325" y="498" fill="#c62828" font-size="8">α &gt; 60°</text>
+        <rect x="252" y="522" width="132" height="36" rx="8" fill="#ffebee" stroke="#c62828" stroke-width="1.5"/>
+        <text x="318" y="538" text-anchor="middle" fill="#b71c1c" font-size="9.5" font-weight="700">DOBLE TERMINAL</text>
+        <text x="318" y="551" text-anchor="middle" fill="#b71c1c" font-size="8">2 terminales → T</text>
+
+        <!-- ─── VANO LARGO ────────────────────────────── -->
+        <!-- línea desde D3 izquierda bajando -->
+        <line x1="122" y1="256" x2="56" y2="256" stroke="#7b1fa2" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="89" y="250" text-anchor="middle" fill="#7b1fa2" font-size="8">Vano largo</text>
+        <line x1="56" y1="256" x2="56" y2="600" stroke="#7b1fa2" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ap)"/>
+
+        <!-- D6: vano vs vmax -->
+        <polygon points="110,604 170,626 110,648 50,626" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5"/>
+        <text x="110" y="621" text-anchor="middle" fill="#4a148c" font-size="9" font-weight="600">¿Cuántas veces</text>
+        <text x="110" y="634" text-anchor="middle" fill="#4a148c" font-size="9" font-weight="600">supera V_max?</text>
+
+        <!-- ≤ 2.5× → H -->
+        <line x1="110" y1="648" x2="110" y2="672" stroke="#7b1fa2" stroke-width="1.5" marker-end="url(#ap)"/>
+        <text x="117" y="664" fill="#7b1fa2" font-size="8">≤ 2.5×</text>
+        <rect x="42" y="674" width="136" height="36" rx="8" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5"/>
+        <text x="110" y="691" text-anchor="middle" fill="#4a148c" font-size="9.5" font-weight="700">ESTRUCTURA H</text>
+        <text x="110" y="703" text-anchor="middle" fill="#4a148c" font-size="7.5">2.5× V_max · TC/TH</text>
+
+        <!-- > 2.5× → Tormenta -->
+        <line x1="170" y1="626" x2="220" y2="626" stroke="#7b1fa2" stroke-width="1.5"/>
+        <line x1="220" y1="626" x2="220" y2="672" stroke="#7b1fa2" stroke-width="1.5" marker-end="url(#ap)"/>
+        <text x="193" y="620" text-anchor="middle" fill="#7b1fa2" font-size="8">&gt; 2.5×</text>
+        <rect x="178" y="674" width="96" height="36" rx="8" fill="#ede7f6" stroke="#512da8" stroke-width="1.5"/>
+        <text x="226" y="691" text-anchor="middle" fill="#311b92" font-size="9.5" font-weight="700">TORMENTA</text>
+        <text x="226" y="703" text-anchor="middle" fill="#311b92" font-size="7.5">3.75× V_max · TT</text>
+
+        <!-- ─── LEYENDA ────────────────────────────────── -->
+        <rect x="4" y="730" width="382" height="132" rx="8" fill="#f5f7fa" stroke="#d0dae8" stroke-width="1"/>
+        <text x="195" y="748" text-anchor="middle" fill="#1a3a5c" font-size="10" font-weight="700">LEYENDA — Sistema de codificación NT2</text>
+
+        <!-- col 1 -->
+        <text x="12" y="766" fill="#1a3a5c" font-size="9" font-weight="700">Posición en el código:</text>
+        <rect x="12" y="772" width="12" height="12" rx="2" fill="#1a3a5c"/>
+        <text x="28" y="782" fill="#333" font-size="8.5">1 = Nivel de tensión 2</text>
+        <rect x="12" y="788" width="12" height="12" rx="2" fill="#2e6da4"/>
+        <text x="28" y="798" fill="#333" font-size="8.5">TC/TB/TV/HC/TH/TT = Apoyo</text>
+        <rect x="12" y="804" width="12" height="12" rx="2" fill="#2e7d32"/>
+        <text x="28" y="814" fill="#333" font-size="8.5">G = con cable de guarda</text>
+        <rect x="12" y="820" width="12" height="12" rx="2" fill="#e8a020"/>
+        <text x="28" y="830" fill="#333" font-size="8.5">11/02/12/03/13 = Fases</text>
+        <rect x="12" y="836" width="12" height="12" rx="2" fill="#c62828"/>
+        <text x="28" y="846" fill="#333" font-size="8.5">P/A/R/T = Configuración</text>
+        <rect x="12" y="852" width="12" height="12" rx="2" fill="#5a6a7a"/>
+        <text x="28" y="862" fill="#333" font-size="8.5">2 / 2.5 / 3 … = Cruceta (m)</text>
+
+        <!-- col 2 -->
+        <text x="210" y="766" fill="#1a3a5c" font-size="9" font-weight="700">Configuraciones:</text>
+        <text x="210" y="782" fill="#1565c0" font-size="8.5" font-weight="700">P</text><text x="222" y="782" fill="#333" font-size="8.5"> Pin sencillo (suspensión)</text>
+        <text x="210" y="796" fill="#283593" font-size="8.5" font-weight="700">A</text><text x="222" y="796" fill="#333" font-size="8.5"> Doble pin (α ≤ 10°)</text>
+        <text x="210" y="810" fill="#2e7d32" font-size="8.5" font-weight="700">R</text><text x="222" y="810" fill="#333" font-size="8.5"> Retención</text>
+        <text x="210" y="824" fill="#b71c1c" font-size="8.5" font-weight="700">T</text><text x="222" y="824" fill="#333" font-size="8.5"> Terminal / Doble terminal</text>
+        <text x="210" y="844" fill="#1a3a5c" font-size="9" font-weight="700">Ejemplo:</text>
+        <rect x="210" y="848" width="172" height="13" rx="3" fill="#e3f0fb"/>
+        <text x="213" y="858" fill="#0d47a1" font-size="8" font-weight="700">1TCG3P2.5 = Poste concreto centro,</text>
+        <text x="213" y="868" fill="#0d47a1" font-size="7.5">guarda, 3F trifilar, pin sencillo, 2.5 m</text>
+      </svg>
+    </div>
+  </div><!-- /panel mapa -->
+
+  <!-- ══ FORMULARIO ══ -->
+  <div class="panel">
+    <div class="panel-hdr">⚙️ Asistente de selección — paso a paso</div>
+    <div class="form-body">
+
+      <div class="step active" id="st1">
+        <div class="step-hdr"><div class="step-num">1</div><div class="step-title">Situación del tramo</div><div class="step-val" id="sv1"></div></div>
+        <div class="step-body">
+          <div class="radio-group" id="opts1">
+            <label class="radio-opt"><input type="radio" name="s1" value="inicio_fin" style="display:none"><div class="rdot"></div>🔚 Inicio o fin de línea (arranque / terminación)</label>
+            <label class="radio-opt"><input type="radio" name="s1" value="recto" style="display:none"><div class="rdot"></div>➡️ Alineación recta — sin cambio de dirección</label>
+            <label class="radio-opt"><input type="radio" name="s1" value="angulo" style="display:none"><div class="rdot"></div>↪️ Cambio de dirección (ángulo de deflexión)</label>
+            <label class="radio-opt"><input type="radio" name="s1" value="vano_largo" style="display:none"><div class="rdot"></div>📏 Vano excepcionalmente largo</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="step locked" id="st2">
+        <div class="step-hdr"><div class="step-num">2</div><div class="step-title" id="st2t">Criterio adicional</div><div class="step-val" id="sv2"></div></div>
+        <div class="step-body"><div class="radio-group" id="opts2"></div></div>
+      </div>
+
+      <div class="step locked" id="st3">
+        <div class="step-hdr"><div class="step-num">3</div><div class="step-title">¿Vano pesante negativo?</div><div class="step-val" id="sv3"></div></div>
+        <div class="step-body">
+          <div class="radio-group" id="opts3">
+            <label class="radio-opt"><input type="radio" name="s3" value="no" style="display:none"><div class="rdot"></div>✅ No — vanos normales</label>
+            <label class="radio-opt"><input type="radio" name="s3" value="si" style="display:none"><div class="rdot"></div>⚠️ Sí — vano pesante negativo (fuerza retención)</label>
+          </div>
+          <p style="font-size:.73rem;color:var(--muted);margin-top:6px">Cap. 7.6: cuando el vano pesante es negativo se colocan siempre cadenas de retención.</p>
+        </div>
+      </div>
+
+      <div class="step locked" id="st4">
+        <div class="step-hdr"><div class="step-num">4</div><div class="step-title">Configuración de fases y neutro</div><div class="step-val" id="sv4"></div></div>
+        <div class="step-body">
+          <div class="radio-group" id="opts4">
+            <label class="radio-opt"><input type="radio" name="s4" value="11" style="display:none"><div class="rdot"></div>1 circuito monofásico bifilar — 1 fase + neutro</label>
+            <label class="radio-opt"><input type="radio" name="s4" value="02" style="display:none"><div class="rdot"></div>1 circuito bifásico bifilar — 2 fases sin neutro</label>
+            <label class="radio-opt"><input type="radio" name="s4" value="12" style="display:none"><div class="rdot"></div>1 circuito bifásico trifilar — 2 fases + neutro</label>
+            <label class="radio-opt"><input type="radio" name="s4" value="03" style="display:none"><div class="rdot"></div>1 circuito trifásico trifilar — 3 fases sin neutro</label>
+            <label class="radio-opt"><input type="radio" name="s4" value="13" style="display:none"><div class="rdot"></div>1 circuito trifásico tetrafilar — 3 fases + neutro</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="step locked" id="st5">
+        <div class="step-hdr"><div class="step-num">5</div><div class="step-title">Calibre del conductor de fase</div><div class="step-val" id="sv5"></div></div>
+        <div class="step-body">
+          <div class="g2" id="opts5">
+            <label class="radio-opt"><input type="radio" name="s5" value="ACSR2" style="display:none"><div class="rdot"></div>ACSR #2 AWG</label>
+            <label class="radio-opt"><input type="radio" name="s5" value="ACSR1/0" style="display:none"><div class="rdot"></div>ACSR 1/0 AWG</label>
+            <label class="radio-opt"><input type="radio" name="s5" value="ACSR2/0" style="display:none"><div class="rdot"></div>ACSR 2/0 AWG</label>
+            <label class="radio-opt"><input type="radio" name="s5" value="ACSR4/0" style="display:none"><div class="rdot"></div>ACSR 4/0 AWG</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="step locked" id="st6">
+        <div class="step-hdr"><div class="step-num">6</div><div class="step-title">Vano medio de diseño</div><div class="step-val" id="sv6"></div></div>
+        <div class="step-body">
+          <div class="slider-row">
+            <input type="range" id="vslider" min="50" max="200" step="10" value="100" oninput="onSlider(+this.value)">
+            <span class="slider-val" id="vdisp">100 m</span>
+          </div>
+          <div class="chips" id="vchips"></div>
+          <button id="vbtn" onclick="confirmVano()" style="margin-top:8px;padding:6px 16px;background:var(--secondary);color:#fff;border:none;border-radius:7px;font-size:.82rem;font-weight:600;cursor:pointer;display:none">Confirmar vano ↓</button>
+        </div>
+      </div>
+
+      <div class="step locked" id="st7">
+        <div class="step-hdr"><div class="step-num">7</div><div class="step-title">¿Lleva cable de guarda?</div><div class="step-val" id="sv7"></div></div>
+        <div class="step-body">
+          <div class="radio-group" id="opts7">
+            <label class="radio-opt"><input type="radio" name="s7" value="no" style="display:none"><div class="rdot"></div>Sin cable de guarda</label>
+            <label class="radio-opt"><input type="radio" name="s7" value="si" style="display:none"><div class="rdot"></div>Con cable de guarda (bayoneta 2–3 m)</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="step locked" id="st8">
+        <div class="step-hdr"><div class="step-num">8</div><div class="step-title">Tipo de apoyo</div><div class="step-val" id="sv8"></div></div>
+        <div class="step-body"><div class="radio-group" id="opts8"></div></div>
+      </div>
+
+      <div id="resultado"></div>
+
+    </div>
+  </div>
+
+</div><!-- /layout -->
+
+<script>
+// ── Datos ─────────────────────────────────────────────────────────────
+var V={};// V[n] = valor elegido en paso n
+
+var FL={
+  'ACSR2':{50:.33,60:.48,70:.64,80:.84,90:1.05,100:1.29,110:1.55,120:1.82,130:2.12,140:2.44,150:2.78,160:3.13,170:3.51,180:3.90,200:4.73},
+  'ACSR1/0':{50:.282,60:.404,70:.547,80:.711,90:.895,100:1.098,110:1.320,120:1.561,130:1.820,140:2.097,150:2.390,160:2.701,170:3.027,180:3.370,200:4.103},
+  'ACSR2/0':{50:.26,60:.38,70:.51,80:.66,90:.83,100:1.01,110:1.22,120:1.44,130:1.68,140:1.93,150:2.20,160:2.49,170:2.79,180:3.10,200:3.77},
+  'ACSR4/0':{50:.22,60:.32,70:.43,80:.56,90:.70,100:.86,110:1.03,120:1.22,130:1.42,140:1.63,150:1.86}
+};
+var VANOS={'ACSR2':[50,60,70,80,90,100,110,120,130,140,150,160,170,180,200],'ACSR1/0':[50,60,70,80,90,100,110,120,130,140,150,160,170,180,200],'ACSR2/0':[50,60,70,80,90,100,110,120,130,140,150,160,170,180],'ACSR4/0':[50,60,70,80,90,100,110,120,130,140,150]};
+
+function flerp(cal,v){
+  var t=FL[cal];if(!t)return null;
+  var k=Object.keys(t).map(Number).sort(function(a,b){return a-b;});
+  if(v<=k[0])return t[k[0]];if(v>=k[k.length-1])return t[k[k.length-1]];
+  for(var i=0;i<k.length-1;i++){if(v>=k[i]&&v<=k[i+1]){var f=(v-k[i])/(k[i+1]-k[i]);return t[k[i]]+f*(t[k[i+1]]-t[k[i]]);}}
+  return null;
+}
+function sep(cal,v){var F=flerp(cal,v);return F===null?null:Math.round((0.55*Math.sqrt(F)+13.2/150)*100)/100;}
+
+var AL={TC:'Poste concreto — cruceta al centro',TB:'Poste concreto — cruceta en bandera',TV:'Poste concreto — disposición vertical',HC:'Torre metálica — cruceta al centro',TH:'Postes concreto en H',TT:'Postes concreto en tormenta',TE:'Cable cubierto'};
+var AI={TC:'🏚️',TB:'🚩',TV:'📐',HC:'🗼',TH:'⚖️',TT:'⛈️',TE:'🔌'};
+var CL={P:'Suspensión pin sencillo',A:'Suspensión doble pin',R:'Retención',T:'Terminal'};
+var FL2={'11':'Monofásica bifilar','02':'Bifásica bifilar','12':'Bifásica trifilar','03':'Trifásica trifilar','13':'Trifásica tetrafilar'};
+var CC={P:'#1565c0',A:'#283593',R:'#1b5e20',T:'#4a148c'};
+var APOYOS_CFG={P:['TC','TB','TV','HC','TE'],A:['TC','TB','TH','TE'],R:['TC','TB','TV','TH','TT'],T:['TC','TB','TV','TH','TT']};
+var CRUX={TC:{P:[2,2.5,3],A:[2,2.5,3],R:[2.5,3],T:[2,2.5,3]},TB:{P:[2,2.5,3],A:[2.5,3,3.5],R:[2,2.5,3],T:[2,2.5,3,3.5]},TV:{P:[1],A:[],R:[1],T:[1]},HC:{P:[1.5,2,2.3],A:[1.5,2],R:[],T:[]},TH:{P:[2.5],A:[3.5],R:[3.5,4],T:[3.5,4]},TT:{P:[],A:[],R:[6,7,8],T:[6]},TE:{P:[0,0.5],A:[0],R:[0.5],T:[0.5]}};
+
+var OPS2={
+  recto:[{v:'intermedio',t:'Entre postes de retención (postes 1–4)'},{v:'retencion_recto',t:'Cada 5 apoyos o más de 500 m entre retenciones'}],
+  angulo:[{v:'a0_5',t:'0° a 5° — ángulo muy pequeño'},{v:'a5_10',t:'5° a 10°'},{v:'a10_60',t:'10° a 60°'},{v:'a60_mas',t:'Mayor de 60°'}],
+  vano_largo:[{v:'hasta25',t:'Hasta 2.5× el vano máximo del poste sencillo → H'},{v:'hasta375',t:'2.5× a 3.75× el vano máximo → tormenta'}]
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────
+function sh(id){document.getElementById(id).classList.remove('locked');document.getElementById(id).classList.add('active');}
+function done(id){document.getElementById(id).classList.remove('active','locked');document.getElementById(id).classList.add('done');}
+function lock(id){document.getElementById(id).classList.remove('active','done');document.getElementById(id).classList.add('locked');}
+function g(id){return document.getElementById(id);}
+
+function getCfg(){
+  if(V[3]==='si') return 'R';
+  var v1=V[1]||'',v2=V[2]||'';
+  if(v1==='inicio_fin') return 'T';
+  if(v1==='recto') return v2==='retencion_recto'?'R':'P';
+  if(v1==='angulo'){if(v2==='a0_5')return'P';if(v2==='a5_10')return'A';if(v2==='a10_60')return'R';if(v2==='a60_mas')return'T';}
+  if(v1==='vano_largo') return 'R';
+  return 'P';
+}
+
+// ── Reset desde un paso en adelante ───────────────────────────────────
+function resetFrom(from){
+  // No borrar el valor que acaba de guardarse (from-1 o el paso actual)
+  // Borramos solo los pasos posteriores
+  for(var i=from;i<=8;i++){
+    delete V[i];
+    var st=document.getElementById('st'+i);if(st)lock('st'+i);
+    var sv=document.getElementById('sv'+i);if(sv)sv.textContent='';
+    var opts=st?st.querySelectorAll('.radio-opt'):[];
+    opts.forEach(function(o){o.classList.remove('selected');var inp=o.querySelector('input');if(inp)inp.checked=false;});
+  }
+  var res=g('resultado');res.innerHTML='';res.style.display='none';
+}
+
+// ── Selección genérica ────────────────────────────────────────────────
+function choose(step,val,label){
+  V[step]=val;
+  // marcar visualmente en el grupo correcto
+  var grp=document.getElementById('opts'+step)||document.getElementById('st'+step);
+  var allOpts=grp.querySelectorAll('.radio-opt');
+  allOpts.forEach(function(o){
+    var inp=o.querySelector('input');
+    if(inp && inp.value===val){o.classList.add('selected');}
+    else{o.classList.remove('selected');}
+  });
+  g('sv'+step).textContent='✓ '+label;
+  done('st'+step);
+  resetFrom(step+1);
+  // Restaurar valores de pasos anteriores (resetFrom los borró)
+  V[step]=val;
+  nextStep(step);
+}
+
+// ── Qué sigue ─────────────────────────────────────────────────────────
+function nextStep(from){
+  var v1=V[1]||'',v2=V[2]||'';
+  if(from===1){
+    if(v1==='inicio_fin'){
+      sh('st4'); scrollTo('st4');
+    } else {
+      var ops=OPS2[v1]||[];
+      var titles={recto:'¿Criterio de posición?',angulo:'¿Ángulo de deflexión α?',vano_largo:'¿Cuántas veces supera el vano máximo?'};
+      g('st2t').textContent=titles[v1]||'Criterio adicional';
+      buildOpts('opts2','s2',ops,2);
+      sh('st2'); scrollTo('st2');
+    }
+  } else if(from===2){
+    var needVP=(v1!=='inicio_fin')&&!(v1==='angulo'&&v2==='a60_mas')&&(v1!=='vano_largo');
+    if(needVP){sh('st3');scrollTo('st3');}
+    else{sh('st4');scrollTo('st4');}
+  } else if(from===3){
+    sh('st4'); scrollTo('st4');
+  } else if(from===4){
+    sh('st5'); scrollTo('st5');
+  } else if(from===5){
+    buildChips();
+    g('vslider').max=VANOS[V[5]][VANOS[V[5]].length-1];
+    g('vslider').value=100;
+    g('vdisp').textContent='100 m';
+    g('vbtn').style.display='inline-block';
+    sh('st6'); scrollTo('st6');
+  } else if(from===6){
+    sh('st7'); scrollTo('st7');
+  } else if(from===7){
+    buildApoyos();
+    sh('st8'); scrollTo('st8');
+  } else if(from===8){
+    mostrarResultado();
+  }
+}
+
+function buildOpts(containerId,name,ops,step){
+  var c=g(containerId);c.innerHTML='';
+  ops.forEach(function(o){
+    var lbl=document.createElement('label');
+    lbl.className='radio-opt';
+    lbl.innerHTML='<input type="radio" name="'+name+'" value="'+o.v+'" style="display:none"><div class="rdot"></div>'+o.t;
+    lbl.onclick=function(){choose(step,o.v,o.t);};
+    c.appendChild(lbl);
+  });
+}
+
+function buildChips(){
+  var cal=V[5];
+  var vanos=VANOS[cal]||[];
+  var wrap=g('vchips');wrap.innerHTML='';
+  vanos.forEach(function(v){
+    var ch=document.createElement('button');
+    ch.className='chip';ch.textContent=v+' m';
+    ch.onclick=(function(vv){return function(){
+      document.querySelectorAll('#vchips .chip').forEach(function(b){b.classList.remove('sel');});
+      ch.classList.add('sel');
+      g('vslider').value=vv;g('vdisp').textContent=vv+' m';
+    };})(v);
+    wrap.appendChild(ch);
+  });
+}
+
+function onSlider(v){
+  g('vdisp').textContent=v+' m';
+  document.querySelectorAll('#vchips .chip').forEach(function(b){
+    b.classList.toggle('sel',b.textContent===v+' m');
+  });
+}
+
+function confirmVano(){
+  var v=+g('vslider').value;
+  V[6]=v;
+  g('sv6').textContent='✓ '+v+' m';
+  done('st6');
+  resetFrom(7); V[6]=v;
+  nextStep(6);
+}
+
+function buildApoyos(){
+  var cfg=getCfg();
+  var apoyos=APOYOS_CFG[cfg]||[];
+  var c=g('opts8');c.innerHTML='';
+  apoyos.forEach(function(a){
+    var lbl=document.createElement('label');
+    lbl.className='radio-opt';
+    lbl.innerHTML='<input type="radio" name="s8" value="'+a+'" style="display:none"><div class="rdot"></div>'+AI[a]+' '+AL[a]+' <span style="font-size:.74rem;color:var(--muted);margin-left:4px">('+a+')</span>';
+    lbl.onclick=(function(aa){return function(){choose(8,aa,aa+' — '+AL[aa]);};})(a);
+    c.appendChild(lbl);
+  });
+}
+
+// ── Conectar listeners de pasos fijos ─────────────────────────────────
+function wireFixed(optsId,name,step){
+  var c=g(optsId);if(!c)return;
+  c.querySelectorAll('.radio-opt').forEach(function(lbl){
+    var inp=lbl.querySelector('input');if(!inp)return;
+    lbl.onclick=function(){choose(step,inp.value,lbl.textContent.trim());};
+  });
+}
+wireFixed('opts1','s1',1);
+wireFixed('opts3','s3',3);
+wireFixed('opts4','s4',4);
+wireFixed('opts5','s5',5);
+wireFixed('opts7','s7',7);
+
+function scrollTo(id){
+  var el=document.getElementById(id);
+  if(el)setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'nearest'});},80);
+}
+
+// ── Resultado ─────────────────────────────────────────────────────────
+function mostrarResultado(){
+  var cfg=getCfg();
+  var fases=V[4]||'03';
+  var G=V[7]==='si'?'G':'';
+  var cal=V[5]||'ACSR2';
+  var van=V[6]||100;
+  var apo=V[8];
+
+  if(!apo){g('resultado').innerHTML='<p style="color:var(--red);padding:8px">Error: seleccione el tipo de apoyo.</p>';g('resultado').style.display='block';return;}
+
+  var s=sep(cal,van)||0;
+  var minMT=1.2,minReq=Math.max(s,minMT);
+  var mult=(fases==='03'||fases==='13')?2.0:1.0;
+  var minCruc=minReq*mult;
+  var crucOps=(CRUX[apo]&&CRUX[apo][cfg])||[];
+  var crucFinal=null;
+  for(var ci=0;ci<crucOps.length;ci++){if(crucOps[ci]>=minCruc){crucFinal=crucOps[ci];break;}}
+  var alerta='';
+  if(crucFinal===null){
+    if(crucOps.length>0){crucFinal=crucOps[crucOps.length-1];alerta='⚠️ Cruceta máxima disponible ('+crucFinal+' m) puede ser menor a la recomendada. Verifique con el equipo de diseño.';}
+    else{crucFinal='?';alerta='⚠️ Combinación '+apo+'+'+cfg+' sin cruceta estándar en catálogo NT2. Consulte normativa.';}
+  }
+
+  // Construir código
+  var codigo;
+  if(apo==='HC') codigo='1HC'+fases+crucFinal;
+  else if(apo==='HH') codigo='1HH'+fases+cfg+crucFinal;
+  else{
+    var apoCod=apo.replace(/^T/,'');// TC→C, TB→B, TV→V, TH→H, TT→T, TE→E
+    codigo='1T'+apoCod+G+fases+cfg+crucFinal;
+  }
+
+  var bgCol=CC[cfg]||'#1a3a5c';
+  var F=flerp(cal,van);
+  var segs=[{s:'1',l:'NT2'},{s:apo.replace(/^T/,''),l:'Apoyo'}];
+  if(G)segs.push({s:'G',l:'C.guarda'});
+  segs.push({s:fases,l:FL2[fases]},{s:cfg,l:CL[cfg]},{s:String(crucFinal),l:'Cruceta '+crucFinal+'m'});
+  var decHtml=segs.map(function(d){return'<div class="dec-item"><span class="dec-seg">'+d.s+'</span><span class="dec-lbl">'+d.l+'</span></div>';}).join('<div style="color:rgba(255,255,255,.4);font-size:1.1rem;padding-bottom:10px">·</div>');
+
+  var dets=[];
+  if(cfg==='P'){dets.push('Pin sencillo: vanos ≤ 100 m, ángulo ≤ 5° (Cap. 7.3). Verificar vibración en pines.');dets.push('Aisladores pin ANSI 55-4/55-5/55-6/55-7 (13.2 kV).');}
+  if(cfg==='A') dets.push('Doble pin: deflexión ≤ 10°. Verificar vano máximo en tablas 7.8–7.15.');
+  if(cfg==='R'){if(V[1]==='recto')dets.push('Retención en tramo recto: cada 5 apoyos, máx. 500 m (Cap. 7.2).');if(V[2]==='a10_60')dets.push('Crucetas orientadas en la bisectriz del ángulo entre los dos tramos.');dets.push('Templetes opuestos a los dos tendidos — siempre obligatorios.');}
+  if(cfg==='T'){if(V[2]==='a60_mas')dets.push('Deflexión > 60°: dos terminales en mismo apoyo, uno en segundo nivel.');else dets.push('Terminal: arranque o terminación de línea.');dets.push('Cada apoyo lleva templete; cable de guarda en bayoneta lleva viento.');}
+  if(apo==='TH') dets.push('Estructura H: resistencia 2.5× la nominal. No usar aisladores de pin (Cap. 7.5).');
+  if(apo==='TT') dets.push('Tormenta: resistencia 3.75× la nominal del poste sencillo (Cap. 7.5).');
+  if(G) dets.push('Cable de guarda: oscilación máxima de cadenas ≤ 45° (Cap. 7.6).');
+  dets.push('Calibres de grapas deben corresponder al calibre del conductor del proyecto.');
+
+  var res=g('resultado');
+  res.style.cssText='display:block;background:'+bgCol+';color:#fff;border-radius:12px;padding:16px;margin-top:6px;';
+  res.innerHTML=
+    '<p class="res-titulo">'+CL[cfg]+'</p>'
+    +'<p class="res-sub">'+AL[apo]+' · '+FL2[fases]+' · '+cal+' · Vano '+van+' m</p>'
+    +'<div class="codigo-grande">'+codigo+'</div>'
+    +'<div class="dec-wrap">'+decHtml+'</div>'
+    +'<table class="sep-tbl">'
+    +'<tr><th>Parámetro</th><th>Valor</th></tr>'
+    +'<tr><td>Calibre</td><td>'+cal+'</td></tr>'
+    +'<tr><td>Vano de diseño</td><td>'+van+' m</td></tr>'
+    +(F?'<tr><td>Flecha F (20°C, Cap. 6)</td><td class="hl">'+Math.round(F*100)/100+' m</td></tr>':'')
+    +'<tr><td>Separación mín. calculada (Cap. 6)</td><td class="hl">'+s+' m</td></tr>'
+    +'<tr><td>Separación mín. MT misma estructura (Cap. 7.23)</td><td>1.20 m</td></tr>'
+    +'<tr><td>Separación a garantizar</td><td class="hl">'+Math.round(minReq*100)/100+' m</td></tr>'
+    +'<tr><td>Cruceta mín. recomendada</td><td class="hl">'+Math.ceil(minCruc*10)/10+' m</td></tr>'
+    +'<tr><td style="font-weight:700">✅ Cruceta seleccionada</td><td class="hl" style="font-size:1.05rem;font-weight:700">'+crucFinal+' m</td></tr>'
+    +'</table>'
+    +'<ul class="res-ul">'+dets.map(function(d){return'<li>'+d+'</li>';}).join('')+'</ul>'
+    +(V[3]==='si'?'<div class="alerta-box">⚠️ Vano pesante negativo: cadenas de retención obligatorias (Cap. 7.6). Templetes en ambas direcciones.</div>':'')
+    +(alerta?'<div class="alerta-box">'+alerta+'</div>':'')
+    +'<p class="res-nota">Ref: Cap. 6 Tab. 9-10 · Cap. 7 §§7.2–7.6, 7.20–7.23 — MA-DI-02-002-001 V.46 CHEC/EPM</p>'
+    +'<button class="btn-reset" onclick="reiniciar()">↺ Nueva selección</button>';
+  res.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function reiniciar(){
+  V={};
+  for(var i=1;i<=8;i++){
+    var st=document.getElementById('st'+i);if(!st)continue;
+    st.classList.remove('done','active','locked');
+    if(i===1)st.classList.add('active');else st.classList.add('locked');
+    var sv=document.getElementById('sv'+i);if(sv)sv.textContent='';
+    st.querySelectorAll('.radio-opt').forEach(function(o){o.classList.remove('selected');var inp=o.querySelector('input');if(inp)inp.checked=false;});
+  }
+  var res=g('resultado');res.innerHTML='';res.style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
+</div>
+
+
+
 
 </div><!-- /page-body -->
 <!-- FOOTER -->
