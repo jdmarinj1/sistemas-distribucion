@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Grid · Autorreparación · Distribución</title>
+
+
+<style>
+  :root{
+    --ink:#0b0f13; --panel:#12181e; --line:#2a333e; --line2:#39434f;
+    --text:#E7ECF1; --dim:#9AA6B2; --mut:#6C7885;
+    --paper:#e9e4d6; --paper-ink:#1b2129; --paper-grid:#d8d2c0;
+    --f1:#b3a0dd; --f2:#39cdea; --f3:#c3d24a; --f4:#6f61ad; --f5:#efd93f;
+    --dead:#c4bea9; --closed:#d63b32; --open:#2fae54; --fault:#f2c400; --ok:#3BB273; --amber:#F2A63B;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--ink);color:var(--text);overflow:hidden;-webkit-font-smoothing:antialiased}
+  .app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+  header{display:flex;align-items:center;gap:14px;padding:9px 16px;background:linear-gradient(180deg,#0f151b,#0b1015);border-bottom:1px solid var(--line);flex:0 0 auto}
+  .brand h1{font-family:'Space Grotesk';font-size:15px;font-weight:600}
+  .brand .sub{font-size:10.5px;color:var(--dim)}
+  .brand .accent{color:var(--f2)}
+  .badge{margin-left:auto;font-family:'IBM Plex Mono';font-size:11px;color:var(--text);background:var(--panel);border:1px solid var(--line2);border-radius:8px;padding:6px 12px}
+  .badge b{color:var(--amber)}
+
+  .toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:7px 16px;background:#0e141a;border-bottom:1px solid var(--line);flex:0 0 auto;font-family:'IBM Plex Mono';font-size:11px}
+  .seg{display:flex;border:1px solid var(--line2);border-radius:7px;overflow:hidden}
+  .seg button{background:transparent;color:var(--dim);border:0;padding:5px 11px;font:inherit;cursor:pointer}
+  .seg button[aria-pressed="true"]{background:#25313d;color:#fff}
+  .tb-btn{background:var(--panel);color:var(--text);border:1px solid var(--line2);border-radius:6px;padding:6px 11px;font:inherit;cursor:pointer}
+  .tb-btn:hover{border-color:var(--amber)}
+  .tb-btn.old{border-color:var(--closed)}
+  .tb-btn.smart{border-color:var(--open)}
+  .tb-btn.primary:disabled{opacity:.45;cursor:default}
+  .hint{color:var(--mut);margin-left:auto;font-size:10px}
+
+  .stage{flex:1 1 auto;min-height:0;position:relative;background:var(--ink);display:flex}
+  .diagram{flex:1 1 auto;min-width:0;background:var(--paper);position:relative}
+  #svg{display:block;width:100%;height:100%}
+  .sw{cursor:pointer}
+  .tr{cursor:pointer}
+  .flash{position:absolute;inset:0;background:#fff;opacity:0;transition:opacity .12s;pointer-events:none}
+
+  aside{flex:0 0 300px;background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+  .console-hd{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--line);font-family:'IBM Plex Mono';font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mut)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+  .dot.busy{background:var(--amber);animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.35}}
+  .counters{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+  .cbig{font-family:'Space Grotesk';font-size:15px}
+  .cbig .n{font-family:'IBM Plex Mono';font-weight:600}
+  .cbig .out{color:var(--closed)}
+  .cbig .res{color:var(--ok)}
+  .bar{height:9px;border-radius:5px;background:#243039;overflow:hidden}
+  .bar > i{display:block;height:100%;background:var(--closed);width:0;transition:width .4s}
+  .log{flex:1 1 auto;overflow-y:auto;padding:8px 14px;font-family:'IBM Plex Mono';font-size:11px;line-height:1.55}
+  .log .ln{display:flex;gap:9px;padding:2px 0}
+  .log .t{color:var(--mut);flex:0 0 74px}
+  .log .m{color:var(--dim)}
+  .log .ln.trip .m{color:var(--closed)}
+  .log .ln.iso .m{color:var(--amber)}
+  .log .ln.restore .m{color:var(--ok)}
+  .log .ln.head .m{color:var(--text);font-weight:600}
+
+  footer{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:7px 16px;background:#0d1319;border-top:1px solid var(--line);font-size:11px;color:var(--dim)}
+  .leg{display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono';font-size:10px}
+  .sw-s{width:14px;height:5px;border-radius:2px}
+  .foot-note{margin-left:auto;color:var(--mut);font-size:10px}
+  @media (max-width:940px){aside{flex-basis:240px}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+</style>
+<style>@font-face{font-family:Ancizar;src:url('../assets/unal/ancizar-sans-regular.woff')}@font-face{font-family:Ancizar;src:url('../assets/unal/ancizar-sans-bold.woff');font-weight:700}body,button,select,input,h1,h2,h3{font-family:Ancizar,Arial,sans-serif!important}body{--bg:#f4f6f0;--panel:#fff;--accent:#466b3f;--line:#c9d1bf;--ink:#303431}header{background:#606060!important;color:white!important;border-bottom:4px solid #94b43b!important}header h1,header p{color:white!important}.logo{display:none!important}button,select{min-height:42px!important;font-size:15px!important}button:focus-visible,[tabindex]:focus-visible{outline:3px solid #466b3f;outline-offset:3px}.toolbar{flex-wrap:wrap!important}.log{font-size:14px!important}.foot-note{font-size:13px!important}.course-scope{background:#edf1e5;color:#303431;padding:8px 16px;font:15px Ancizar,Arial,sans-serif;border-bottom:1px solid #c9d1bf}.course-scope a{color:#355d30}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}canvas{touch-action:none}</style><script src="../network-state.js"></script><link rel="stylesheet" href="theme.css"></head>
+<body><div class="course-scope">Modelo educativo de conectividad · tiempos ilustrativos · sin flujo AC ni validación de capacidad. <a href="../simulador.html" target="_top">Volver al laboratorio</a></div>
+<div class="app">
+  <header>
+    <div class="brand">
+      <h1>Smart Grid · <span class="accent">Autorreparación (FLISR)</span></h1>
+      <div class="sub">Distribución · reconfiguración ante falla · reproducción del esquema S&amp;C · <b style="color:#F2A63B">rayo + carro canasta (v2)</b></div>
+    </div>
+    <div class="badge">Alimentadores <b>1–5</b> · enlaces de transferencia normalmente abiertos</div>
+  </header>
+
+  <div class="toolbar">
+    <div class="seg" role="group" aria-label="Modo">
+      <button id="modeAuto" aria-pressed="true">Automático</button>
+      <button id="modeManual" aria-pressed="false">Maniobrar</button>
+    </div>
+    <span style="width:1px;height:20px;background:var(--line)"></span>
+    <button class="tb-btn old primary" id="btnOld">⚡ Falla · Red antigua</button>
+    <button class="tb-btn smart primary" id="btnSmart">⚡ Falla · Red inteligente</button>
+    <button class="tb-btn" id="btnReset">↺ Reiniciar</button>
+    <span class="hint" id="hint">Automático: pulsa un escenario. Maniobrar: clic en un interruptor para abrir/cerrar; clic en un transformador funde su fusible.</span>
+  </div>
+
+  <div class="stage">
+    <div class="diagram" id="diagram">
+      <svg id="svg" viewBox="0 0 1260 900" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="flash" id="flash"></div>
+    </div>
+    <aside>
+      <div class="console-hd"><span class="dot" id="stDot"></span>Consola · <span id="stText" style="text-transform:none;letter-spacing:0;color:var(--dim)">red en condición normal</span></div>
+      <div class="counters">
+        <div class="cbig">Clientes sin servicio: <span class="n out" id="cOut">0</span> / <span class="n" id="cTot">2000</span></div>
+        <div class="bar"><i id="cBar"></i></div>
+        <div class="cbig" style="font-size:14px">Restablecidos del alimentador afectado: <span class="n res" id="cRes">0</span></div>
+      </div>
+      <div class="log" id="log"></div>
+    </aside>
+  </div>
+
+  <footer>
+    <span class="leg"><span class="sw-s" style="background:var(--closed)"></span>Seccionador cerrado</span>
+    <span class="leg"><span class="sw-s" style="background:var(--open);transform:rotate(-25deg)"></span>Enlace abierto</span>
+    <span class="leg"><span class="sw-s" style="background:var(--dead)"></span>Sin tensión</span>
+    <span class="leg"><span class="sw-s" style="background:var(--fault)"></span>Falla</span>
+    <span class="foot-note">Simulación cualitativa. Secuencia de autorreparación fiel al esquema S&amp;C de las imágenes; la del video puede variar.</span>
+  </footer>
+</div>
+
+<script>
+/* ===================== DATOS ===================== */
+const FCOL={1:'#b3a0dd',2:'#39cdea',3:'#c3d24a',4:'#6f61ad',5:'#efd93f',dead:'#c4bea9'};
+// nodos [x,y]
+const N={
+  src1:[150,90],t25:[250,90],t1:[430,90],j1:[490,90],t26:[690,90],src3:[790,90],
+  t12:[250,235],t2:[430,235],j2:[490,235],t14:[660,235],j2b:[740,235],n56:[880,235],t27:[1030,235],j4top:[1090,235],src4:[1170,235],
+  t3:[250,380],t18:[430,380],jcu:[490,380],
+  jll:[590,380],j3:[740,380],t5:[830,380],t17n:[590,455],
+  src2:[110,520],n2a:[180,520],n2b:[250,520],t10:[340,520],t9:[510,520],n20:[560,520],t20:[730,520],n17:[800,520],t6:[940,520],jf4:[1090,520],
+  t13:[1090,345],n58:[1090,450],
+  n35:[250,615],yA:[250,810],
+  j5by:[560,810],t11:[350,810],t23:[500,810],t8:[720,810],t29:[900,810],src5:[980,810]
+};
+// líneas (siempre conducen)
+const LINES=[
+  ['src1','t25'],['t1','j1'],['t26','src3'],
+  ['t2','j2'],['t14','j2b'],['t27','j4top'],['j4top','src4'],
+  ['t18','jcu'],
+  ['j3','t5'],['jll','t17n'],
+  ['src2','n2a'],['n2b','t10'],['t9','n20'],['t20','n17'],['t6','jf4'],
+  ['j4top','t13'],['n58','jf4'],
+  ['yA','t11'],['t23','j5by'],['t29','src5']
+];
+// interruptores {id,a,b,tie,open}
+const SW=[
+  {id:'SW51',a:'t25',b:'t1'},{id:'SW52',a:'j1',b:'t26',tie:1},
+  {id:'SW23',a:'j1',b:'j2'},
+  {id:'SW54',a:'t12',b:'t2'},{id:'SW55',a:'j2',b:'t14'},
+  {id:'SW56',a:'j2b',b:'n56',tie:1},{id:'SW57',a:'n56',b:'t27'},
+  {id:'SW18',a:'j2b',b:'j3'},{id:'SW1',a:'jll',b:'j3'},{id:'SW2',a:'jcu',b:'jll',tie:1},
+  {id:'SW3',a:'t3',b:'t18'},{id:'SW6',a:'t3',b:'n2b'},
+  {id:'SW33',a:'n2a',b:'n2b'},{id:'SW24',a:'t10',b:'t9'},{id:'SW20',a:'n20',b:'t20'},
+  {id:'SW17',a:'n17',b:'t6',tie:1},{id:'SW58',a:'t13',b:'n58'},
+  {id:'SW35',a:'n2b',b:'n35'},{id:'SW36',a:'n35',b:'yA',tie:1},{id:'SW39',a:'n20',b:'j5by',tie:1},
+  {id:'SW37',a:'t11',b:'t23'},{id:'SW38',a:'j5by',b:'t8'},{id:'SW40',a:'t8',b:'t29'}
+];
+SW.forEach(s=>{s.open=!!s.tie;});   // enlaces abiertos; seccionadores cerrados
+// transformadores con fusible {id,node,dir,cust}
+const TR=[
+  {id:'T25',node:'t25',dir:'u',cust:80},{id:'T1',node:'t1',dir:'d',cust:80},{id:'T26',node:'t26',dir:'d',cust:60},
+  {id:'T12',node:'t12',dir:'d',cust:80},{id:'T2',node:'t2',dir:'d',cust:90},{id:'T14',node:'t14',dir:'d',cust:90},{id:'T27',node:'t27',dir:'d',cust:60},
+  {id:'T3',node:'t3',dir:'l',cust:250},{id:'T18',node:'t18',dir:'d',cust:250},
+  {id:'T5',node:'t5',dir:'d',cust:90},{id:'T17',node:'t17n',dir:'d',cust:80},
+  {id:'T10',node:'t10',dir:'d',cust:400},{id:'T9',node:'t9',dir:'d',cust:400},{id:'T20',node:'t20',dir:'d',cust:350},{id:'T6',node:'t6',dir:'d',cust:100},
+  {id:'T13',node:'t13',dir:'r',cust:80},{id:'T22',node:'n35',dir:'r',cust:250},
+  {id:'T11',node:'t11',dir:'d',cust:90},{id:'T23',node:'t23',dir:'d',cust:90},{id:'T8',node:'t8',dir:'d',cust:90},{id:'T29',node:'t29',dir:'d',cust:60}
+];
+TR.forEach(t=>t.blown=false);
+const SRC=[
+  {f:1,node:'src1',cur:'120 A',on:true},{f:2,node:'src2',cur:'240 A',on:true},
+  {f:3,node:'src3',cur:'0 A',on:true},{f:4,node:'src4',cur:'40 A',on:true},{f:5,node:'src5',cur:'60 A',on:true}
+];
+const FAULT={edge:null};   // {a,b} arista fallada
+
+/* ===================== SVG ===================== */
+const NS="http://www.w3.org/2000/svg", svg=document.getElementById('svg');
+function el(t,a){const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);return n;}
+function mid(a,b){return [(N[a][0]+N[b][0])/2,(N[a][1]+N[b][1])/2];}
+function horiz(a,b){return Math.abs(N[a][1]-N[b][1])<Math.abs(N[a][0]-N[b][0]);}
+
+// fondo
+(function(){const g=el('g',{});for(let x=0;x<=1260;x+=42)g.appendChild(el('line',{x1:x,y1:0,x2:x,y2:900,stroke:'#d8d2c0','stroke-width':.5,opacity:.5}));for(let y=0;y<=900;y+=42)g.appendChild(el('line',{x1:0,y1:y,x2:1260,y2:y,stroke:'#d8d2c0','stroke-width':.5,opacity:.5}));svg.appendChild(g);})();
+
+// líneas + interruptores: capa base (líneas), luego marcadores
+const EDGES=[];   // {a,b,kind,ref,el}
+LINES.forEach(([a,b])=>{const ln=el('line',{x1:N[a][0],y1:N[a][1],x2:N[b][0],y2:N[b][1],stroke:FCOL.dead,'stroke-width':5,'stroke-linecap':'round'});svg.appendChild(ln);EDGES.push({a,b,kind:'line',el:ln});});
+SW.forEach(s=>{const ln=el('line',{x1:N[s.a][0],y1:N[s.a][1],x2:N[s.b][0],y2:N[s.b][1],stroke:FCOL.dead,'stroke-width':5,'stroke-linecap':'round'});svg.appendChild(ln);s.line=ln;EDGES.push({a:s.a,b:s.b,kind:'sw',ref:s,el:ln});});
+
+// marcadores de interruptor
+SW.forEach(s=>{
+  const [mx,my]=mid(s.a,s.b),h=horiz(s.a,s.b);
+  const g=el('g',{class:'sw',tabindex:0,role:'button','aria-label':s.id});
+  const bar=h?el('rect',{x:mx-3,y:my-10,width:6,height:20,rx:1}):el('rect',{x:mx-10,y:my-3,width:20,height:6,rx:1});
+  bar.setAttribute('fill',FCOL.closed);g.appendChild(bar);s.bar=bar;
+  const blade=h?el('line',{x1:mx-9,y1:my,x2:mx+6,y2:my-13}):el('line',{x1:mx,y1:my-9,x2:mx+13,y2:my+6});
+  blade.setAttribute('stroke',FCOL.open);blade.setAttribute('stroke-width',4);blade.setAttribute('stroke-linecap','round');g.appendChild(blade);s.blade=blade;
+  g.appendChild(el('circle',{cx:h?mx-9:mx,cy:h?my:my-9,r:2.4,fill:'#333'}));
+  const lb=el('text',{x:mx+(h?0:14),y:my+(h?24:4),'text-anchor':h?'middle':'start','font-family':"'IBM Plex Mono'",'font-size':11,fill:'#4a4636'});lb.textContent=s.id;g.appendChild(lb);
+  const act=()=>{if(mode!=='manual'||playing)return;safeToggle(s);};
+  g.addEventListener('click',e=>{e.stopPropagation();act();});
+  g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act();}});
+  svg.appendChild(g);
+});
+
+// transformadores con fusible
+TR.forEach(t=>{
+  const [x,y]=N[t.node];const d=t.dir;const L=34;
+  const dx=d==='l'?-L:d==='r'?L:0, dy=d==='d'?L:d==='u'?-L:0;
+  const g=el('g',{class:'tr',tabindex:0,role:'button','aria-label':t.id});
+  const stub=el('line',{x1:x,y1:y,x2:x+dx,y2:y+dy,stroke:FCOL.dead,'stroke-width':3});g.appendChild(stub);t.stub=stub;
+  // fusible (rectángulo con línea) a mitad del stub
+  const fx=x+dx*0.42, fy=y+dy*0.42;
+  const fuse=(dx!==0)?el('rect',{x:fx-6,y:fy-4,width:12,height:8,rx:1}):el('rect',{x:fx-4,y:fy-6,width:8,height:12,rx:1});
+  fuse.setAttribute('fill','#F4F1E6');fuse.setAttribute('stroke','#1b2129');fuse.setAttribute('stroke-width',1.6);g.appendChild(fuse);t.fuse=fuse;
+  // transformador (dos círculos)
+  const cx=x+dx, cy=y+dy;
+  const c1=el('circle',{cx:cx-(dx?0:0),cy:cy-(dx?4:4),r:6,fill:'none',stroke:'#1b2129','stroke-width':1.5});
+  const c2=el('circle',{cx:cx,cy:cy+4,r:6,fill:'none',stroke:'#1b2129','stroke-width':1.5});g.appendChild(c1);g.appendChild(c2);
+  const lb=el('text',{x:cx+(d==='r'?12:d==='l'?-12:9),y:cy+12,'text-anchor':d==='l'?'end':'start','font-family':"'IBM Plex Mono'",'font-size':10,fill:'#4a4636'});lb.textContent=t.id;g.appendChild(lb);
+  const act=()=>{if(mode!=='manual'||playing)return;t.blown=!t.blown;render();log('fusible',t.id+': fusible '+(t.blown?'FUNDIDO':'repuesto'),t.blown?'trip':'restore');};
+  g.addEventListener('click',e=>{e.stopPropagation();act();});
+  g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act();}});
+  svg.appendChild(g);
+});
+
+// fuentes (alimentadores)
+SRC.forEach(s=>{
+  const [x,y]=N[s.node];const g=el('g',{});
+  g.appendChild(el('rect',{x:x-16,y:y-16,width:32,height:32,rx:5,fill:FCOL[s.f],stroke:'#1b2129','stroke-width':1.6}));
+  const t=el('text',{x:x,y:y+6,'text-anchor':'middle','font-family':"'Space Grotesk'",'font-size':17,'font-weight':700,fill:'#1b2129'});t.textContent=s.f;g.appendChild(t);
+  const c=el('text',{x:x,y:y+30,'text-anchor':'middle','font-family':"'IBM Plex Mono'",'font-size':10,fill:'#4a4636'});c.textContent='I no calculada';g.appendChild(c);
+  svg.appendChild(g);
+});
+
+// bolt de falla
+const boltEl=el('path',{d:'M0,0 L-9,16 L-2,15 L-6,30 L11,10 L2,11 L8,0 Z',fill:FCOL.fault,stroke:'#7a5a00','stroke-width':1.2,opacity:0});
+svg.appendChild(boltEl);
+function showBolt(a,b){const [mx,my]=mid(a,b);boltEl.setAttribute('transform',`translate(${mx-2},${my-34})`);boltEl.setAttribute('opacity','1');}
+function hideBolt(){boltEl.setAttribute('opacity','0');}
+
+/* ===================== RAYO (destello + sonido) ===================== */
+let boltG=null,actx=null;
+function thunder(){/* Audio disabled by default for classroom use. */}
+function makeBoltG(x){let d='M'+x+',18',cy=18;for(let i=1;i<=8;i++){cy=18+(494-18)*i/8;const cx=(x+(Math.random()-0.5)*46*(1-i/8)).toFixed(0);d+=' L'+cx+','+cy.toFixed(0);}const g=el('g',{});g.appendChild(el('path',{d,fill:'none',stroke:'#8fbcff','stroke-width':7,opacity:.5,'stroke-linecap':'round'}));g.appendChild(el('path',{d,fill:'none',stroke:'#eaf4ff','stroke-width':2.6,'stroke-linecap':'round'}));svg.appendChild(g);return g;}
+function clearBoltG(){if(boltG){boltG.remove();boltG=null;}}
+function lightningStrike(a,b){return new Promise(res=>{const [mx]=mid(a,b),fl=document.getElementById('flash');thunder();let n=0;(function tick(){n++;clearBoltG();if(n<=5){boltG=makeBoltG(mx);if(fl){fl.style.opacity=n%2?'0.9':'0.45';setTimeout(()=>{if(fl)fl.style.opacity='0';},70);}setTimeout(tick,95);}else{clearBoltG();showBolt(a,b);setTimeout(res,160);}})();});}
+
+/* ===================== CARRO CANASTA ===================== */
+const truck=el('g',{opacity:0});svg.appendChild(truck);
+let truckArm,truckBkt;
+(function buildTruck(){const a=(t,at)=>truck.appendChild(el(t,at));
+  a('rect',{x:0,y:-16,width:38,height:12,rx:2,fill:'#e0a53a',stroke:'#1b2129','stroke-width':1.4});
+  a('rect',{x:38,y:-24,width:16,height:20,rx:2,fill:'#d9d3c4',stroke:'#1b2129','stroke-width':1.4});
+  a('rect',{x:40,y:-22,width:12,height:8,rx:1,fill:'#8fb8cc',stroke:'#1b2129','stroke-width':1});
+  a('circle',{cx:9,cy:0,r:5,fill:'#2a2f34',stroke:'#1b2129','stroke-width':1.2});
+  a('circle',{cx:30,cy:0,r:5,fill:'#2a2f34',stroke:'#1b2129','stroke-width':1.2});
+  a('circle',{cx:46,cy:0,r:5,fill:'#2a2f34',stroke:'#1b2129','stroke-width':1.2});
+  a('rect',{x:12,y:-22,width:6,height:8,rx:1,fill:'#c58f2a',stroke:'#1b2129','stroke-width':1});
+  truckArm=a('line',{x1:15,y1:-20,x2:34,y2:-18,stroke:'#b5842a','stroke-width':4,'stroke-linecap':'round'});
+  truckBkt=a('rect',{x:28,y:-24,width:10,height:8,rx:1.5,fill:'#f0d64a',stroke:'#1b2129','stroke-width':1.4});
+})();
+const easeS=k=>k*k*(3-2*k);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function tween(dur,fn){return new Promise(res=>{const t0=performance.now();(function fr(now){const k=Math.min(1,(now-t0)/dur);fn(k);if(k<1)requestAnimationFrame(fr);else res();})(performance.now());});}
+const TRUCK_STOP=232;   // se detiene junto a la falla (punto ~295 sobre la línea y=520)
+function setTruck(tx,ext){truck.setAttribute('transform','translate('+tx+',560)');
+  const bx=(1-ext)*34+ext*(295-tx),by=(1-ext)*(-18)+ext*(-40);
+  if(truckArm){truckArm.setAttribute('x2',bx);truckArm.setAttribute('y2',by);}
+  if(truckBkt){truckBkt.setAttribute('x',bx-5);truckBkt.setAttribute('y',by-4);}
+}
+function hideTruck(){truck.setAttribute('opacity','0');setTruck(-120,0);}
+function spark(){const s=el('circle',{cx:295,cy:520,r:3,fill:'#fff2a8',opacity:1});svg.appendChild(s);let o=1;const iv=setInterval(()=>{o-=0.12;s.setAttribute('opacity',Math.max(0,o));s.setAttribute('r',3+(1-o)*8);if(o<=0){clearInterval(iv);s.remove();}},40);}
+async function dispatchTruck(onRepair){
+  truck.setAttribute('opacity','1');setTruck(-120,0);
+  await tween(1500,k=>setTruck(-120+(TRUCK_STOP+120)*easeS(k),0));
+  await tween(800,k=>setTruck(TRUCK_STOP,easeS(k)));
+  spark();if(onRepair)onRepair();render();
+  await sleep(800);
+  await tween(600,k=>setTruck(TRUCK_STOP,1-easeS(k)));
+  await tween(1500,k=>setTruck(TRUCK_STOP+(1400-TRUCK_STOP)*easeS(k),0));
+  truck.setAttribute('opacity','0');
+}
+
+/* ===================== RECUADRO DE CONVENCIONES ===================== */
+(function legend(){
+  const bx=1050,by=560,bw=196,rh=22,rows=[
+    ['src','Alimentador (fuente)'],['closed','Seccionador cerrado'],['open','Enlace / seccionador abierto'],
+    ['trf','Transformador con fusible'],['fault','Punto de falla'],['dead','Tramo sin tensión']
+  ];
+  const g=el('g',{});
+  g.appendChild(el('rect',{x:bx,y:by,width:bw,height:30+rows.length*rh,fill:'#efeadd',stroke:'#4a4636','stroke-width':1.2,rx:5}));
+  const t=el('text',{x:bx+10,y:by+18,'font-family':"'IBM Plex Mono'",'font-size':10,'font-weight':700,fill:'#2b2a22'});t.textContent='CONVENCIONES · IEEE/ANSI';g.appendChild(t);
+  g.appendChild(el('line',{x1:bx+8,y1:by+24,x2:bx+bw-8,y2:by+24,stroke:'#c9c3ad','stroke-width':1}));
+  rows.forEach((r,i)=>{const ry=by+36+i*rh,sx=bx+18;
+    if(r[0]==='src'){g.appendChild(el('rect',{x:sx-8,y:ry-8,width:16,height:16,rx:3,fill:FCOL[1],stroke:'#1b2129','stroke-width':1.4}));}
+    else if(r[0]==='closed'){g.appendChild(el('rect',{x:sx-3,y:ry-8,width:6,height:16,rx:1,fill:FCOL.closed}));}
+    else if(r[0]==='open'){g.appendChild(el('line',{x1:sx-8,y1:ry+3,x2:sx+6,y2:ry-9,stroke:FCOL.open,'stroke-width':3.5,'stroke-linecap':'round'}));}
+    else if(r[0]==='trf'){g.appendChild(el('rect',{x:sx-9,y:ry-3,width:8,height:6,fill:'#F4F1E6',stroke:'#1b2129','stroke-width':1.2}));g.appendChild(el('circle',{cx:sx+5,cy:ry-2,r:4,fill:'none',stroke:'#1b2129','stroke-width':1.3}));g.appendChild(el('circle',{cx:sx+5,cy:ry+3,r:4,fill:'none',stroke:'#1b2129','stroke-width':1.3}));}
+    else if(r[0]==='fault'){g.appendChild(el('path',{d:`M${sx},${ry-9} L${sx-5},${ry+1} L${sx-1},${ry} L${sx-4},${ry+9} L${sx+6},${ry-3} L${sx+1},${ry-2} L${sx+4},${ry-9} Z`,fill:FCOL.fault,stroke:'#7a5a00','stroke-width':1}));}
+    else{g.appendChild(el('line',{x1:sx-8,y1:ry,x2:sx+8,y2:ry,stroke:FCOL.dead,'stroke-width':4,'stroke-linecap':'round'}));}
+    const tx=el('text',{x:bx+40,y:ry+4,'font-family':"'IBM Plex Mono'",'font-size':9.5,fill:'#3a382c'});tx.textContent=r[1];g.appendChild(tx);
+  });
+  svg.appendChild(g);
+})();
+
+/* ===================== ENERGIZACIÓN ===================== */
+function networkAssessment(){return NETWORK.assess(EDGES.map(e=>({a:e.a,b:e.b,open:e.kind==='sw'&&e.ref.open})),SRC,FAULT.edge);}
+function energize(){return networkAssessment().live;}
+function safeToggle(s){const was=s.open;s.open=!s.open;const check=networkAssessment();if(!s.open&&(check.parallel||check.faultFed)){s.open=was;log('bloqueo',check.parallel?'Cierre rechazado: conectaría fuentes distintas.':'Cierre rechazado: energizaría el tramo fallado.','trip');return;}render();log('maniobra',s.id+': '+(s.open?'ABIERTO':'CERRADO'),s.open?'trip':'restore');}
+
+function render(){
+  const nf=energize();
+  if(!FAULT.edge)hideBolt();
+  EDGES.forEach(e=>{
+    const cond=e.kind==='line'||(e.kind==='sw'&&!e.ref.open);
+    const faulted=FAULT.edge&&((FAULT.edge.a===e.a&&FAULT.edge.b===e.b)||(FAULT.edge.a===e.b&&FAULT.edge.b===e.a));
+    let col=FCOL.dead;
+    if(cond&&!faulted){const f=nf[e.a]||nf[e.b];if(f)col=FCOL[f];}
+    e.el.setAttribute('stroke',col);
+  });
+  SW.forEach(s=>{s.bar.setAttribute('opacity',s.open?'0':'1');s.blade.setAttribute('opacity',s.open?'1':'0');});
+  TR.forEach(t=>{const live=!!nf[t.node]&&!t.blown;t.stub.setAttribute('stroke',live?FCOL[nf[t.node]]:FCOL.dead);t.fuse.setAttribute('fill',t.blown?FCOL.closed:'#F4F1E6');});
+  updateCounters(nf);
+}
+function updateCounters(nf){
+  let out=0,res=0;
+  TR.forEach(t=>{const live=!!nf[t.node]&&!t.blown;if(!live)out+=t.cust;else if(t.baseDead)res+=t.cust;});
+  document.getElementById('cOut').textContent=out;
+  document.getElementById('cRes').textContent=res;
+  const total=TR.reduce((n,t)=>n+t.cust,0);document.getElementById('cTot').textContent=total;
+  document.getElementById('cBar').style.width=Math.min(100,out/total*100)+'%';
+}
+
+/* ===================== SECUENCIAS ===================== */
+let mode='auto',playing=false,timer=null,runId=0;
+const logEl=document.getElementById('log'),stDot=document.getElementById('stDot'),stText=document.getElementById('stText');
+function log(t,m,cls){const d=document.createElement('div');d.className='ln'+(cls?' '+cls:'');d.innerHTML=`<span class="t">${t}</span><span class="m">${m}</span>`;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight;}
+function clearLog(){logEl.innerHTML='';}
+function status(txt,busy){stText.textContent=txt;stDot.classList.toggle('busy',!!busy);}
+function setControls(on){document.getElementById('btnOld').disabled=!on;document.getElementById('btnSmart').disabled=!on;}
+function markBaseDead(){const off={...SRC.find(s=>s.f===2)};SRC.find(s=>s.f===2).on=false;const nf=energize();SRC.find(s=>s.f===2).on=true;TR.forEach(t=>t.baseDead=!nf[t.node]);} // transformadores que quedarían muertos si cae el alim. 2
+
+function seqOld(){
+  return [
+    {m:'Falla en el tramo SW33–T10 del alimentador 2.',c:'trip',bolt:['n2b','t10'],do:()=>{FAULT.edge={a:'n2b',b:'t10'};}},
+    {m:'El interruptor del alimentador 2 dispara. Sin recierre exitoso.',c:'trip',do:()=>{SRC.find(s=>s.f===2).on=false;}},
+    {m:'Todo el alimentador 2 queda sin servicio (1900 clientes en este modelo).',c:'trip'},
+    {m:'Se despacha cuadrilla: el carro canasta se desplaza al punto de falla.',c:'iso',truck:true,onRepair:()=>{FAULT.edge=null;SRC.find(s=>s.f===2).on=true;}},
+    {m:'Reparado en sitio. Alimentador 2 restablecido tras la intervención manual (horas).',c:'restore'}
+  ];
+}
+function seqSmart(){
+  const S=id=>SW.find(s=>s.id===id);
+  return [
+    {m:'Falla en el tramo SW33–T10 del alimentador 2.',c:'trip',bolt:['n2b','t10'],do:()=>{FAULT.edge={a:'n2b',b:'t10'};}},
+    {m:'El interruptor del alimentador 2 dispara (momentáneo).',c:'trip',do:()=>{SRC.find(s=>s.f===2).on=false;}},
+    {m:'Localización: la automatización identifica el tramo fallado entre SW33 y SW24.',c:'iso'},
+    {m:'Aislamiento: abre SW33 y SW24.',c:'iso',do:()=>{S('SW33').open=true;S('SW24').open=true;}},
+    {m:'Separa ramales sanos del tramo fallado: abre SW6 y SW35.',c:'iso',do:()=>{S('SW6').open=true;S('SW35').open=true;}},
+    {m:'Restaura ramal aéreo (T3, T18) desde el alimentador 1: cierra SW2.',c:'restore',do:()=>{S('SW2').open=false;}},
+    {m:'Restaura ramal de T22 desde el alimentador 5: cierra SW36.',c:'restore',do:()=>{S('SW36').open=false;}},
+    {m:'Restaura la sección aguas abajo (T9, T20) desde el alimentador 4: cierra SW17.',c:'restore',do:()=>{S('SW17').open=false;}},
+    {m:'El alimentador 2 recierra sobre su sección sana aguas arriba.',c:'restore',do:()=>{SRC.find(s=>s.f===2).on=true;}},
+    {m:'Solo el tramo SW33–T10 (T10) queda sin servicio; el resto ya está restablecido en segundos.',c:'restore'},
+    {m:'El carro canasta repara el tramo fallado (T10); no fue necesario esperar para restaurar al resto.',c:'iso',truck:true,onRepair:()=>{FAULT.edge=null;S('SW33').open=false;S('SW24').open=false;S('SW6').open=false;S('SW35').open=false;S('SW2').open=true;S('SW36').open=true;S('SW17').open=true;}},
+    {m:'Configuración normal restablecida. Cero clientes sin servicio.',c:'restore'}
+  ];
+}
+async function run(seq,label){
+  if(playing)return;playing=true;const my=++runId;setControls(false);resetState();markBaseDead();clearLog();
+  log('evento','Escenario: '+label,'head');status('ejecutando…',true);
+  for(let i=0;i<seq.length;i++){if(my!==runId)return;const s=seq[i];if(s.do)s.do();render();log('paso '+(i+1),s.m,s.c);
+    if(s.bolt)await lightningStrike(s.bolt[0],s.bolt[1]);
+    if(s.truck)await dispatchTruck(()=>{if(my===runId&&s.onRepair)s.onRepair();});
+    if(my!==runId)return;await sleep(s.bolt||s.truck?300:1300);
+  }
+  if(my!==runId)return;playing=false;setControls(true);status('secuencia finalizada — pulsa Reiniciar',false);
+}
+function resetState(){SW.forEach(s=>s.open=!!s.tie);TR.forEach(t=>{t.blown=false;t.baseDead=false;});SRC.forEach(s=>s.on=true);FAULT.edge=null;hideBolt();clearBoltG();hideTruck();}
+function resetAll(){location.reload();}
+
+/* ===================== UI ===================== */
+document.getElementById('modeAuto').addEventListener('click',()=>setMode('auto'));
+document.getElementById('modeManual').addEventListener('click',()=>setMode('manual'));
+function setMode(m){mode=m;document.getElementById('modeAuto').setAttribute('aria-pressed',m==='auto');document.getElementById('modeManual').setAttribute('aria-pressed',m==='manual');
+  document.getElementById('hint').textContent=m==='auto'?'Automático: pulsa un escenario de falla.':'Maniobrar: clic en un interruptor para abrir/cerrar; clic en un transformador funde/repone su fusible.';}
+document.getElementById('btnOld').addEventListener('click',()=>run(seqOld(),'Red antigua'));
+document.getElementById('btnSmart').addEventListener('click',()=>run(seqSmart(),'Red inteligente (self-healing)'));
+document.getElementById('btnReset').addEventListener('click',resetAll);
+
+/* ===================== INICIO ===================== */
+TR.forEach(t=>t.baseDead=false);render();
+log('init','Red en condición normal. Enlaces de transferencia abiertos.','restore');
+status('red en condición normal',false);
+</script>
+</body>
+</html>

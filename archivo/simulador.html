@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proyecto Red de Distribución · 4100730 · UNAL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0b0f13;--panel:#12181e;--line:#2a333e;--line2:#39434f;--text:#E7ECF1;--dim:#9AA6B2;--mut:#6C7885;--unal:#00693C;--accent:#F2A63B}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--ink);color:var(--text);overflow:hidden}
+  .app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+  header{display:flex;align-items:center;gap:14px;padding:8px 16px;background:linear-gradient(180deg,#0f151b,#0b1015);border-bottom:1px solid var(--line);flex:0 0 auto}
+  .escudo{width:30px;height:30px;border-radius:6px;border:1px dashed var(--line2);display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:8px}
+  .brand h1{font-family:'Space Grotesk';font-size:14.5px;font-weight:600;line-height:1.1}
+  .brand .sub{font-size:10.5px;color:var(--dim)}
+  .brand .accent{color:var(--accent)}
+  nav{display:flex;gap:4px;padding:6px 12px;background:#0e141a;border-bottom:1px solid var(--line);flex:0 0 auto;flex-wrap:wrap}
+  nav button{font-family:'IBM Plex Mono';font-size:12px;color:var(--dim);background:transparent;border:1px solid transparent;border-radius:8px 8px 0 0;padding:8px 15px;cursor:pointer;border-bottom:2px solid transparent}
+  nav button:hover{color:var(--text)}
+  nav button[aria-selected="true"]{color:#fff;background:var(--panel);border-color:var(--line);border-bottom-color:var(--accent)}
+  .stage{flex:1 1 auto;min-height:0;position:relative;background:var(--ink)}
+  .view{position:absolute;inset:0;display:none}
+  .view.active{display:block}
+  iframe{width:100%;height:100%;border:0;display:block;background:var(--ink)}
+  .home{position:absolute;inset:0;overflow-y:auto;padding:26px 22px}
+  .home-in{max-width:1000px;margin:0 auto}
+  .home h2{font-family:'Space Grotesk';font-size:20px;font-weight:600;margin-bottom:6px}
+  .home p.lead{color:var(--dim);font-size:13.5px;line-height:1.55;margin-bottom:20px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:9px}
+  .card h3{font-family:'Space Grotesk';font-size:15px;font-weight:600}
+  .card p{font-size:12.5px;color:var(--dim);line-height:1.5;flex:1 1 auto}
+  .card ul{margin:0 0 0 16px;font-size:11.5px;color:var(--mut);line-height:1.5}
+  .card button{align-self:flex-start;font-family:'IBM Plex Mono';font-size:12px;background:var(--unal);color:#fff;border:0;border-radius:8px;padding:8px 14px;cursor:pointer}
+  .note{margin-top:20px;font-size:11.5px;color:var(--mut);line-height:1.55;border-top:1px solid var(--line);padding-top:14px}
+  .spin{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--mut);font-family:'IBM Plex Mono';font-size:12px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="escudo">UNAL</div>
+    <div class="brand">
+      <h1>Proyecto <span class="accent">Red de Distribución</span></h1>
+      <div class="sub">Sistemas de Distribución · 4100730 · UNAL — Sede Manizales · archivo único autocontenido</div>
+    </div>
+  </header>
+
+  <nav id="tabs" role="tablist">
+    <button role="tab" data-view="home" aria-selected="true">Inicio</button>
+    <button role="tab" data-view="fisico" aria-selected="false">Vista 3D física</button>
+    <button role="tab" data-view="planta" aria-selected="false">Planta · convenciones</button>
+    <button role="tab" data-view="smart" aria-selected="false">SmartGrid · autorreparación</button>
+  </nav>
+
+  <div class="stage">
+    <div class="view active" id="v-home">
+      <div class="home"><div class="home-in">
+        <h2>Vistas del proyecto</h2>
+        <p class="lead">Un mismo modelo de red de distribución, explorable desde varias representaciones. Todo está incrustado en este único archivo; elige una pestaña arriba o una tarjeta abajo.</p>
+        <div class="cards">
+          <div class="card">
+            <h3>Vista 3D física</h3>
+            <p>El modelo físico navegable con simulación cualitativa de energización, coordinación de protecciones y eventos.</p>
+            <ul>
+              <li>Botones <b>Planta</b> y <b>Perfil</b> (arriba a la derecha): vistas cenital y de elevación.</li>
+              <li>Panel <b>unifilar</b> IEEE/ANSI en el centro, sincronizado con el 3D.</li>
+              <li>Recorrido en <b>primera persona</b>, maniobras, fallas, rayo y caída de árbol.</li>
+            </ul>
+            <button data-go="fisico">Abrir vista 3D</button>
+          </div>
+          <div class="card">
+            <h3>Planta · convenciones</h3>
+            <p>Plano cenital esquemático sobre la traza física, con símbolos IEEE/ANSI, red aérea y subterránea, ductos, cámaras y edificaciones, más su recuadro de convenciones.</p>
+            <button data-go="planta">Abrir planta</button>
+          </div>
+          <div class="card">
+            <h3>SmartGrid · autorreparación</h3>
+            <p>Unifilar de cinco alimentadores (reproducción del esquema S&amp;C) con la operación de autorreparación: aislar la falla y restaurar desde alimentadores vecinos. Conserva la operación de los fusibles.</p>
+            <button data-go="smart">Abrir SmartGrid</button>
+          </div>
+        </div>
+        <div class="note">
+          Este es un archivo único: las tres vistas están incrustadas. No requiere archivos externos. La primera vez que abres una vista, se carga desde su documento interno. Para el recorrido en primera persona, el navegador pedirá permiso de bloqueo de puntero dentro de la vista 3D.
+        </div>
+      </div></div>
+    </div>
+    <div class="view" id="v-fisico"><div class="spin" data-spin>Cargando vista 3D…</div></div>
+    <div class="view" id="v-planta"><div class="spin" data-spin>Cargando planta…</div></div>
+    <div class="view" id="v-smart"><div class="spin" data-spin>Cargando SmartGrid…</div></div>
+  </div>
+</div>
+
+<script type="text/html" id="doc-fisico"><!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explorador + Simulación · Red de Distribución · 4100730 · UNAL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
+<style>
+  :root{
+    --unal:#00693C;            /* verde UNAL aproximado (editable) [verificar hex oficial] */
+    --ink:#0E1116; --panel:#141A20; --panel-2:#1B222B;
+    --line:#2A333E; --line-2:#39434F;
+    --text:#E7ECF1; --text-dim:#9AA6B2; --text-mut:#6C7885;
+    --paper:#F4F1E6; --paper-grid:#DED9C6; --paper-ink:#1B2129;
+    --mt:#F2A63B; --bt:#25B4C8; --der:#8B6CF0; --sub:#E0A54A;
+    --dead:#3d454e; --falla:#E5484D; --tierra:#C4CE1E;
+    --ok:#3BB273; --amber:#F2A63B;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--ink);color:var(--text);overflow:hidden;-webkit-font-smoothing:antialiased}
+  .app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+
+  /* Header */
+  header{display:flex;align-items:center;gap:14px;padding:9px 16px;background:linear-gradient(180deg,#101821,#0d1319);border-bottom:1px solid var(--line);flex:0 0 auto}
+  .escudo{width:32px;height:32px;border-radius:6px;border:1px dashed var(--line-2);display:flex;align-items:center;justify-content:center;color:var(--text-mut);font-size:8px;flex:0 0 auto}
+  .brand h1{font-family:'Space Grotesk';font-size:14.5px;font-weight:600;line-height:1.15}
+  .brand .sub{font-size:10.5px;color:var(--text-dim)}
+  .brand .accent{color:var(--mt)}
+
+  /* Toolbar de simulación */
+  .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:7px 16px;background:#0f151b;border-bottom:1px solid var(--line);flex:0 0 auto;font-family:'IBM Plex Mono';font-size:11px}
+  .seg{display:flex;border:1px solid var(--line-2);border-radius:7px;overflow:hidden}
+  .seg button{background:transparent;color:var(--text-dim);border:0;padding:5px 11px;font:inherit;cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--unal);color:#fff}
+  .tb-group{display:flex;align-items:center;gap:7px;color:var(--text-mut)}
+  .tb-sel{background:var(--panel-2);color:var(--text);border:1px solid var(--line-2);border-radius:6px;padding:5px 7px;font:inherit;cursor:pointer}
+  .tb-btn{background:var(--panel-2);color:var(--text);border:1px solid var(--line-2);border-radius:6px;padding:5px 10px;font:inherit;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .tb-btn:hover{border-color:var(--mt)}
+  .tb-btn.primary{background:var(--falla);border-color:var(--falla);color:#fff}
+  .tb-btn.primary:disabled{opacity:.45;cursor:default}
+  .tb-btn.ghost{background:transparent}
+  .flow-toggle[aria-pressed="true"]{color:var(--mt);border-color:var(--mt)}
+  .tb-mode-hint{color:var(--text-mut);margin-left:auto;font-size:10px}
+
+  /* Stage */
+  .stage{flex:1 1 auto;display:grid;grid-template-columns:1.1fr 1.1fr 330px;min-height:0}
+  .view{position:relative;min-height:0;min-width:0}
+  .view .vlabel{position:absolute;top:9px;left:12px;z-index:5;font-family:'IBM Plex Mono';font-size:9px;letter-spacing:1.4px;text-transform:uppercase;color:var(--text-mut)}
+  .view .vlabel b{color:var(--text);font-family:'Space Grotesk';font-size:12px;font-weight:600;letter-spacing:.4px;text-transform:none}
+  #view3d{background:radial-gradient(120% 120% at 50% 0%,#131b24 0%,var(--ink) 60%);border-right:1px solid var(--line)}
+  #canvas3d{display:block;width:100%;height:100%}
+  .hint{position:absolute;bottom:9px;left:12px;z-index:5;font-family:'IBM Plex Mono';font-size:9.5px;color:var(--text-mut);background:rgba(14,17,22,.6);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+  .v3tools{position:absolute;top:7px;right:10px;z-index:6;display:flex;gap:6px}
+  .tbtn{font-family:'IBM Plex Mono';font-size:10px;color:var(--text-dim);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:5px 8px;cursor:pointer}
+  .tbtn:hover{border-color:var(--line-2);color:var(--text)}
+  .tbtn[aria-pressed="true"]{color:var(--mt);border-color:var(--mt)}
+  #viewuni{background:var(--paper);border-right:1px solid var(--line)}
+  #viewuni .vlabel{color:#8a8367}#viewuni .vlabel b{color:var(--paper-ink)}
+  #svg{display:block;width:100%;height:100%}
+
+  .uni-node{cursor:pointer}
+  .uni-node text{font-family:'IBM Plex Mono';font-size:9px;fill:#4a4636;pointer-events:none}
+  .uni-node .halo{opacity:0;transition:opacity .12s}
+  .uni-node.sel .halo{opacity:1}
+  .uni-node.dev-open .sym *{stroke:var(--falla)!important}
+  .uni-node .openmark{opacity:0}
+  .uni-node.dev-open .openmark{opacity:1}
+  .uni-node.flash .halo{opacity:1;stroke:var(--amber)}
+  .cond{cursor:pointer}
+  .flowline{fill:none;stroke-dasharray:5 7;opacity:0;animation:flow 1.15s linear infinite}
+  .flowline.on{opacity:.95}
+  .flowline.rev{animation-direction:reverse}
+  @keyframes flow{to{stroke-dashoffset:-96}}
+  .junc{fill:var(--paper-ink)}
+
+  aside{background:var(--panel);min-width:0;display:flex;flex-direction:column;border-left:1px solid var(--line)}
+  .ficha{flex:1 1 auto;overflow-y:auto;padding:16px}
+  .empty{color:var(--text-mut);font-size:13px;line-height:1.55;padding-top:6px}
+  .empty b{color:var(--text-dim)}
+  .cat-tag{display:inline-block;font-family:'IBM Plex Mono';font-size:9.5px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:4px;margin-bottom:10px}
+  .ficha h2{font-family:'Space Grotesk';font-size:18px;font-weight:600;line-height:1.15;margin-bottom:4px}
+  .nivel-chip{font-family:'IBM Plex Mono';font-size:10px;color:var(--text-dim);margin-bottom:14px;display:block}
+  .sec-t{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:var(--text-mut);margin:15px 0 7px;padding-bottom:5px;border-bottom:1px solid var(--line)}
+  .funcion{font-size:13px;line-height:1.55;color:var(--text)}
+  .placa{border:1px solid var(--line-2);border-radius:8px;overflow:hidden;background:var(--panel-2)}
+  .placa .row{display:flex;font-size:12px;border-bottom:1px solid var(--line)}
+  .placa .row:last-child{border-bottom:0}
+  .placa .k{flex:0 0 42%;padding:7px 10px;color:var(--text-dim);font-weight:500}
+  .placa .v{flex:1 1 auto;padding:7px 10px;font-family:'IBM Plex Mono';border-left:1px solid var(--line)}
+  .norma{list-style:none;display:flex;flex-direction:column;gap:6px}
+  .norma li{font-size:12px;line-height:1.45;color:var(--text-dim);padding-left:16px;position:relative}
+  .norma li::before{content:"§";position:absolute;left:0;color:var(--unal);font-weight:700}
+  .verif{color:var(--mt);font-family:'IBM Plex Mono';font-size:10px}
+
+  /* Consola de eventos */
+  .console{flex:0 0 auto;background:#0c1116;border-top:1px solid var(--line);display:flex;flex-direction:column;max-height:172px}
+  .console-hd{display:flex;align-items:center;gap:10px;padding:6px 14px;border-bottom:1px solid var(--line);font-family:'IBM Plex Mono';font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-mut)}
+  .console-hd .dot{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+  .console-hd .dot.busy{background:var(--amber);animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.35}}
+  .console-hd .st{color:var(--text-dim);text-transform:none;letter-spacing:0}
+  .log{flex:1 1 auto;overflow-y:auto;padding:6px 14px 10px;font-family:'IBM Plex Mono';font-size:11px;line-height:1.55}
+  .log .ln{display:flex;gap:10px;padding:1.5px 0}
+  .log .t{color:var(--text-mut);flex:0 0 92px}
+  .log .m{color:var(--text-dim)}
+  .log .ln.trip .m{color:var(--falla)}
+  .log .ln.reclose .m{color:var(--amber)}
+  .log .ln.restore .m{color:var(--ok)}
+  .log .ln.head .m{color:var(--text);font-weight:600}
+
+  footer{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:13px;align-items:center;padding:7px 16px;background:#0d1319;border-top:1px solid var(--line);font-size:11px;color:var(--text-dim)}
+  .leg{display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono';font-size:10px}
+  .swatch{width:11px;height:11px;border-radius:3px}.swatch.line{height:3px;width:16px;border-radius:2px}
+  .foot-note{margin-left:auto;color:var(--text-mut);font-size:10px}
+
+  @media (max-width:1050px){
+    .stage{grid-template-columns:1fr 1fr;grid-template-rows:1fr 260px}
+    aside{position:fixed;inset:auto 0 0 0;height:56vh;transform:translateY(101%);transition:transform .25s;z-index:40;box-shadow:0 -12px 30px rgba(0,0,0,.5)}
+    aside.open{transform:translateY(0)}
+    .sheet-close{display:block}
+    .console{max-height:130px}
+  }
+  @media (max-width:640px){
+    .stage{grid-template-columns:1fr;grid-template-rows:1fr 1fr}
+    #view3d{border-right:0;border-bottom:1px solid var(--line)}
+    .tb-mode-hint{display:none}
+  }
+  .sheet-close{display:none;background:none;border:0;color:var(--text-dim);font-size:20px;cursor:pointer;padding:0 6px}
+  .sheet-hd{display:flex;justify-content:flex-end;padding:8px 12px 0}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+  :focus-visible{outline:2px solid var(--mt);outline-offset:2px}
+
+  /* Primera persona */
+  #view3d.fp{position:fixed;inset:0;z-index:60;border:0}
+  .fp-hud{position:absolute;inset:0;z-index:6;font-family:'IBM Plex Mono';pointer-events:none}
+  #fpCross{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border:2px solid rgba(255,255,255,.85);border-radius:50%;box-shadow:0 0 5px rgba(0,0,0,.7)}
+  #fpPrompt{position:absolute;left:50%;bottom:70px;transform:translateX(-50%);background:rgba(14,17,22,.82);border:1px solid var(--line-2);border-radius:8px;padding:7px 13px;color:var(--text);font-size:12px;opacity:0;transition:opacity .1s;white-space:nowrap}
+  #fpHelp{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:rgba(14,17,22,.7);border:1px solid var(--line);border-radius:8px;padding:6px 13px;color:var(--text-dim);font-size:11px}
+  #fpPause{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:rgba(8,11,15,.72);z-index:10;pointer-events:auto}
+  #fpPause h3{font-family:'Space Grotesk';color:var(--text);font-size:19px;font-weight:600}
+  .fpbtn{pointer-events:auto;background:var(--unal);color:#fff;border:0;border-radius:8px;padding:9px 18px;font-family:'IBM Plex Mono';font-size:13px;cursor:pointer}
+  .fpbtn.sec{background:var(--panel-2);border:1px solid var(--line-2);color:var(--text)}
+  #fpFichaWrap{position:absolute;top:0;right:0;width:340px;max-width:90%;height:100%;background:var(--panel);border-left:1px solid var(--line);z-index:11;display:none;flex-direction:column;pointer-events:auto;box-shadow:-12px 0 30px rgba(0,0,0,.4)}
+  #fpFicha{overflow-y:auto;padding:16px;flex:1 1 auto}
+  #fpResume{margin:0 12px 12px}
+  #fpCross.active{border-color:#5fd08a;width:14px;height:14px;margin:-7px 0 0 -7px;box-shadow:0 0 8px rgba(95,208,138,.6)}
+  #fpStatus{position:absolute;left:12px;top:12px;background:rgba(14,17,22,.74);border:1px solid var(--line);border-radius:8px;padding:7px 12px;color:var(--text);font-size:11px;line-height:1.6}
+  #fpStatus #fpStatusText{color:var(--text-dim)}
+  #fpConsole{position:absolute;left:12px;bottom:14px;width:340px;max-width:54%;max-height:152px;background:rgba(12,17,22,.8);border:1px solid var(--line);border-radius:8px;display:flex;flex-direction:column;overflow:hidden}
+  .fpc-hd{padding:5px 10px;border-bottom:1px solid var(--line);color:var(--text-mut);font-size:9px;letter-spacing:1px;text-transform:uppercase}
+  #fpLog{overflow-y:auto;padding:5px 10px;font-size:10.5px;line-height:1.5}
+  #fpLog .ln{display:flex;gap:8px;padding:1px 0}
+  #fpLog .t{color:var(--text-mut);flex:0 0 76px}
+  #fpLog .m{color:var(--text-dim)}
+  #fpLog .ln.trip .m{color:var(--falla)}#fpLog .ln.reclose .m{color:var(--amber)}#fpLog .ln.restore .m{color:var(--ok)}#fpLog .ln.head .m{color:var(--text);font-weight:600}
+  #fpFlash{position:absolute;inset:0;opacity:0;transition:opacity .5s;pointer-events:none;z-index:8}
+  #fpStatus #fpFault{color:var(--amber)}
+  #skyFlash{position:absolute;inset:0;background:#e2eeff;opacity:0;transition:opacity .12s;pointer-events:none;z-index:7}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="escudo">UNAL</div>
+    <div class="brand">
+      <h1>Explorador + Simulación · <span class="accent">Red de Distribución</span></h1>
+      <div class="sub">Sistemas de Distribución · 4100730 · UNAL — Sede Manizales</div>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="seg" role="group" aria-label="Modo">
+      <button id="modeExplore" aria-pressed="true">Explorar</button>
+      <button id="modeManiobra" aria-pressed="false">Maniobrar</button>
+    </div>
+    <button class="tb-btn ghost flow-toggle" id="flowToggle" aria-pressed="true">Flujo de corriente</button>
+    <button class="tb-btn" id="btnWalk">🚶 Recorrer (1ª persona)</button>
+    <button class="tb-btn" id="btnBolt">⚡ Rayo</button>
+    <button class="tb-btn" id="btnTree">🌳 Árbol</button>
+    <span style="width:1px;height:20px;background:var(--line)"></span>
+    <div class="tb-group">
+      <span>Falla:</span>
+      <select class="tb-sel" id="fScenario">
+        <option value="troncal">Troncal (reconectador)</option>
+        <option value="lateral">Lateral subterráneo (seccionalizador)</option>
+        <option value="ramal">Ramal transformador (fusible)</option>
+      </select>
+      <select class="tb-sel" id="fType">
+        <option value="transitoria">Transitoria</option>
+        <option value="permanente">Permanente</option>
+      </select>
+      <button class="tb-btn primary" id="fRun">▶ Simular</button>
+    </div>
+    <button class="tb-btn" id="btnReset">↺ Reiniciar</button>
+    <span class="tb-mode-hint" id="modeHint">Modo Explorar: clic en un componente para ver su ficha.</span>
+  </div>
+
+  <div class="stage">
+    <div class="view" id="view3d">
+      <div class="vlabel"><b>Vista física 3D</b> · red aérea y subterránea</div>
+      <div class="v3tools">
+        <button class="tbtn" id="btnV3d" aria-pressed="true">3D</button>
+        <button class="tbtn" id="btnPlanta">Planta</button>
+        <button class="tbtn" id="btnPerfil">Perfil</button>
+        <button class="tbtn" id="btnLabels" aria-pressed="true">Etiquetas</button>
+        <button class="tbtn" id="btnRecenter">Reencuadrar</button>
+      </div>
+      <canvas id="canvas3d"></canvas>
+      <div id="skyFlash"></div>
+      <div class="hint">Arrastrar: orbitar · Rueda: zoom · Clic: seleccionar</div>
+      <div class="fp-hud" id="fpHud" style="display:none">
+        <div id="fpFlash"></div>
+        <div id="fpCross"></div>
+        <div id="fpHelp">WASD moverse · Ratón mirar · E interactuar · 1/2 modo · F flujo · G falla · T tipo · L rayo · B árbol · R reiniciar · Esc pausar</div>
+        <div id="fpPrompt"></div>
+        <div id="fpStatus"><div id="fpMode">Modo: Explorar · Flujo ON</div><div id="fpFault">Falla: transitoria</div><div id="fpStatusText">sistema en condición normal</div></div>
+        <div id="fpConsole"><div class="fpc-hd">Consola de eventos</div><div id="fpLog"></div></div>
+        <div id="fpPause">
+          <h3>Recorrido en pausa</h3>
+          <button class="fpbtn" id="fpResumeBtn">Reanudar</button>
+          <button class="fpbtn sec" id="fpExitBtn">Salir del recorrido</button>
+        </div>
+        <div id="fpFichaWrap"><div id="fpFicha"></div><button class="fpbtn sec" id="fpResume">Volver al recorrido</button></div>
+      </div>
+    </div>
+    <div class="view" id="viewuni">
+      <div class="vlabel"><b>Diagrama unifilar</b> · esquema eléctrico</div>
+      <svg id="svg" viewBox="0 0 940 500" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+    <aside id="aside">
+      <div class="sheet-hd"><button class="sheet-close" id="sheetClose" aria-label="Cerrar">✕</button></div>
+      <div class="ficha" id="ficha">
+        <div class="empty">Selecciona un elemento en la <b>vista 3D</b> o el <b>unifilar</b> para ver su
+        <b>nombre</b>, <b>función</b> y <b>ficha técnica</b> (RETIE / NTC 2050).<br><br>
+        Cambia a <b>Maniobrar</b> para abrir/cerrar dispositivos, o lanza una <b>falla</b> desde la barra superior
+        y observa la coordinación en la consola de eventos.</div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="console">
+    <div class="console-hd"><span class="dot" id="stDot"></span>Consola de eventos ·
+      <span class="st" id="stText">sistema en condición normal</span></div>
+    <div class="log" id="log"></div>
+  </div>
+
+  <footer>
+    <span class="leg"><span class="swatch line" style="background:var(--mt)"></span>MT 13.2 kV</span>
+    <span class="leg"><span class="swatch line" style="background:var(--bt)"></span>BT 208/120 V</span>
+    <span class="leg"><span class="swatch line" style="background:var(--der)"></span>Gen. distribuida</span>
+    <span class="leg"><span class="swatch line" style="background:var(--dead)"></span>Sin tensión</span>
+    <span class="leg"><span class="swatch" style="background:var(--falla)"></span>Dispositivo abierto</span>
+    <span class="foot-note">Simulación <b style="color:var(--text-dim)">cualitativa</b>. Tiempos indicados son típicos, no calculados. Artículos con <span class="verif">[verificar]</span>: confirmar edición vigente.</span>
+  </footer>
+</div>
+
+<script>
+/* ===================== DATOS (fichas) ===================== */
+const CAT={
+  fuente:{n:"Fuente / subestación",c:"#F2A63B",bg:"rgba(242,166,59,.12)"},
+  proteccion:{n:"Protección",c:"#E5484D",bg:"rgba(229,72,77,.12)"},
+  regulacion:{n:"Regulación / reactiva",c:"#F2A63B",bg:"rgba(242,166,59,.12)"},
+  transformacion:{n:"Transformación",c:"#7FD1E6",bg:"rgba(37,180,200,.12)"},
+  conductor:{n:"Conductor",c:"#C9A227",bg:"rgba(201,162,39,.12)"},
+  estructura:{n:"Estructura / obra",c:"#9AA6B2",bg:"rgba(154,166,178,.10)"},
+  tierra:{n:"Puesta a tierra",c:"#C4CE1E",bg:"rgba(196,206,30,.12)"},
+  bt:{n:"Red BT / medida",c:"#25B4C8",bg:"rgba(37,180,200,.12)"},
+  der:{n:"Generación distribuida",c:"#8B6CF0",bg:"rgba(139,108,240,.14)"}
+};
+const COMP={
+  subestacion:{nombre:"Subestación de distribución",cat:"fuente",nivel:"AT → 13.2 kV",funcion:"Reduce la tensión desde el nivel superior a media tensión y distribuye la energía hacia los alimentadores. Concentra la medida, la protección y la maniobra de cabecera.",ficha:[["Tensión salida","13.2 kV"],["Configuración","Barraje MT, salida radial"],["Elementos","Transformador de potencia, celdas, SPT"],["Medida","En cabecera"]],norma:["RETIE — subestaciones, distancias, SPT","NTC 2050 Art. 450 — transformadores","NTC 2050 Art. 250 — puesta a tierra"]},
+  cabecera:{nombre:"Protección de cabecera (interruptor + relé)",cat:"proteccion",nivel:"13.2 kV",funcion:"Despeja las fallas del alimentador y coordina con las protecciones aguas abajo. El relé (funciones ANSI 50/51, 50N/51N) ordena la apertura del interruptor.",ficha:[["Funciones ANSI","50/51, 50N/51N, 79"],["Interruptor","Vacío o SF₆"],["Nivel","15 kV clase"],["Coordinación","Con reconectador y fusibles"]],norma:["RETIE — coordinación de protecciones","IEEE C37 — relés e interruptores (ref.)"]},
+  reconectador:{nombre:"Reconectador (recloser)",cat:"proteccion",nivel:"13.2 kV",funcion:"Interruptor automático con recierre que despeja fallas transitorias sin dejar sin servicio al alimentador. Distingue una falla temporal de una permanente mediante una secuencia programada de recierres.",ficha:[["Corriente nominal","400–630 A"],["Cap. interrupción","8–12.5 kA"],["Secuencia","1 rápida + 2–3 lentas"],["Control","Electrónico programable"]],norma:["IEEE C37.60 / IEC 62271-111","RETIE — coordinación"]},
+  seccionalizador:{nombre:"Seccionalizador",cat:"proteccion",nivel:"13.2 kV",funcion:"Aísla el tramo en falla contando las operaciones del reconectador aguas arriba y abriendo durante el intervalo sin corriente. No interrumpe corriente de falla por sí mismo.",ficha:[["Principio","Conteo de aperturas del recloser"],["Conteo","Programable (p. ej. 2–3)"],["Nivel","15 kV clase"],["Coordinación","Con reconectador aguas arriba"]],norma:["IEEE C37.63 — seccionalizadores","RETIE — coordinación"]},
+  dps:{nombre:"Pararrayos / DPS",cat:"proteccion",nivel:"13.2 kV",funcion:"Limita las sobretensiones de origen atmosférico o de maniobra derivando la corriente a tierra, protegiendo el aislamiento de los equipos.",ficha:[["Tecnología","Óxido metálico (ZnO)"],["Tensión nominal Ur","~12 kV"],["MCOV","Según el sistema"],["Conexión","A la SPT"]],norma:["IEC 60099-4 — pararrayos ZnO","NTC 2050 Art. 280 — pararrayos [verificar]","RETIE — sobretensiones"]},
+  poste:{nombre:"Poste (estructura de apoyo)",cat:"estructura",nivel:"Estructural",funcion:"Soporta conductores, equipos y herrajes manteniendo las distancias de seguridad al piso y entre fases.",ficha:[["Material","Concreto o poliéster reforzado"],["Altura típica","12 m"],["Resistencia rotura","Según vano y carga"],["Rotulado","Numeración e identificación"]],norma:["RETIE Art. 13 — distancias de seguridad [verificar]","NTC 2050 — métodos de instalación"]},
+  conductor_aereo:{nombre:"Conductor aéreo (ACSR)",cat:"conductor",nivel:"MT 13.2 kV",funcion:"Transporta la corriente del alimentador de media tensión entre estructuras a lo largo del troncal y los ramales aéreos.",ficha:[["Material","ACSR — Al con alma de acero"],["Calibres típicos","2/0 – 336.4 kcmil"],["Tipo","Desnudo"],["Ampacidad","Según calibre y temperatura"]],norma:["NTC 2050 Art. 310 — ampacidad [verificar]","RETIE Art. 13 — distancias [verificar]"]},
+  regulador:{nombre:"Regulador de tensión",cat:"regulacion",nivel:"13.2 kV",funcion:"Mantiene la tensión dentro de límites a lo largo del alimentador ajustando la relación de transformación con un cambiador de tomas bajo carga (LTC).",ficha:[["Tipo","Autotransformador con LTC"],["Rango","±10 % en 32 pasos"],["Config.","Monofásico o banco 3Ø"],["Control","Por caída de línea (LDC)"]],norma:["IEEE C57.15 — reguladores","RETIE — instalación y SPT","Marco CREG de calidad de tensión [verificar]"]},
+  banco_condensadores:{nombre:"Banco de condensadores",cat:"regulacion",nivel:"13.2 kV",funcion:"Aporta potencia reactiva capacitiva para corregir el factor de potencia y soportar la tensión, reduciendo pérdidas.",ficha:[["Potencia típica","150–1200 kVAr"],["Operación","Fijo o conmutado (V/VAr/t)"],["Nivel","13.2 kV"],["Protección","Fusibles individuales"]],norma:["IEEE 18 / IEEE 1036","NTC 2050 Art. 460 — condensadores [verificar]","RETIE"]},
+  cortacircuitos:{nombre:"Cortacircuitos con fusible (cutout)",cat:"proteccion",nivel:"13.2 kV",funcion:"Protege ramales y transformadores contra sobrecorrientes. El fusible se funde y abre de forma visible; permite maniobra manual con pértiga.",ficha:[["Nivel","15 kV clase"],["Corriente","100–200 A"],["Fusible","Tipo K o T (coordinado)"],["Apertura","Visible, con pértiga"]],norma:["NTC 2050 Art. 450 — protección de transformadores","RETIE — coordinación"]},
+  transformador:{nombre:"Transformador de distribución (poste)",cat:"transformacion",nivel:"13.2 kV → 208/120 V",funcion:"Reduce la tensión de media a baja tensión para entregar energía utilizable al usuario final.",ficha:[["Relación","13200 / 208Y-120 V"],["Potencias típicas","25–150 kVA"],["Tipo","Poste (aéreo)"],["Refrig. / grupo","ONAN · Dyn5"]],norma:["NTC 2050 Art. 450 — transformadores","RETIE — rotulado, SPT, distancias","NTC 818/819/3445 [verificar]"]},
+  puesta_tierra:{nombre:"Puesta a tierra (SPT)",cat:"tierra",nivel:"Sistema",funcion:"Establece una referencia de potencial y una vía de baja impedancia para corrientes de falla y descargas, controlando tensiones de paso y contacto.",ficha:[["Electrodos","Varillas Cu / acero cobrizado"],["Conductor","Según corriente de falla"],["Resistencia obj.","Según diseño (p. ej. ≤ 25 Ω)"],["Medición","Estudio de SPT"]],norma:["NTC 2050 Art. 250 — puesta a tierra","RETIE — SPT, tensiones de paso y contacto","IEEE 80 — SPT en subestaciones"]},
+  camara:{nombre:"Cámara de paso",cat:"estructura",nivel:"Obra civil (subterráneo)",funcion:"Aloja empalmes y permite el tendido, halado e inspección de los cables en redes subterráneas.",ficha:[["Construcción","Concreto reforzado"],["Tapa","Peatonal o vehicular"],["Drenaje","Sí"],["Señalización","Red eléctrica"]],norma:["RETIE — redes subterráneas y señalización","NTC 2050 — canalizaciones [verificar]"]},
+  cable_subterraneo:{nombre:"Cable subterráneo (XLPE)",cat:"conductor",nivel:"MT 13.2 kV",funcion:"Transporta la energía en los tramos subterráneos del alimentador, con aislamiento sólido y pantalla metálica puesta a tierra.",ficha:[["Aislamiento","XLPE"],["Nivel","15 kV clase"],["Construcción","Pantalla + chaqueta"],["Instalación","Ducto o directo enterrado"]],norma:["NTC 2050 Art. 310 / 300 [verificar]","RETIE — redes subterráneas","AEIC/ICEA — cables MT (ref.)"]},
+  transformador_pedestal:{nombre:"Transformador pedestal (padmount)",cat:"transformacion",nivel:"13.2 kV → 208/120 V",funcion:"Cumple la función del transformador de poste pero en gabinete a nivel de piso para redes subterráneas, con frente muerto (dead-front).",ficha:[["Relación","13200 / 208Y-120 V"],["Potencias típicas","45–500 kVA"],["Tipo","Pedestal, gabinete metálico"],["Conexión","Codos premoldeados"]],norma:["NTC 2050 Art. 450","IEEE C57.12","RETIE"]},
+  red_bt:{nombre:"Red BT / acometida",cat:"bt",nivel:"208/120 V",funcion:"Distribuye la energía en baja tensión desde el transformador hasta las acometidas de los usuarios.",ficha:[["Tensión","208/120 V (o 240/120 V)"],["Conductor","Trenzado aislado o cable"],["Neutro","Puesto a tierra"],["Protección","En el punto de conexión"]],norma:["NTC 2050 Art. 230 — acometidas","RETIE — uso final"]},
+  medidor:{nombre:"Medidor de energía",cat:"bt",nivel:"120/208 V",funcion:"Mide la energía consumida (y entregada, si es bidireccional) para facturación y para la liquidación de la generación distribuida.",ficha:[["Tipo","Estático (electrónico)"],["Clase","1 o 2"],["Bidireccional","Sí — AGPE/GD"],["Comunicación","AMI (opcional)"]],norma:["RETIE / medida del OR","NTC 2050 Art. 230","CREG — medida y AGPE, Res. 174/2021 [verificar]"]},
+  carga:{nombre:"Carga / usuario",cat:"bt",nivel:"120/208 V",funcion:"Representa el consumo del cliente (residencial, comercial o industrial), con su instalación interna protegida.",ficha:[["Tensión","120/208 V"],["Protección","Tablero con interruptores"],["Demanda","Según uso y coincidencia"],["Tipo","Res. / com. / ind."]],norma:["NTC 2050 Art. 210/220 — circuitos y cargas [verificar]","RETIE — uso final"]},
+  edificio:{nombre:"Edificio administrativo",cat:"bt",nivel:"208/120 V",funcion:"Carga comercial/institucional alimentada en baja tensión desde el transformador pedestal de la red subterránea. Concentra su acometida y tablero general de protección.",ficha:[["Tensión","208/120 V"],["Alimentación","Desde transformador pedestal"],["Acometida","Subterránea"],["Protección","Tablero general + medida"]],norma:["NTC 2050 Art. 230 — acometidas","NTC 2050 Art. 215/220 — alimentadores [verificar]","RETIE — uso final"]},
+  fv:{nombre:"Sistema solar fotovoltaico",cat:"der",nivel:"CC → 120/208 V CA",funcion:"Genera energía a partir de la irradiación solar. El inversor convierte la CC en CA sincronizada con la red y puede inyectar excedentes bajo el esquema AGPE. Ante pérdida de red, la protección anti-isla lo desconecta.",ficha:[["Arreglo","Strings en CC"],["Inversor","CA 120/208 V, anti-isla"],["Protecciones","CC y CA + SPD"],["Puesta a tierra","Arreglo e inversor"]],norma:["NTC 2050 Art. 690 — sistemas FV","NTC 2050 Art. 705 — interconexión [verificar]","Ley 1715 · CREG 174/2021 — AGPE","RETIE"]},
+  bateria:{nombre:"Sistema de almacenamiento (batería)",cat:"der",nivel:"CC → 120/208 V CA",funcion:"Almacena energía para respaldo, gestión de demanda o firmeza de la generación solar, mediante un inversor/cargador bidireccional.",ficha:[["Química","Li-ion (LFP típico)"],["Conversión","Inversor/cargador bidireccional"],["Gestión","BMS + protecciones"],["Puesta a tierra","Del sistema"]],norma:["NTC 2050 Art. 706 — almacenamiento [verificar]","NTC 2050 Art. 690/705","RETIE"]}
+};
+
+/* ===================== TOPOLOGÍA (unifilar) ===================== */
+// viewBox 940 x 500
+const N={
+  subestacion:[66,150], cabecera:[144,150], reconectador:[228,150], poste:[308,150], dps:[308,94],
+  J1:[386,150], J2:[628,150],
+  seccionalizador:[386,232], camara:[386,352], transformador_pedestal:[512,352],
+  cortacircuitos:[628,214], transformador:[628,286], BTbus:[628,352],
+  medidor:[720,352], carga:[812,352], fv:[720,432], bateria:[812,432], puesta_tierra:[66,222]
+};
+// [a,b,level,zone,comp(o null),flow, reverse?]
+const EDGES=[
+  ["subestacion","cabecera","mt","SRC",null,false],
+  ["cabecera","reconectador","mt","TA","conductor_aereo",true],
+  ["reconectador","poste","mt","TB","conductor_aereo",true],
+  ["poste","J1","mt","TB","conductor_aereo",true],
+  ["poste","dps","mt","TB",null,false],
+  ["J1","J2","mt","TB","conductor_aereo",true],
+  ["J1","seccionalizador","mt","TB",null,false],
+  ["seccionalizador","camara","sub","LSUB","cable_subterraneo",true],
+  ["camara","transformador_pedestal","sub","LSUB","cable_subterraneo",true],
+  ["J2","cortacircuitos","mt","TB",null,false],
+  ["cortacircuitos","transformador","mt","RTR",null,true],
+  ["transformador","BTbus","bt","RTR",null,true],
+  ["BTbus","medidor","bt","RTR","red_bt",true],
+  ["medidor","carga","bt","RTR","red_bt",true],
+  ["BTbus","fv","der","DER",null,true,true],
+  ["fv","bateria","der","DER",null,false],
+  ["subestacion","puesta_tierra","gnd","SRC",null,false]
+];
+const LVL={mt:"#C9A227",bt:"#1f9fb2",der:"#7b5fe0",sub:"#C98A45",gnd:"#7d8892"};
+const LVL_LIVE={mt:"#F2A63B",bt:"#25B4C8",der:"#8B6CF0",sub:"#E0A54A",gnd:"#7d8892"};
+
+/* ===================== ESTADO / ENERGIZACIÓN ===================== */
+const DEV={cabecera:{open:false},reconectador:{open:false},seccionalizador:{open:false},cortacircuitos:{open:false}};
+function energize(){
+  const TA=!DEV.cabecera.open;
+  const TB=TA&&!DEV.reconectador.open;
+  const LSUB=TB&&!DEV.seccionalizador.open;
+  const RTR=TB&&!DEV.cortacircuitos.open;
+  const DER=RTR;               // anti-isla: DER cae si la red BT pierde tensión
+  return {SRC:true,TA,TB,LSUB,RTR,DER,gnd:true};
+}
+let selected=null, mode="explore", flowOn=true, playing=false;
+const isMobile=()=>window.matchMedia("(max-width:1050px)").matches;
+
+/* ===================== UNIFILAR (SVG) ===================== */
+const SVGNS="http://www.w3.org/2000/svg", svg=document.getElementById('svg');
+function el(t,a){const n=document.createElementNS(SVGNS,t);for(const k in a)n.setAttribute(k,a[k]);return n;}
+function grid(){const g=el("g",{});for(let x=0;x<=940;x+=40)g.appendChild(el("line",{x1:x,y1:0,x2:x,y2:500,stroke:"#DED9C6","stroke-width":x%200===0?.8:.4,opacity:x%200===0?.7:.4}));for(let y=0;y<=500;y+=40)g.appendChild(el("line",{x1:0,y1:y,x2:940,y2:y,stroke:"#DED9C6","stroke-width":y%200===0?.8:.4,opacity:y%200===0?.7:.4}));svg.appendChild(g);}
+function pathD(a,b){const A=N[a],B=N[b];const mid=A[0]===B[0]?`${A[0]},${B[1]}`:`${B[0]},${A[1]}`;return `M ${A[0]},${A[1]} L ${mid} L ${B[0]},${B[1]}`;}
+
+const SVGEDGES=[];
+function drawEdges(){
+  EDGES.forEach(([a,b,lvl,zone,comp,flow,rev])=>{
+    const d=pathD(a,b);
+    const base=el("path",{d,fill:"none",stroke:LVL[lvl],"stroke-width":2.2,"stroke-linejoin":"round","stroke-linecap":"round"});
+    if(lvl==="der")base.setAttribute("stroke-dasharray","6 4");
+    if(comp){base.classList.add("cond");base.style.cursor="pointer";base.addEventListener("click",e=>{e.stopPropagation();if(mode!=="explore")return;selectComponent(comp);});}
+    svg.appendChild(base);
+    let fl=null;
+    if(flow){fl=el("path",{d,class:"flowline"+(rev?" rev":""),stroke:LVL_LIVE[lvl],"stroke-width":2.6});svg.appendChild(fl);}
+    SVGEDGES.push({zone,base,fl,lvl});
+  });
+}
+function symbol(cat,id){
+  const c="#1B2129",g=el("g",{class:"sym"});const add=(t,a)=>g.appendChild(el(t,a));
+  switch(id){
+    case"subestacion":add("rect",{x:-20,y:-18,width:40,height:36,fill:"none",stroke:c,"stroke-width":2,rx:2});add("circle",{cx:0,cy:-4,r:7,fill:"none",stroke:c,"stroke-width":1.6});add("circle",{cx:0,cy:5,r:7,fill:"none",stroke:c,"stroke-width":1.6});break;
+    case"cabecera":add("rect",{x:-9,y:-9,width:18,height:18,fill:"#F4F1E6",stroke:c,"stroke-width":2});break;
+    case"reconectador":add("rect",{x:-10,y:-10,width:20,height:20,fill:"#F4F1E6",stroke:c,"stroke-width":2});{const t=el("text",{x:0,y:4,"text-anchor":"middle","font-size":11,"font-weight":600,fill:c});t.textContent="R";g.appendChild(t);}break;
+    case"seccionalizador":add("line",{x1:0,y1:12,x2:0,y2:4,stroke:c,"stroke-width":2});add("circle",{cx:0,cy:4,r:1.7,fill:c});add("line",{x1:0,y1:4,x2:9,y2:-8,stroke:c,"stroke-width":2});add("circle",{cx:0,cy:-9,r:1.7,fill:c});add("line",{x1:0,y1:-9,x2:0,y2:-12,stroke:c,"stroke-width":2});{const t=el("text",{x:9,y:7,"font-size":8,fill:c});t.textContent="S";g.appendChild(t);}break;
+    case"cortacircuitos":add("rect",{x:-5,y:-12,width:10,height:24,fill:"#F4F1E6",stroke:c,"stroke-width":2});add("line",{x1:0,y1:-12,x2:0,y2:12,stroke:c,"stroke-width":1.4});break;
+    case"dps":add("rect",{x:-6,y:-9,width:12,height:16,fill:"#F4F1E6",stroke:c,"stroke-width":1.8});add("line",{x1:-3,y1:5,x2:4,y2:-5,stroke:c,"stroke-width":1.6});add("path",{d:"M4,-5 L0.5,-5 M4,-5 L4,-1.2",fill:"none",stroke:c,"stroke-width":1.4});add("line",{x1:0,y1:7,x2:0,y2:11,stroke:c,"stroke-width":1.4});break;
+    case"transformador":case"transformador_pedestal":add("circle",{cx:0,cy:-4,r:8,fill:"none",stroke:c,"stroke-width":1.8});add("circle",{cx:0,cy:5,r:8,fill:"none",stroke:c,"stroke-width":1.8});break;
+    case"medidor":add("circle",{cx:0,cy:0,r:10,fill:"#F4F1E6",stroke:c,"stroke-width":2});{const t=el("text",{x:0,y:4,"text-anchor":"middle","font-size":11,"font-weight":600,fill:c});t.textContent="M";g.appendChild(t);}break;
+    case"carga":add("line",{x1:0,y1:-11,x2:0,y2:2,stroke:c,"stroke-width":2});add("path",{d:"M-5,-1 L0,9 L5,-1 Z",fill:c,stroke:c,"stroke-width":1});break;
+    case"fv":add("rect",{x:-12,y:-10,width:24,height:20,fill:"#F4F1E6",stroke:c,"stroke-width":1.8,rx:1});add("line",{x1:0,y1:-10,x2:0,y2:10,stroke:c,"stroke-width":1});add("line",{x1:-12,y1:0,x2:12,y2:0,stroke:c,"stroke-width":1});break;
+    case"bateria":add("rect",{x:-11,y:-7,width:22,height:14,fill:"#F4F1E6",stroke:c,"stroke-width":1.8,rx:2});add("line",{x1:-4,y1:-4,x2:-4,y2:4,stroke:c,"stroke-width":2.2});add("line",{x1:4,y1:-4,x2:4,y2:4,stroke:c,"stroke-width":1.2});break;
+    case"poste":add("line",{x1:0,y1:-13,x2:0,y2:13,stroke:c,"stroke-width":2.4});add("line",{x1:-9,y1:-10,x2:9,y2:-10,stroke:c,"stroke-width":2});break;
+    case"camara":add("rect",{x:-13,y:-8,width:26,height:16,fill:"none",stroke:c,"stroke-width":2,rx:1});add("line",{x1:-13,y1:-2,x2:13,y2:-2,stroke:c,"stroke-width":1});break;
+    case"puesta_tierra":add("line",{x1:0,y1:-11,x2:0,y2:0,stroke:c,"stroke-width":2});add("line",{x1:-11,y1:0,x2:11,y2:0,stroke:c,"stroke-width":2.4});add("line",{x1:-7,y1:4,x2:7,y2:4,stroke:c,"stroke-width":2});add("line",{x1:-3,y1:8,x2:3,y2:8,stroke:c,"stroke-width":2});break;
+    default:add("circle",{cx:0,cy:0,r:8,fill:"none",stroke:c,"stroke-width":2});
+  }
+  return g;
+}
+const NLABEL={subestacion:"S/E",cabecera:"52",reconectador:"Recon.",seccionalizador:"Secc.",dps:"DPS",poste:"Poste",regulador:"Reg.",banco_condensadores:"Cond.",cortacircuitos:"Fusible",transformador:"Trafo",puesta_tierra:"SPT",camara:"Cámara",transformador_pedestal:"Padmount",medidor:"Medidor",carga:"Carga",fv:"FV",bateria:"Batería"};
+const UNODES={};
+function drawNodes(){
+  // juntas
+  [["J1"],["J2"],["BTbus"]].forEach(([j])=>{const[x,y]=N[j];svg.appendChild(el("circle",{cx:x,cy:y,r:3,class:"junc"}));});
+  Object.keys(N).forEach(id=>{
+    if(["J1","J2","BTbus"].includes(id))return;
+    const[x,y]=N[id];
+    const g=el("g",{class:"uni-node",tabindex:0,role:"button","aria-label":COMP[id]?.nombre||id,"data-id":id,transform:`translate(${x},${y})`});
+    g.appendChild(el("circle",{class:"halo",cx:0,cy:0,r:19,fill:"none",stroke:"#00693C","stroke-width":2.5}));
+    g.appendChild(symbol(COMP[id]?.cat,id));
+    const om=el("text",{class:"openmark",x:16,y:-10,"font-size":8,fill:"#E5484D","font-weight":700});om.textContent="ABIERTO";g.appendChild(om);
+    const lb=el("text",{x:0,y:29,"text-anchor":"middle"});lb.textContent=NLABEL[id]||id;g.appendChild(lb);
+    g.addEventListener("click",e=>{e.stopPropagation();onNodeClick(id);});
+    g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();onNodeClick(id);}});
+    svg.appendChild(g);UNODES[id]=g;
+  });
+}
+function legendBox(){
+  const items=[['fuente','subestacion','Fuente / subestación'],['proteccion','cabecera','Interruptor de potencia (52)'],['proteccion','reconectador','Reconectador (79)'],['proteccion','seccionalizador','Seccionalizador'],['proteccion','cortacircuitos','Cortacircuitos fusible'],['proteccion','dps','Pararrayos (DPS)'],['transformacion','transformador','Transformador'],['bt','medidor','Medidor de energía'],['bt','carga','Carga'],['der','fv','Generación fotovoltaica'],['tierra','puesta_tierra','Puesta a tierra (SPT)']];
+  const bx=690,by=12,bw=242,rh=17,bh=32+items.length*rh;
+  const g=el("g",{});
+  g.appendChild(el("rect",{x:bx,y:by,width:bw,height:bh,fill:"#EFEBDD",stroke:"#4a4636","stroke-width":1.2,rx:4}));
+  const t=el("text",{x:bx+10,y:by+17,"font-family":"'IBM Plex Mono'","font-size":10,"font-weight":700,fill:"#2b2a22"});t.textContent="CONVENCIONES · IEEE/ANSI";g.appendChild(t);
+  g.appendChild(el("line",{x1:bx+8,y1:by+24,x2:bx+bw-8,y2:by+24,stroke:"#c9c3ad","stroke-width":1}));
+  items.forEach((it,i)=>{const ry=by+34+i*rh;
+    const sg=el("g",{transform:`translate(${bx+20},${ry+5}) scale(0.6)`});sg.appendChild(symbol(it[0],it[1]));g.appendChild(sg);
+    const tx=el("text",{x:bx+42,y:ry+9,"font-family":"'IBM Plex Mono'","font-size":9.5,fill:"#3a382c"});tx.textContent=it[2];g.appendChild(tx);
+  });
+  svg.appendChild(g);
+}
+grid();drawEdges();drawNodes();legendBox();
+
+/* ===================== ESCENA 3D (hiperrealista) ===================== */
+const canvas=document.getElementById('canvas3d'),wrap3d=document.getElementById('view3d');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x0c1319,0.0085);
+const camera=new THREE.PerspectiveCamera(42,1,0.1,2000);
+const CAM0=new THREE.Vector3(-6,27,55),TGT0=new THREE.Vector3(-2,6,-2);let target=TGT0.clone();
+
+// --- Cielo + entorno (reflejos PBR) ---
+function skyTex(stops){const c=document.createElement('canvas');c.width=16;c.height=256;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,0,256);stops.forEach(s=>g.addColorStop(s[0],s[1]));x.fillStyle=g;x.fillRect(0,0,16,256);const t=new THREE.CanvasTexture(c);t.mapping=THREE.EquirectangularReflectionMapping;t.encoding=THREE.sRGBEncoding;return t;}
+scene.background=skyTex([[0,'#0a141f'],[.5,'#1a2b3b'],[.7,'#3a5064'],[.82,'#54697a'],[1,'#0e161c']]);
+const pmrem=new THREE.PMREMGenerator(renderer);pmrem.compileEquirectangularShader();
+scene.environment=pmrem.fromEquirectangular(skyTex([[0,'#2c4054'],[.6,'#41586a'],[1,'#0f161c']])).texture;
+
+// --- Luces ---
+scene.add(new THREE.HemisphereLight(0xbcd2e6,0x141a1e,.5));
+const sun=new THREE.DirectionalLight(0xfff1de,1.25);sun.position.set(28,40,20);sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.near=1;sun.shadow.camera.far=170;
+sun.shadow.camera.left=-64;sun.shadow.camera.right=64;sun.shadow.camera.top=64;sun.shadow.camera.bottom=-64;
+sun.shadow.bias=-0.0004;sun.shadow.normalBias=0.02;scene.add(sun);
+const fill=new THREE.DirectionalLight(0x8ab0d6,.28);fill.position.set(-32,22,-24);scene.add(fill);
+scene.add(new THREE.AmbientLight(0x2c3844,.35));
+
+// --- Registros ---
+const pickables=[],labels=[],groupsById={},DEVMESH={},CONDS=[];
+function reg(o,id){o.traverse(x=>x.userData.id=id);(groupsById[id]=groupsById[id]||[]).push(o);pickables.push(o);}
+function setShadow(g){g.traverse(o=>{if(o.isMesh){o.castShadow=true;if(o.geometry&&o.geometry.type==='PlaneGeometry')o.receiveShadow=true;}});}
+
+// --- Texturas procedurales ---
+function ctex(draw,rep){const c=document.createElement('canvas');c.width=c.height=256;draw(c.getContext('2d'),256);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;if(rep)t.repeat.set(rep[0],rep[1]);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t;}
+const concreteTex=ctex((x,s)=>{x.fillStyle='#8f8d86';x.fillRect(0,0,s,s);for(let i=0;i<4000;i++){const v=120+Math.random()*70;x.fillStyle='rgba('+v+','+v+','+(v-6)+','+(Math.random()*.35)+')';x.fillRect(Math.random()*s,Math.random()*s,2,2);}for(let i=0;i<12;i++){x.strokeStyle='rgba(80,80,76,.18)';x.beginPath();x.moveTo(Math.random()*s,Math.random()*s);x.lineTo(Math.random()*s,Math.random()*s);x.stroke();}});
+const groundTex=ctex((x,s)=>{x.fillStyle='#252b2f';x.fillRect(0,0,s,s);for(let i=0;i<5000;i++){const v=30+Math.random()*40;x.fillStyle='rgba('+v+','+(v+4)+','+(v)+','+(Math.random()*.5)+')';x.fillRect(Math.random()*s,Math.random()*s,2,2);}},[30,22]);
+const panelTex=ctex((x,s)=>{x.fillStyle='#0f1f3d';x.fillRect(0,0,s,s);const cols=6,rows=10;for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){x.fillStyle='#16305c';x.fillRect(i*s/cols+2,j*s/rows+2,s/cols-4,s/rows-4);x.strokeStyle='rgba(150,180,230,.25)';x.strokeRect(i*s/cols+2,j*s/rows+2,s/cols-4,s/rows-4);}x.strokeStyle='rgba(200,215,240,.4)';for(let i=1;i<cols;i++){x.beginPath();x.moveTo(i*s/cols,0);x.lineTo(i*s/cols,s);x.stroke();}});
+const warnTex=ctex((x,s)=>{x.clearRect(0,0,s,s);x.fillStyle='#f4c518';x.beginPath();x.moveTo(s/2,30);x.lineTo(s-30,s-40);x.lineTo(30,s-40);x.closePath();x.fill();x.strokeStyle='#111';x.lineWidth=8;x.stroke();x.fillStyle='#111';x.font='bold 130px sans-serif';x.textAlign='center';x.fillText('⚡',s/2,s-60);});
+const wallTex=ctex((x,s)=>{x.fillStyle='#c3b6a2';x.fillRect(0,0,s,s);for(let i=0;i<3000;i++){const v=175+Math.random()*40;x.fillStyle='rgba('+v+','+(v-10)+','+(v-28)+','+(Math.random()*.3)+')';x.fillRect(Math.random()*s,Math.random()*s,2,2);}});
+const facadeTex=ctex((x,s)=>{x.fillStyle='#c3b6a2';x.fillRect(0,0,s,s);const win=(wx,wy,w,h)=>{x.fillStyle='#1d3a4d';x.fillRect(wx,wy,w,h);x.strokeStyle='#5b4a35';x.lineWidth=6;x.strokeRect(wx,wy,w,h);x.strokeStyle='rgba(160,190,210,.5)';x.lineWidth=2;x.beginPath();x.moveTo(wx+w/2,wy);x.lineTo(wx+w/2,wy+h);x.moveTo(wx,wy+h/2);x.lineTo(wx+w,wy+h/2);x.stroke();};win(30,60,60,60);win(166,60,60,60);x.fillStyle='#5b4a35';x.fillRect(104,120,48,110);});
+const roofTex=ctex((x,s)=>{x.fillStyle='#7a4636';x.fillRect(0,0,s,s);x.strokeStyle='rgba(60,30,22,.5)';x.lineWidth=3;for(let j=0;j<12;j++){const y=j*s/12;x.beginPath();x.moveTo(0,y);x.lineTo(s,y);x.stroke();for(let i=0;i<10;i++){x.beginPath();x.moveTo(i*s/10+(j%2?s/20:0),y);x.lineTo(i*s/10+(j%2?s/20:0),y+s/12);x.stroke();}}},[3,2]);
+const manholeTex=ctex((x,s)=>{x.fillStyle='#3a3f44';x.fillRect(0,0,s,s);x.strokeStyle='#20242a';x.lineWidth=6;for(let r=20;r<s/2;r+=22){x.beginPath();x.arc(s/2,s/2,r,0,6.29);x.stroke();}});
+
+// --- Materiales ---
+function mPaint(c,r=.55,m=.3){return new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m,envMapIntensity:.7});}
+function mMetalR(c,r=.4,m=.92){return new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m,envMapIntensity:.95});}
+function mPorc(c=0xe4e7e4){return new THREE.MeshPhysicalMaterial({color:c,roughness:.32,metalness:0,clearcoat:.7,clearcoatRoughness:.35,envMapIntensity:.85});}
+function mConc(){return new THREE.MeshStandardMaterial({map:concreteTex,color:0x9a988f,roughness:.95,metalness:0,envMapIntensity:.35});}
+function mGlass(){return new THREE.MeshPhysicalMaterial({color:0x213640,roughness:.06,metalness:0,clearcoat:1,transparent:true,opacity:.5,envMapIntensity:1.1});}
+
+// --- Primitivas ---
+function B(w,h,d,mat){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.castShadow=m.receiveShadow=true;return m;}
+function C(rt,rb,h,mat,seg){const m=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg||18),mat);m.castShadow=m.receiveShadow=true;return m;}
+function insulator(sc){sc=sc||1;const p=[[0,0],[.09,0],[.09,.05],[.14,.07],[.05,.09],[.13,.11],[.05,.13],[.12,.15],[.05,.17],[.045,.24],[0,.24]].map(a=>new THREE.Vector2(a[0]*sc,a[1]*sc));const m=new THREE.Mesh(new THREE.LatheGeometry(p,16),mPorc(0xdfe3e0));m.castShadow=true;return m;}
+function bushing(h,col){h=h||.9;const p=[[.11,0],[.11,.15*h],[.16,.2*h],[.08,.28*h],[.15,.34*h],[.08,.42*h],[.14,.48*h],[.07,.56*h],[.06,h]].map(a=>new THREE.Vector2(a[0],a[1]));const m=new THREE.Mesh(new THREE.LatheGeometry(p,16),mPorc(col||0xe6ac6b));m.castShadow=true;return m;}
+
+// --- Poste con cruceta + 3 aisladores; devuelve anclajes de conductor ---
+function pinInsulator(sc){sc=sc||1;const g=new THREE.Group();
+  const pin=C(.04*sc,.05*sc,.32*sc,mMetalR(0x6a7076,.5,.8),8);pin.position.y=-.12*sc;g.add(pin);
+  const prof=[[0,0],[.13,0],[.13,.05],[.19,.08],[.07,.11],[.17,.14],[.06,.17],[.13,.20],[.06,.23],[.10,.30],[.10,.34],[0,.36]].map(a=>new THREE.Vector2(a[0]*sc,a[1]*sc));
+  const body=new THREE.Mesh(new THREE.LatheGeometry(prof,18),mPorc(0xdfe3e0));body.castShadow=true;g.add(body);
+  const cap=C(.055*sc,.05*sc,.05*sc,mMetalR(0x8a9096,.5,.7),12);cap.position.y=.37*sc;g.add(cap);      // silleta donde apoya el cable
+  return {group:g,top:.40*sc};}
+function poleUnit(x,z,h){const g=new THREE.Group();
+  const armY=h-0.95;
+  const tipY=armY+0.35;                                   // el poste termina justo sobre la cruceta, debajo del conductor
+  const p=C(.2,.34,tipY,mConc(),12);p.position.set(x,tipY/2,z);g.add(p);
+  const arm=B(.26,.28,4.4,new THREE.MeshStandardMaterial({color:0x6a5638,roughness:.85,metalness:.1,envMapIntensity:.2}));arm.position.set(x,armY,z);g.add(arm);   // cruceta (madera), perpendicular a la línea
+  const plate=B(.1,.5,4.4,mMetalR(0x5a6167,.6,.7));plate.position.set(x-.16,armY,z);g.add(plate);        // pletina de refuerzo
+  [-1,1].forEach(s=>{const br=B(.1,.1,1.7,mMetalR(0x6a7076,.6,.7));br.position.set(x,armY-0.5,z+s*1.0);br.rotation.x=s*0.62;g.add(br);});   // riostras
+  const ins=[],insBaseY=armY+0.14;
+  [-1.7,0,1.7].forEach(dz=>{const pi=pinInsulator(1.25);pi.group.position.set(x,insBaseY,z+dz);g.add(pi.group);ins.push(new THREE.Vector3(x,insBaseY+pi.top,z+dz));});
+  setShadow(g);scene.add(g);return {group:g,ins};}
+
+// --- Constructores de equipos ---
+function substation(x,z){const g=new THREE.Group();
+  const pad=B(12,.3,10.5,mConc());pad.position.set(x,.15,z);g.add(pad);
+  const tank=B(3.2,3.3,4.4,mPaint(0x515d65,.5,.5));tank.position.set(x-1,2.0,z);g.add(tank);
+  for(let s=-1;s<=1;s+=2)for(let i=0;i<6;i++){const fin=B(.1,2.6,.5,mPaint(0x424d54,.6,.5));fin.position.set(x-1+s*1.78,2.0,z-1.7+i*.62);g.add(fin);}
+  const cons=C(.45,.45,2.4,mPaint(0x545f66,.5,.5),16);cons.rotation.z=Math.PI/2;cons.position.set(x-1,3.95,z);g.add(cons);
+  [-1,0,1].forEach(d=>{const b=bushing(1.5);b.position.set(x-1,3.7,z+d);g.add(b);});
+  [-.7,0,.7].forEach(d=>{const b=bushing(.75,0xdad0c4);b.position.set(x+1,3.4,z+d);g.add(b);});
+  const mm=mMetalR(0x6a7076,.6,.75);
+  [x-4,x+3].forEach(mx=>{const mast=C(.13,.15,10.5,mm,8);mast.position.set(mx,5.2,z+3.4);g.add(mast);});
+  const beam=C(.11,.11,7.6,mm,8);beam.rotation.z=Math.PI/2;beam.position.set(x-.5,10.4,z+3.4);g.add(beam);
+  [x-3.5,x-.5,x+2.5].forEach(ix=>{for(let k=0;k<3;k++){const d=new THREE.Mesh(new THREE.SphereGeometry(.17,10,8),mPorc(0xd6dad7));d.position.set(ix,9.9-k*.42,z+3.4);g.add(d);}});
+  const ch=B(4.2,3,3.6,mPaint(0x9c9789,.9,.05));ch.position.set(x-6,1.6,z-4);g.add(ch);
+  const chr=B(4.5,.26,3.9,mPaint(0x5d5951,.8,.1));chr.position.set(x-6,3.2,z-4);g.add(chr);
+  for(let i=0;i<4;i++)[z+4.6,z-5.4].forEach(fz=>{const fp=C(.07,.07,2.4,mm,6);fp.position.set(x-5+i*3.2,1.2,fz);g.add(fp);});
+  setShadow(g);scene.add(g);return g;}
+function groundGrid(x,z){const g=new THREE.Group();const cu=new THREE.MeshStandardMaterial({color:0xb5743c,roughness:.5,metalness:.9,envMapIntensity:.8});
+  for(let i=0;i<4;i++){const l=C(.03,.03,6,cu,6);l.rotation.z=Math.PI/2;l.position.set(x+i*1.6,.06,z);g.add(l);}
+  for(let j=0;j<4;j++){const l=C(.03,.03,4.8,cu,6);l.rotation.x=Math.PI/2;l.position.set(x,.06,z-2.4+j*1.6);g.add(l);}
+  const rod=C(.05,.05,1.6,cu,8);rod.position.set(x+3,.4,z);g.add(rod);
+  setShadow(g);scene.add(g);return g;}
+function breakerDev(x,z,y){const g=new THREE.Group();
+  const tank=C(.5,.5,1.5,mPaint(0x59636b,.45,.55),18);tank.position.set(x,y,z);g.add(tank);
+  [-.28,.28].forEach(d=>{const b=bushing(.62);b.position.set(x,y+.85,z+d);g.add(b);});
+  const br=B(.7,.12,.4,mMetalR(0x545a60));br.position.set(x,y,z-.5);g.add(br);
+  setShadow(g);scene.add(g);return {group:g,key:tank};}
+function recloserDev(x,z,y){const g=new THREE.Group();
+  const frame=B(2.7,.16,.6,mMetalR(0x5a6167));frame.position.set(x,y-.62,z);g.add(frame);
+  const armPost=B(.18,1.5,.5,mMetalR(0x5a6167));armPost.position.set(x,y-.05,z-.42);g.add(armPost);
+  const tank=B(2.3,.9,.86,mPaint(0x59636b,.42,.5));tank.position.set(x,y,z);g.add(tank);          // módulo (key)
+  const tankTop=B(2.34,.14,.9,mPaint(0x4b555c,.5,.5));tankTop.position.set(x,y+.5,z);g.add(tankTop);
+  const band=B(2.36,.12,.92,mPaint(0x3d464c,.5,.5));band.position.set(x,y-.15,z);g.add(band);
+  [-.72,0,.72].forEach(dx=>{[[-.24,-1],[.24,1]].forEach(p=>{const dz=p[0],s=p[1];
+    const b=bushing(.72);b.position.set(x+dx,y+.56,z+dz);b.rotation.x=s*.28;g.add(b);
+    const term=C(.05,.05,.16,mMetalR(0x9aa0a6),8);term.position.set(x+dx,y+1.2,z+dz*1.7);g.add(term);
+    const grade=new THREE.Mesh(new THREE.TorusGeometry(.12,.02,8,14),mMetalR(0x9aa0a6));grade.position.set(x+dx,y+1.12,z+dz*1.6);grade.rotation.x=Math.PI/2;g.add(grade);});});
+  const name=new THREE.Mesh(new THREE.PlaneGeometry(.6,.2),new THREE.MeshBasicMaterial({color:0xccd2d6}));name.position.set(x,y,z+.44);g.add(name);
+  const cab=B(.72,1.25,.55,mPaint(0x7c8288,.6,.3));cab.position.set(x-1.05,y-3.5,z);g.add(cab);
+  const door=new THREE.Mesh(new THREE.PlaneGeometry(.52,.95),new THREE.MeshStandardMaterial({color:0x6b7278,roughness:.5,metalness:.3}));door.position.set(x-1.05,y-3.5,z+.29);g.add(door);
+  const led=new THREE.Mesh(new THREE.CircleGeometry(.04,10),new THREE.MeshBasicMaterial({color:0x3BB273}));led.position.set(x-.9,y-3.05,z+.3);g.add(led);
+  const cd=C(.045,.045,3.1,mMetalR(0x33383c),6);cd.position.set(x-1.05,y-1.85,z);g.add(cd);
+  setShadow(g);scene.add(g);return {group:g,key:tank};}
+function cutoutDev(x,z,y){const g=new THREE.Group();
+  const brk=B(.5,.12,.3,mMetalR(0x5a6066));brk.position.set(x-.18,y-.5,z);g.add(brk);
+  const back=B(.12,1.5,.22,mMetalR(0x5a6066));back.position.set(x-.2,y+.1,z);g.add(back);
+  const prof=[[0,0],[.16,0],[.16,.06],[.22,.09],[.08,.12],[.20,.15],[.08,.18],[.18,.22],[.08,.25],[.09,.85],[0,.85]].map(a=>new THREE.Vector2(a[0]*1.5,a[1]*1.5));
+  const ins=new THREE.Mesh(new THREE.LatheGeometry(prof,16),mPorc(0xe8e2d0));ins.position.set(x,y-.6,z);ins.castShadow=true;g.add(ins);
+  const cTop=C(.07,.07,.16,mMetalR(0x9aa0a6),10);cTop.position.set(x+.14,y+.82,z);g.add(cTop);
+  const cBot=C(.08,.08,.18,mMetalR(0x9aa0a6),10);cBot.position.set(x+.1,y-.58,z);g.add(cBot);
+  const fuse=new THREE.Group();
+  const tube=C(.075,.075,1.55,mPaint(0x2a2f34,.5,.4),12);tube.position.y=.78;fuse.add(tube);        // tubo portafusible (key)
+  const capT=C(.09,.09,.12,mMetalR(0x8a9096),10);capT.position.y=1.55;fuse.add(capT);
+  const pull=new THREE.Mesh(new THREE.TorusGeometry(.08,.02,8,14),mMetalR(0x8a9096));pull.position.y=1.62;pull.rotation.x=Math.PI/2;fuse.add(pull);
+  fuse.position.set(x+.13,y-.5,z);fuse.rotation.z=-.30;
+  g.add(fuse);
+  setShadow(g);scene.add(g);return {group:g,key:tube};}
+function sectDev(x,z,y){const g=new THREE.Group();
+  const brk=B(.42,.12,.26,mMetalR(0x5a6066));brk.position.set(x,y-.5,z);g.add(brk);
+  const ins=insulator(2.0);ins.position.set(x,y-.5,z);g.add(ins);
+  const body=B(.55,.72,.55,mPaint(0x6b7278,.5,.4));body.position.set(x,y+.28,z);g.add(body);            // key
+  const blade=C(.05,.05,.95,mMetalR(0x8a9096),8);blade.position.set(x+.16,y+.8,z);blade.rotation.z=-.24;g.add(blade);
+  const cTop=C(.06,.06,.12,mMetalR(0x9aa0a6),8);cTop.position.set(x+.3,y+1.15,z);g.add(cTop);
+  const cBot=C(.06,.06,.12,mMetalR(0x9aa0a6),8);cBot.position.set(x,y-.05,z);g.add(cBot);
+  setShadow(g);scene.add(g);return {group:g,key:body};}
+function arresterDev(x,z,y){const g=new THREE.Group();
+  const brk=B(.4,.1,.1,mMetalR(0x5a6066));brk.position.set(x,y+.65,z-.1);g.add(brk);
+  const p=[];for(let i=0;i<=8;i++){const yy=i/8;p.push(new THREE.Vector2(i===0?0:((i%2)?.13:.08),yy*1.25));}p.push(new THREE.Vector2(0,1.25));
+  const arr=new THREE.Mesh(new THREE.LatheGeometry(p,14),mPorc(0x9aa0a4));arr.position.set(x,y,z);g.add(arr);
+  const lead=C(.03,.03,1.1,mMetalR(0x7a6a4a),6);lead.position.set(x+.13,y-.5,z);g.add(lead);
+  setShadow(g);scene.add(g);return g;}
+function regulatorDev(x,z,y){const g=new THREE.Group();
+  const tank=C(.82,.82,2.2,mPaint(0x4f5a62,.5,.5),20);tank.position.set(x,y,z);g.add(tank);
+  const dome=new THREE.Mesh(new THREE.SphereGeometry(.82,18,8,0,6.29,0,1.57),mPaint(0x47525a));dome.position.set(x,y+1.1,z);g.add(dome);
+  [-.35,.35].forEach(dx=>{const b=bushing(.62);b.position.set(x+dx,y+1.2,z);g.add(b);});
+  const cab=B(.65,1.2,.5,mPaint(0x7c8288,.6,.3));cab.position.set(x-.72,y-2.8,z);g.add(cab);
+  setShadow(g);scene.add(g);return g;}
+function capBankDev(x,z,y){const g=new THREE.Group();
+  const f1=B(2.4,.12,.7,mMetalR(0x60666b));f1.position.set(x,y+.95,z);g.add(f1);
+  const f2=B(2.4,.12,.7,mMetalR(0x60666b));f2.position.set(x,y-.95,z);g.add(f2);
+  for(let i=0;i<3;i++){const can=B(.55,1.6,.5,mPaint(0xb7bbc0,.4,.4));can.position.set(x-.8+i*.8,y,z);g.add(can);const ct=insulator(1.1);ct.position.set(x-.8+i*.8,y+1.0,z+.28);g.add(ct);}
+  const posts=B(.14,2.6,.14,mMetalR(0x60666b));posts.position.set(x-1.25,y,z);g.add(posts);const posts2=posts.clone();posts2.position.set(x+1.25,y,z);g.add(posts2);
+  setShadow(g);scene.add(g);return g;}
+function transformerPole(x,z,y){const g=new THREE.Group();
+  const body=C(.85,.85,2.6,mPaint(0x556069,.5,.5),24);body.position.set(x,y,z);g.add(body);
+  for(let i=0;i<18;i++){const a=i/18*Math.PI*2;const fin=B(.05,2.3,.11,mPaint(0x4b555c,.55,.5));fin.position.set(x+Math.cos(a)*.87,y,z+Math.sin(a)*.87);fin.rotation.y=-a;g.add(fin);}
+  const lid=C(.9,.9,.16,mPaint(0x49525a,.5,.5),24);lid.position.set(x,y+1.36,z);g.add(lid);
+  const dome=new THREE.Mesh(new THREE.SphereGeometry(.86,20,10,0,6.29,0,1.15),mPaint(0x49525a,.5,.5));dome.position.set(x,y+1.42,z);g.add(dome);
+  const hv=bushing(1.0);hv.position.set(x,y+1.5,z);g.add(hv);
+  [-.4,0,.4].forEach(dx=>{const b=bushing(.5,0xdad0c4);b.position.set(x+dx,y+.7,z+.82);b.rotation.x=1.05;g.add(b);});
+  const abr=B(.32,.09,.09,mMetalR(0x5a6066));abr.position.set(x-.95,y+.75,z+.35);g.add(abr);
+  const ar=new THREE.Mesh(new THREE.LatheGeometry([[0,0],[.09,.1],[.13,.2],[.08,.3],[.13,.45],[.08,.6],[.12,.75],[.07,.9],[0,.95]].map(a=>new THREE.Vector2(a[0],a[1])),12),mPorc(0x9aa0a4));ar.position.set(x-1.12,y+.15,z+.35);g.add(ar);
+  [-.7,.7].forEach(dy=>{const br=B(.55,.12,.2,mMetalR(0x545a60));br.position.set(x,y+dy,z-.88);g.add(br);});
+  const valve=C(.05,.05,.18,mMetalR(0x33383c),8);valve.rotation.x=Math.PI/2;valve.position.set(x,y-1.0,z+.9);g.add(valve);
+  const name=new THREE.Mesh(new THREE.PlaneGeometry(.42,.26),new THREE.MeshBasicMaterial({color:0xccd2d6}));name.position.set(x+.62,y+.2,z+.55);name.rotation.y=-.7;g.add(name);
+  const lug=B(.28,.36,.1,mMetalR(0x2f363b));lug.position.set(x,y+1.55,z+.55);g.add(lug);
+  setShadow(g);scene.add(g);return {group:g,lv:new THREE.Vector3(x,y+.7,z+.95)};}
+function padmount(x,z){const g=new THREE.Group();
+  const pad=B(3.8,.4,3.2,mConc());pad.position.set(x,.2,z);g.add(pad);
+  const body=B(2.8,2.4,2.1,mPaint(0x2f6b4f,.5,.3));body.position.set(x,1.6,z);g.add(body);
+  const roof=B(3.0,.16,2.3,mPaint(0x275a43,.55,.3));roof.position.set(x,2.86,z);roof.rotation.x=.04;g.add(roof);
+  const seam=B(.03,1.9,.02,mMetalR(0x1c3a2c));seam.position.set(x,1.55,z+1.06);g.add(seam);
+  [-1.05,1.05].forEach(dx=>{[.55,-.55].forEach(dy=>{const h=B(.06,.22,.06,mMetalR(0x1c3a2c));h.position.set(x+dx,1.6+dy,z+1.05);g.add(h);});});
+  const handle=B(.1,.4,.08,mMetalR(0x9aa0a6));handle.position.set(x+.14,1.55,z+1.1);g.add(handle);
+  for(let i=0;i<5;i++){const lv=B(1.0,.05,.02,mMetalR(0x22452f));lv.position.set(x-.55,2.15-i*.16,z+1.06);g.add(lv);}
+  const decal=new THREE.Mesh(new THREE.PlaneGeometry(.68,.68),new THREE.MeshBasicMaterial({map:warnTex,transparent:true}));decal.position.set(x+.72,1.75,z+1.07);g.add(decal);
+  const lug=B(.5,.08,.2,mMetalR(0x1c3a2c));lug.position.set(x,2.8,z);g.add(lug);
+  setShadow(g);scene.add(g);return g;}
+const officeTex=ctex((x,s)=>{x.fillStyle='#8f969c';x.fillRect(0,0,s,s);const cols=6,rows=6;for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){x.fillStyle=(Math.random()<.28)?'#cfe0ea':'#26343d';x.fillRect(i*s/cols+7,j*s/rows+7,s/cols-14,s/rows-14);}x.strokeStyle='rgba(120,130,138,.55)';for(let i=0;i<=cols;i++){x.beginPath();x.moveTo(i*s/cols,0);x.lineTo(i*s/cols,s);x.stroke();}for(let j=0;j<=rows;j++){x.beginPath();x.moveTo(0,j*s/rows);x.lineTo(s,j*s/rows);x.stroke();}});
+function adminBuilding(x,z){const g=new THREE.Group();
+  const wall=new THREE.MeshStandardMaterial({map:officeTex,color:0xaeb4ba,roughness:.65,metalness:.15,envMapIntensity:.5});
+  const body=B(7.5,8,6,wall);body.position.set(x,4,z);g.add(body);
+  const glass=new THREE.MeshStandardMaterial({map:officeTex,roughness:.35,metalness:.4,envMapIntensity:.9});
+  const f1=new THREE.Mesh(new THREE.PlaneGeometry(7.5,8),glass);f1.position.set(x,4,z+3.02);g.add(f1);
+  const f2=new THREE.Mesh(new THREE.PlaneGeometry(6,8),glass);f2.position.set(x+3.77,4,z);f2.rotation.y=Math.PI/2;g.add(f2);
+  const f3=new THREE.Mesh(new THREE.PlaneGeometry(6,8),glass);f3.position.set(x-3.77,4,z);f3.rotation.y=-Math.PI/2;g.add(f3);
+  const roof=B(7.7,.35,6.2,mPaint(0x5c5e62,.7,.2));roof.position.set(x,8.15,z);g.add(roof);
+  const para=B(7.7,.7,6.2,mPaint(0x7f858b,.7,.1));para.position.set(x,7.7,z);para.geometry=new THREE.BoxGeometry(7.7,.7,6.2);g.add(para);
+  const rft=B(7.72,.4,6.22,mPaint(0x4a4d51,.7,.1));rft.position.set(x,8.35,z);g.add(rft);
+  const can=B(3,.18,1.6,mPaint(0x33383c,.6,.3));can.position.set(x,2.5,z+3.3);g.add(can);
+  const door=new THREE.Mesh(new THREE.PlaneGeometry(2,2.3),new THREE.MeshStandardMaterial({color:0x1c2b33,roughness:.3,metalness:.4}));door.position.set(x,1.15,z+3.03);g.add(door);
+  const svc=B(.7,1.1,.35,mPaint(0x9aa0a4,.6,.2));svc.position.set(x-3.9,1.5,z+2);g.add(svc);
+  const hvac=B(1.6,.7,1.6,mMetalR(0x8a9096,.6,.5));hvac.position.set(x-1.6,8.7,z-1);g.add(hvac);
+  setShadow(g);scene.add(g);return {group:g,svc:new THREE.Vector3(x-3.9,1.6,z+2)};}
+function houseUnit(x,z){const g=new THREE.Group();
+  const body=B(6,4,5,new THREE.MeshStandardMaterial({map:wallTex,color:0xc8bca8,roughness:.92,metalness:0,envMapIntensity:.3}));body.position.set(x,2,z);g.add(body);
+  const fac=new THREE.Mesh(new THREE.PlaneGeometry(6,4),new THREE.MeshStandardMaterial({map:facadeTex,roughness:.9,metalness:0,envMapIntensity:.25}));fac.position.set(x,2,z+2.52);g.add(fac);
+  const rmat=new THREE.MeshStandardMaterial({map:roofTex,color:0x8a5240,roughness:.85,metalness:0,envMapIntensity:.3});
+  const r1=B(6.7,.22,3.4,rmat);r1.position.set(x,4.75,z-1.2);r1.rotation.x=-.62;g.add(r1);
+  const r2=B(6.7,.22,3.4,rmat);r2.position.set(x,4.75,z+1.2);r2.rotation.x=.62;g.add(r2);
+  const mast=C(.08,.08,2.6,mMetalR(0x555b60),8);mast.position.set(x-2.7,5.4,z+2);g.add(mast);
+  const wh=C(.13,.13,.42,mMetalR(0x4a4f54),8);wh.position.set(x-2.7,6.6,z+2);g.add(wh);
+  setShadow(g);scene.add(g);return {group:g,drop:new THREE.Vector3(x-2.7,6.4,z+2)};}
+function meterUnit(x,z){const g=new THREE.Group();
+  const bx=B(.6,.85,.28,mPaint(0x9aa0a4,.6,.2));bx.position.set(x,3,z);g.add(bx);
+  const dome=new THREE.Mesh(new THREE.SphereGeometry(.22,16,12),mGlass());dome.position.set(x,3.12,z+.22);g.add(dome);
+  const reg=new THREE.Mesh(new THREE.PlaneGeometry(.3,.16),new THREE.MeshBasicMaterial({color:0x0a0f12}));reg.position.set(x,3.12,z+.36);g.add(reg);
+  setShadow(g);scene.add(g);return {group:g,box:bx};}
+function solarArray(x,z){const g=new THREE.Group();
+  const pmat=new THREE.MeshStandardMaterial({map:panelTex,color:0x2b3a63,roughness:.35,metalness:.25,envMapIntensity:.9});
+  for(let i=0;i<2;i++)for(let j=0;j<3;j++){const frame=new THREE.Mesh(new THREE.BoxGeometry(2.3,.14,1.45),mMetalR(0x9aa0a4,.4,.7));const p=new THREE.Mesh(new THREE.BoxGeometry(2.16,.08,1.32),pmat);const px=x+i*2.4,pz=z+j*1.55;frame.position.set(px,5.2,pz);frame.rotation.x=-.5;p.position.set(px,5.24,pz);p.rotation.x=-.5;frame.castShadow=p.castShadow=true;g.add(frame);g.add(p);const leg=C(.05,.05,1.5,mMetalR(0x777d82),6);leg.position.set(px,4.5,pz-.45);g.add(leg);}
+  const inv=B(.7,1.0,.3,mPaint(0xd2d6da,.5,.2));inv.position.set(x-2.6,3.4,z-1.2);g.add(inv);
+  setShadow(g);scene.add(g);return g;}
+function batteryUnit(x,z){const g=new THREE.Group();
+  const cab=B(1.5,2.5,.7,mPaint(0xe9ecef,.4,.15));cab.position.set(x,1.45,z);g.add(cab);
+  const strip=B(1.3,.22,.02,new THREE.MeshBasicMaterial({color:0x8B6CF0}));strip.position.set(x,2.05,z+.37);g.add(strip);
+  const led=new THREE.Mesh(new THREE.SphereGeometry(.05,8,8),new THREE.MeshBasicMaterial({color:0x3BB273}));led.position.set(x+.55,2.25,z+.37);g.add(led);
+  setShadow(g);scene.add(g);return {group:g,box:cab};}
+function vaultUnit(x,z){const g=new THREE.Group();
+  const bv=B(3,2.4,3,mConc());bv.position.set(x,-1.0,z);g.add(bv);
+  const cover=C(.9,.9,.12,new THREE.MeshStandardMaterial({map:manholeTex,color:0x3a3f44,roughness:.9,metalness:.35,envMapIntensity:.5}),24);cover.position.set(x,.13,z);g.add(cover);
+  setShadow(g);scene.add(g);return g;}
+
+// --- Etiquetas ---
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function makeLabel(txt){const cv=document.createElement('canvas');cv.width=256;cv.height=64;const c=cv.getContext('2d');c.fillStyle="rgba(14,17,22,.82)";roundRect(c,4,14,248,36,8);c.fill();c.strokeStyle="rgba(120,135,150,.6)";c.lineWidth=1.5;roundRect(c,4,14,248,36,8);c.stroke();c.fillStyle="#E7ECF1";c.font="600 22px 'Space Grotesk',sans-serif";c.textAlign="center";c.textBaseline="middle";c.fillText(txt,128,33);const tex=new THREE.CanvasTexture(cv);tex.minFilter=THREE.LinearFilter;tex.encoding=THREE.sRGBEncoding;const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));s.scale.set(9,2.25,1);return s;}
+function addLabel(owner,txt,x,y,z){const s=makeLabel(txt);s.position.set(x,y,z);s.userData.owner=owner;s.renderOrder=999;scene.add(s);labels.push(s);}
+
+// --- Conductores con catenaria + pulsos ---
+function straight(a,seg){const o=[];for(let s=0;s<a.length-1;s++){const p=a[s],q=a[s+1];for(let i=(s===0?0:1);i<=seg;i++){const t=i/seg;o.push(new THREE.Vector3(p.x+(q.x-p.x)*t,p.y+(q.y-p.y)*t,p.z+(q.z-p.z)*t));}}return o;}
+function multiSag(a,sag,seg){const o=[];for(let s=0;s<a.length-1;s++){const p=a[s],q=a[s+1];for(let i=(s===0?0:1);i<=seg;i++){const t=i/seg;o.push(new THREE.Vector3(p.x+(q.x-p.x)*t,p.y+(q.y-p.y)*t - sag*4*t*(1-t),p.z+(q.z-p.z)*t));}}return o;}
+function pathLen(P){let L=0;for(let i=1;i<P.length;i++)L+=P[i].distanceTo(P[i-1]);return L;}
+function sampleP(P,t){t=((t%1)+1)%1;const seg=[];let L=0;for(let i=1;i<P.length;i++){const d=P[i].distanceTo(P[i-1]);seg.push([L,L+d,i]);L+=d;}const tt=t*L;for(const[a,b,i]of seg){if(tt<=b){const f=(tt-a)/(b-a||1);return P[i-1].clone().lerp(P[i],f);}}return P[P.length-1].clone();}
+function condMesh(poly,radius){const geo=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(poly),Math.max(10,poly.length*2),radius,8,false);const mat=new THREE.MeshStandardMaterial({color:0x9aa3ab,roughness:.5,metalness:.85,emissive:0x000000,emissiveIntensity:0,envMapIntensity:.85});const m=new THREE.Mesh(geo,mat);m.castShadow=true;scene.add(m);return m;}
+function conductor(anchors,lvl,zone,comp,o){o=o||{};const flow=o.flow,rev=o.rev,sag=o.sag||0,radius=o.radius||.06,phases=o.phases;
+  const poly=sag>0?multiSag(anchors,sag,9):straight(anchors,8);
+  const mesh=condMesh(poly,radius);
+  if(comp){mesh.userData.id=comp;pickables.push(mesh);(groupsById[comp]=groupsById[comp]||[]).push(mesh);}else mesh.userData.id=null;
+  const extra=[];
+  if(phases)phases.forEach(pa=>{const pp=sag>0?multiSag(pa,sag,9):straight(pa,8);extra.push(condMesh(pp,radius*.9));});
+  const pulses=[];
+  if(flow){const L=pathLen(poly),n=Math.max(2,Math.min(7,Math.floor(L/5)));for(let i=0;i<n;i++){const s=new THREE.Mesh(new THREE.SphereGeometry(.23,8,8),new THREE.MeshBasicMaterial({color:LVL_LIVE[lvl],blending:THREE.AdditiveBlending,depthWrite:false,transparent:true}));s.userData.off=i/n;scene.add(s);pulses.push(s);}}
+  const cd={mesh,extra,pts:poly,pulses,lvl,zone,rev,comp};CONDS.push(cd);return cd;
+}
+
+// --- Calles ---
+function roadX(cx,cz,lenX,w){const g=new THREE.Group();const asp=new THREE.Mesh(new THREE.PlaneGeometry(lenX,w),new THREE.MeshStandardMaterial({color:0x15191d,roughness:1,metalness:0,envMapIntensity:.15}));asp.rotation.x=-Math.PI/2;asp.position.set(cx,.04,cz);asp.receiveShadow=true;g.add(asp);const n=Math.floor(lenX/3);for(let i=0;i<n;i++){const d=new THREE.Mesh(new THREE.PlaneGeometry(1.2,.18),new THREE.MeshBasicMaterial({color:0xc9ad46}));d.rotation.x=-Math.PI/2;d.position.set(cx-lenX/2+1.5+i*3,.05,cz);g.add(d);}[w/2,-w/2].forEach(o=>{const c=new THREE.Mesh(new THREE.BoxGeometry(lenX,.16,.35),mPaint(0x7a7f83,.85,.05));c.position.set(cx,.08,cz+o);c.receiveShadow=true;g.add(c);});scene.add(g);return g;}
+function roadZ(cx,cz,lenZ,w){const g=new THREE.Group();const asp=new THREE.Mesh(new THREE.PlaneGeometry(w,lenZ),new THREE.MeshStandardMaterial({color:0x15191d,roughness:1,metalness:0,envMapIntensity:.15}));asp.rotation.x=-Math.PI/2;asp.position.set(cx,.04,cz);asp.receiveShadow=true;g.add(asp);const n=Math.floor(lenZ/3);for(let i=0;i<n;i++){const d=new THREE.Mesh(new THREE.PlaneGeometry(.18,1.2),new THREE.MeshBasicMaterial({color:0xc9ad46}));d.rotation.x=-Math.PI/2;d.position.set(cx,.05,cz-lenZ/2+1.5+i*3);g.add(d);}[w/2,-w/2].forEach(o=>{const c=new THREE.Mesh(new THREE.BoxGeometry(.35,.16,lenZ),mPaint(0x7a7f83,.85,.05));c.position.set(cx+o,.08,cz);c.receiveShadow=true;g.add(c);});scene.add(g);return g;}
+function sidewalkX(cx,cz,lenX,w){const s=new THREE.Mesh(new THREE.PlaneGeometry(lenX,w),new THREE.MeshStandardMaterial({map:concreteTex,color:0x6b6f73,roughness:.95,metalness:0,envMapIntensity:.3}));s.rotation.x=-Math.PI/2;s.position.set(cx,.035,cz);s.receiveShadow=true;scene.add(s);return s;}
+
+// --- Subterráneo: galvanizado, PVC, ductos, cuarto técnico, celda 52 ---
+const mGalv=new THREE.MeshStandardMaterial({color:0xc2c7cb,roughness:.35,metalness:.85,envMapIntensity:.95});
+const mPvc=new THREE.MeshStandardMaterial({color:0x8f938f,roughness:.6,metalness:.05,envMapIntensity:.4});
+function tubeBetween(a,b,r,mat){const dir=new THREE.Vector3().subVectors(b,a);const len=dir.length()||.001;const m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,len,12),mat);m.position.copy(a).add(b).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.clone().normalize());m.castShadow=true;scene.add(m);return m;}
+function galvRiser(x,z,y0,y1){const g=new THREE.Group();const pipe=C(.13,.13,y1-y0,mGalv,12);pipe.position.set(x,(y0+y1)/2,z);g.add(pipe);for(let k=0;k<3;k++){const strap=new THREE.Mesh(new THREE.TorusGeometry(.2,.03,8,16),mGalv);strap.position.set(x,y0+.6+k*Math.max(.4,(y1-y0-1))/2,z);strap.rotation.x=Math.PI/2;g.add(strap);}setShadow(g);scene.add(g);return g;}
+function ductbank(a,b){const dir=new THREE.Vector3().subVectors(b,a).normalize();const side=new THREE.Vector3().crossVectors(dir,new THREE.Vector3(0,1,0)).normalize();const up=new THREE.Vector3(0,1,0),off=.18;[[1,1],[-1,1],[1,-1],[-1,-1]].forEach(o=>{const a2=a.clone().addScaledVector(side,o[0]*off).addScaledVector(up,o[1]*off);const b2=b.clone().addScaledVector(side,o[0]*off).addScaledVector(up,o[1]*off);tubeBetween(a2,b2,.11,mPvc);});}
+function techRoom(x,z){const g=new THREE.Group();const wm=new THREE.MeshStandardMaterial({map:concreteTex,color:0x8e8b82,roughness:.95,metalness:0,envMapIntensity:.3});const fl=B(5,.2,4,mConc());fl.position.set(x,.1,z);g.add(fl);const back=B(5,3,.2,wm);back.position.set(x,1.6,z-2);g.add(back);const left=B(.2,3,4,wm);left.position.set(x-2.4,1.6,z);g.add(left);const right=B(.2,3,4,wm);right.position.set(x+2.4,1.6,z);g.add(right);const lintel=B(5,.5,.24,wm);lintel.position.set(x,2.85,z+1.9);g.add(lintel);const roof=B(5.4,.25,4.4,mPaint(0x5c5951,.85,.1));roof.position.set(x,3.2,z);g.add(roof);setShadow(g);scene.add(g);return g;}
+function protCell(x,z){const g=new THREE.Group();const body=B(1.3,2.3,.9,mPaint(0x7d8a93,.5,.4));body.position.set(x,1.25,z);g.add(body);const panel=new THREE.Mesh(new THREE.PlaneGeometry(1.0,1.6),new THREE.MeshStandardMaterial({color:0x20262b,roughness:.4,metalness:.3}));panel.position.set(x,1.45,z+.46);g.add(panel);const scr=new THREE.Mesh(new THREE.PlaneGeometry(.42,.3),new THREE.MeshBasicMaterial({color:0x0a2a2f}));scr.position.set(x,1.75,z+.47);g.add(scr);[[-.28,2.05,0x3BB273],[-.06,2.05,0xF2A63B],[.16,2.05,0xE5484D]].forEach(o=>{const l=new THREE.Mesh(new THREE.CircleGeometry(.05,12),new THREE.MeshBasicMaterial({color:o[2]}));l.position.set(x+o[0],o[1],z+.47);g.add(l);});const brk=B(.9,.5,.5,mMetalR(0x5a6066));brk.position.set(x,.5,z+.1);g.add(brk);setShadow(g);scene.add(g);return {group:g,key:body};}
+
+/* ===================== CONSTRUCCIÓN DE LA RED ===================== */
+// Calles: la línea corre sobre la avenida; el cable MT va bajo la calzada
+roadX(-5,-6,86,5); sidewalkX(-5,-2.6,86,2.2);
+roadX(-8,-16,28,4); roadZ(2,-11,12,4);
+const H=14, postX=[-30,-24,-18,-12,-6,2], A={};
+postX.forEach(x=>{const pu=poleUnit(x,0,H);A[x]={c:pu.ins[1],l:pu.ins[0],r:pu.ins[2],g:pu.group};});
+const AY=A[-30].c.y;             // ~13.4
+const EY=AY-2.0;                 // altura de montaje de equipos
+
+// Subestación + malla de tierra
+reg(substation(-38,-2),'subestacion');addLabel('subestacion','Subestación',-38,12.5,-2);
+reg(groundGrid(-41,-2),'puesta_tierra');
+// riser subestación → cabecera (decorativo)
+condMesh(straight([new THREE.Vector3(-37,4.6,-2),new THREE.Vector3(-33,AY,0),A[-30].c],7),.05);
+
+// Troncal aéreo (3 fases, catenaria)
+conductor([A[-30].c,A[-24].c],"mt","TA","conductor_aereo",{flow:true,sag:.5,phases:[[A[-30].l,A[-24].l],[A[-30].r,A[-24].r]]});
+conductor([A[-24].c,A[-18].c,A[-12].c,A[-6].c,A[2].c],"mt","TB","conductor_aereo",{flow:true,sag:.5,
+  phases:[[A[-24].l,A[-18].l,A[-12].l,A[-6].l,A[2].l],[A[-24].r,A[-18].r,A[-12].r,A[-6].r,A[2].r]]});
+
+// Equipos del troncal (colgados del poste, con bajante decorativo al conductor)
+function tap(x,z,y){condMesh(straight([new THREE.Vector3(x,AY-.1,0),new THREE.Vector3(x,y+.9,z)],4),.045);}
+// Cuarto técnico contiguo a la subestación: celda 52 (interruptor de potencia + relé)
+techRoom(-33.5,1);
+const cel=protCell(-33.5,1.2);DEVMESH.cabecera=[cel.key];reg(cel.group,'cabecera');addLabel('cabecera','Celda 52 · interruptor + relé',-33.5,3.7,1);
+// del cuarto técnico sale cable en tubería 4" y aflora al poste por bajante galvanizada
+tubeBetween(new THREE.Vector3(-33.5,.4,1.6),new THREE.Vector3(-30,.4,.35),.13,mGalv);
+galvRiser(-30,.35,.4,A[-30].c.y-.2);
+tubeBetween(new THREE.Vector3(-30,A[-30].c.y-.2,.35),A[-30].c,.06,mGalv);
+const rec=recloserDev(-24,0,EY);DEVMESH.reconectador=[rec.key];reg(rec.group,'reconectador');addLabel('reconectador','Reconectador',-24,AY+1.2,0);tap(-24,0,EY);
+reg(arresterDev(-18,.95,EY+.2),'dps');addLabel('dps','DPS',-18,AY+1,.95);
+reg(A[-18].g,'poste');addLabel('poste','Poste',-18,AY+2.2,0);
+// (regulador retirado del modelo por solicitud)
+// (banco de condensadores retirado por solicitud)
+// Segundo transformador de poste (derivado del troncal) + su carga
+cutoutDev(-6,1.0,EY+.4);
+const trafo2=transformerPole(-6,.85,EY-2.4);reg(trafo2.group,'transformador');addLabel('transformador','Transformador 2',-6,EY-.6,1.4);
+condMesh(straight([new THREE.Vector3(-6,AY-.1,0),new THREE.Vector3(-6,EY+.6,1.0)],4),.045);
+const casa2=houseUnit(-6,8);reg(casa2.group,'carga');addLabel('carga','Carga 2',-6,9.8,8);
+const med2=meterUnit(-8.6,10.3);reg(med2.group,'medidor');
+conductor([trafo2.lv,casa2.drop,new THREE.Vector3(-8.6,3.4,10.3)],"bt","TB",null,{flow:true,sag:.35});
+const cut=cutoutDev(2,1.0,EY+.4);DEVMESH.cortacircuitos=[cut.key];reg(cut.group,'cortacircuitos');addLabel('cortacircuitos','Cortacircuitos',2,AY+1.2,1.6);
+const trafo=transformerPole(2,.85,EY-2.4);reg(trafo.group,'transformador');addLabel('transformador','Transformador',2,EY-.6,1.4);
+condMesh(straight([new THREE.Vector3(2,AY-.1,0),new THREE.Vector3(2,EY+.6,1.0)],4),.045);   // MT → cutout → trafo
+
+// Servicio BT: gota de servicio a la casa + medidor
+const casa=houseUnit(24,8);reg(casa.group,'carga');addLabel('carga','Carga / usuario',24,9.8,8);
+const med=meterUnit(21.4,10.3);reg(med.group,'medidor');addLabel('medidor','Medidor',21.4,5,10.3);
+conductor([trafo.lv,casa.drop,new THREE.Vector3(21.4,3.4,10.3)],"bt","RTR","red_bt",{flow:true,sag:.35});
+
+// DER: solar + batería
+reg(solarArray(28,13),'fv');addLabel('fv','Solar FV',30,7.6,15);
+const bat=batteryUnit(31.5,13);reg(bat.group,'bateria');addLabel('bateria','Batería',31.5,3.6,13);
+conductor([new THREE.Vector3(24,5,10),new THREE.Vector3(28,4,13),new THREE.Vector3(31.5,2.6,13)],"der","DER",null,{flow:true,rev:true,sag:.2});
+
+// Lateral subterráneo: seccionalizador → cable → cámara → padmount
+const sec=sectDev(-18,-1.0,EY+.2);DEVMESH.seccionalizador=[sec.key];reg(sec.group,'seccionalizador');addLabel('seccionalizador','Seccionalizador',-18,AY+2,-1.0);
+// Bajante galvanizada: el cable XLPE aéreo baja por el poste hacia el ducto
+galvRiser(-18,-.7,.2,EY);
+// Cámaras de paso a un costado de los postes, sobre andenes (fuera de la calzada)
+sidewalkX(-4,-13.6,34,2.6);
+reg(vaultUnit(-18,-2.6),'camara');addLabel('camara','Cámara de paso',-18,2.3,-2.6);
+reg(vaultUnit(-18,-13.6),'camara');addLabel('camara','Cámara de paso',-18,2.3,-13.6);
+reg(padmount(2,-16),'transformador_pedestal');addLabel('transformador_pedestal','Padmount',2,3.4,-16);
+// Edificio administrativo alimentado en BT desde el transformador pedestal
+const edif=adminBuilding(12,-16);reg(edif.group,'edificio');addLabel('edificio','Edificio administrativo',12,10.5,-16);
+conductor([new THREE.Vector3(3.4,1.2,-16),new THREE.Vector3(8,.9,-15),edif.svc],"bt","LSUB",null,{flow:true,sag:.15,radius:.07});
+// Banco de 4 tubos PVC 4" entre bajante, cámaras y padmount
+ductbank(new THREE.Vector3(-18,-1.2,-1),new THREE.Vector3(-18,-1.2,-2.6));
+ductbank(new THREE.Vector3(-18,-1.2,-2.6),new THREE.Vector3(-18,-1.2,-13.6));
+ductbank(new THREE.Vector3(-18,-1.2,-13.6),new THREE.Vector3(2,-1.2,-16));
+// Cable XLPE (aloja uno de los ductos): tramo subterráneo con flujo
+conductor([new THREE.Vector3(-18,EY,-.7),new THREE.Vector3(-18,.2,-.7),new THREE.Vector3(-18,-1.2,-2.6),new THREE.Vector3(-18,-1.2,-13.6),new THREE.Vector3(2,-1.2,-16),new THREE.Vector3(2,.6,-16)],"sub","LSUB","cable_subterraneo",{flow:true,radius:.08});
+
+// Árbol junto al troncal (para el evento de caída)
+const treeObj=treeUnit(-15,0,3.2);
+
+// colores base de dispositivos (restaurar tras maniobra/falla)
+Object.keys(DEVMESH).forEach(k=>DEVMESH[k].forEach(m=>m.userData.base=m.material.color.getHex()));
+
+/* ===================== RENDER DE ENERGIZACIÓN + FLUJO ===================== */
+function setCondLive(cd,live){
+  const arr=[cd.mesh].concat(cd.extra||[]);
+  arr.forEach(m=>{if(!m)return;m.material.emissive.set(live?LVL_LIVE[cd.lvl]:'#000000');m.material.emissiveIntensity=live?.55:0;m.material.color.setHex(live?(cd.lvl==='sub'?0x2a2f34:0x9aa3ab):(cd.lvl==='sub'?0x1c2024:0x4a5158));});
+  cd.pulses.forEach(p=>p.visible=live&&flowOn);
+}
+function refresh(){
+  const L=energize();
+  CONDS.forEach(cd=>setCondLive(cd,L[cd.zone]!==false&&L[cd.zone]!==undefined?!!L[cd.zone]:false));
+  SVGEDGES.forEach(e=>{const live=!!L[e.zone];e.base.setAttribute("stroke",live?LVL_LIVE[e.lvl]:"#c9c3ad");if(e.fl)e.fl.classList.toggle("on",live&&flowOn);});
+  // dispositivos
+  Object.keys(DEV).forEach(id=>{
+    const open=DEV[id].open;
+    if(UNODES[id])UNODES[id].classList.toggle("dev-open",open);
+    (DEVMESH[id]||[]).forEach(m=>m.material.color.setHex(open?0xE5484D:m.userData.base));
+  });
+}
+
+/* ===================== SELECCIÓN / FICHA ===================== */
+function onNodeClick(id){ if(mode==="maniobra"&&DEV[id]){DEV[id].open=!DEV[id].open;refresh();logManiobra(id);return;} selectComponent(id); }
+function selectComponent(id){
+  selected=id;renderFicha(id);
+  svg.querySelectorAll(".uni-node").forEach(n=>n.classList.toggle("sel",n.getAttribute("data-id")===id));
+  highlight3D(id);
+  if(isMobile())document.getElementById('aside').classList.add('open');
+}
+function renderFicha(id){
+  const d=COMP[id];if(!d)return;const cat=CAT[d.cat];
+  const rows=d.ficha.map(([k,v])=>`<div class="row"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+  const nor=d.norma.map(n=>`<li>${n.replace(/\[verificar\]/g,'<span class="verif">[verificar]</span>')}</li>`).join("");
+  document.getElementById('ficha').innerHTML=`<span class="cat-tag" style="color:${cat.c};background:${cat.bg}">${cat.n}</span><h2>${d.nombre}</h2><span class="nivel-chip">Nivel: ${d.nivel}</span><div class="sec-t">Función</div><p class="funcion">${d.funcion}</p><div class="sec-t">Ficha técnica</div><div class="placa">${rows}</div><div class="sec-t">Referencia normativa</div><ul class="norma">${nor}</ul>`;
+  document.getElementById('ficha').scrollTop=0;
+}
+let hl=[];
+function highlight3D(id){
+  hl.forEach(o=>{if(o._be!==undefined&&o.material.emissive){o.material.emissive.setHex(o._be);o.material.emissiveIntensity=o._bi||0;}});hl=[];
+  refresh();                                   // restablece emisivos de energización de los conductores
+  (groupsById[id]||[]).forEach(g=>g.traverse(o=>{
+    if(o.isMesh&&o.material&&o.material.emissive){if(o._be===undefined){o._be=o.material.emissive.getHex();o._bi=o.material.emissiveIntensity;}o.material.emissive.setHex(0xF2A63B);o.material.emissiveIntensity=.75;hl.push(o);}
+  }));
+  updateLabels();
+}
+
+/* ===================== CONSOLA DE EVENTOS ===================== */
+const logEl=document.getElementById('log'),stDot=document.getElementById('stDot'),stText=document.getElementById('stText');
+function clearLog(){logEl.innerHTML="";const fl=document.getElementById('fpLog');if(fl)fl.innerHTML="";}
+function addLog(t,m,cls){const html=`<span class="t">${t}</span><span class="m">${m}</span>`;const d=document.createElement('div');d.className="ln"+(cls?" "+cls:"");d.innerHTML=html;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight;const fl=document.getElementById('fpLog');if(fl){const d2=document.createElement('div');d2.className="ln"+(cls?" "+cls:"");d2.innerHTML=html;fl.appendChild(d2);while(fl.childNodes.length>40)fl.removeChild(fl.firstChild);fl.scrollTop=fl.scrollHeight;}if(fp&&typeof fpFlash==='function'&&(cls==='trip'||cls==='restore'||cls==='reclose'))fpFlash(cls);}
+function setStatus(txt,busy){stText.textContent=txt;stDot.classList.toggle("busy",!!busy);const fs=document.getElementById('fpStatusText');if(fs)fs.textContent=txt;}
+function logManiobra(id){const open=DEV[id].open;addLog("maniobra",`${COMP[id].nombre}: ${open?"ABIERTO":"CERRADO"}.`,open?"trip":"restore");
+  const L=energize();const dead=[];if(!L.TA)dead.push("todo el alimentador");else{if(!L.TB)dead.push("troncal aguas abajo del reconectador");if(!L.LSUB&&L.TB)dead.push("lateral subterráneo");if(!L.RTR&&L.TB)dead.push("ramal del transformador (y DER por anti-isla)");}
+  setStatus(dead.length?("sin tensión: "+dead.join(", ")):"sistema en condición normal",false);}
+function flashUni(id){const n=UNODES[id];if(!n)return;n.classList.add("flash");setTimeout(()=>n.classList.remove("flash"),650);}
+
+/* ===================== SECUENCIAS DE FALLA (cualitativas) ===================== */
+function seqTroncal(tipo){
+  if(tipo==="transitoria")return[
+    {t:"t+0.00 s",m:"Falla TRANSITORIA en el troncal, aguas abajo del reconectador.",c:"trip"},
+    {t:"~2–3 ciclos",m:"Reconectador: apertura rápida. Tramo aguas abajo sin tensión.",c:"trip",flash:"reconectador",do:()=>DEV.reconectador.open=true},
+    {t:"~2 s",m:"Tiempo muerto (dead time). Espera de recierre.",c:"reclose"},
+    {t:"recierre 1",m:"Reconectador recierra. La falla transitoria ya se despejó.",c:"restore",flash:"reconectador",do:()=>DEV.reconectador.open=false},
+    {t:"—",m:"Servicio restablecido. Alimentador en condición normal.",c:"restore"}
+  ];
+  return[
+    {t:"t+0.00 s",m:"Falla PERMANENTE en el troncal, aguas abajo del reconectador.",c:"trip"},
+    {t:"~2–3 ciclos",m:"Reconectador: apertura rápida (curva instantánea).",c:"trip",flash:"reconectador",do:()=>DEV.reconectador.open=true},
+    {t:"~2 s",m:"Recierre 1 → la falla persiste.",c:"reclose",flash:"reconectador",do:()=>DEV.reconectador.open=false},
+    {t:"~0.1 s",m:"Apertura temporizada (curva lenta).",c:"trip",flash:"reconectador",do:()=>DEV.reconectador.open=true},
+    {t:"~5 s",m:"Recierre 2 → la falla persiste.",c:"reclose",flash:"reconectador",do:()=>DEV.reconectador.open=false},
+    {t:"~0.2 s",m:"Apertura temporizada (curva lenta).",c:"trip",flash:"reconectador",do:()=>DEV.reconectador.open=true},
+    {t:"lockout",m:"Reconectador en BLOQUEO. Alimentador aguas abajo sin servicio hasta reparación.",c:"trip"}
+  ];
+}
+function seqLateral(tipo){
+  if(tipo==="transitoria")return[
+    {t:"t+0.00 s",m:"Falla TRANSITORIA en el lateral subterráneo.",c:"trip"},
+    {t:"~2–3 ciclos",m:"Reconectador (aguas arriba) abre. Alimentador momentáneamente sin tensión.",c:"trip",flash:"reconectador",do:()=>DEV.reconectador.open=true},
+    {t:"conteo",m:"Seccionalizador cuenta la apertura (conteo = 1).",c:"reclose"},
+    {t:"~2 s",m:"Recierre → falla despejada. El seccionalizador no alcanza su conteo y se resetea.",c:"restore",flash:"seccionalizador",do:()=>DEV.reconectador.open=false},
+    {t:"—",m:"Servicio normal. El lateral subterráneo permanece en servicio.",c:"restore"}
+  ];
+  return[
+    {t:"t+0.00 s",m:"Falla PERMANENTE en el lateral subterráneo.",c:"trip"},
+    {t:"~2–3 ciclos",m:"Reconectador abre (conteo 1 del seccionalizador).",c:"trip",flash:"reconectador",do:()=>DEV.reconectador.open=true},
+    {t:"~2 s",m:"Recierre → la falla persiste.",c:"reclose",do:()=>DEV.reconectador.open=false},
+    {t:"~0.1 s",m:"Reconectador abre de nuevo (conteo 2 del seccionalizador).",c:"trip",flash:"reconectador",do:()=>DEV.reconectador.open=true},
+    {t:"intervalo",m:"En el intervalo sin corriente, el SECCIONALIZADOR abre y aísla el lateral subterráneo.",c:"trip",flash:"seccionalizador",do:()=>DEV.seccionalizador.open=true},
+    {t:"recierre",m:"Reconectador recierra sobre red sana → resto del alimentador restablecido.",c:"restore",flash:"reconectador",do:()=>DEV.reconectador.open=false},
+    {t:"—",m:"Solo el lateral subterráneo queda sin servicio.",c:"restore"}
+  ];
+}
+function seqRamal(tipo){
+  const s=[
+    {t:"t+0.00 s",m:`Falla ${tipo==="transitoria"?"TRANSITORIA":"PERMANENTE"} en el ramal del transformador (aguas abajo del fusible).`,c:"trip"},
+    {t:"sobrecorr.",m:"El fusible del cortacircuitos ve la sobrecorriente del ramal.",c:"trip"},
+    {t:"fusión",m:"El fusible se funde y abre. Transformador, red BT y carga sin servicio; la GD se desconecta por anti-isla.",c:"trip",flash:"cortacircuitos",do:()=>DEV.cortacircuitos.open=true},
+    {t:"—",m:"El resto del alimentador continúa en servicio. Requiere reemplazo del fusible.",c:"restore"}
+  ];
+  if(tipo==="transitoria")s.push({t:"nota",m:"Nota pedagógica: con esquema fuse-saving, un recloser rápido podría salvar el fusible ante fallas transitorias.",c:"reclose"});
+  return s;
+}
+function buildSeq(scn,tipo){return scn==="troncal"?seqTroncal(tipo):scn==="lateral"?seqLateral(tipo):seqRamal(tipo);}
+
+let timer=null;
+function runSequence(scn,tipo){
+  if(playing)return;playing=true;setControls(false);clearLog();
+  resetDevices();refresh();
+  addLog("evento",`Escenario: ${scn} · ${tipo}. Secuencia de coordinación:`,"head");
+  setStatus("simulando coordinación…",true);
+  const steps=buildSeq(scn,tipo);let i=0;
+  (function next(){
+    if(i>=steps.length){playing=false;setControls(true);setStatus("secuencia finalizada — pulsa Reiniciar para volver a normal",false);return;}
+    const s=steps[i++];if(s.do)s.do();refresh();addLog(s.t,s.m,s.c);if(s.flash)flashUni(s.flash);
+    timer=setTimeout(next,1350);
+  })();
+}
+function resetDevices(){Object.keys(DEV).forEach(k=>DEV[k].open=false);}
+function resetAll(){if(timer)clearTimeout(timer);playing=false;setControls(true);resetDevices();refresh();clearLog();if(typeof resetTree==='function')resetTree();if(typeof clearBolt==='function')clearBolt();addLog("init","Sistema restablecido a condición normal.","restore");setStatus("sistema en condición normal",false);}
+function setControls(on){document.getElementById('fRun').disabled=!on;document.getElementById('fScenario').disabled=!on;document.getElementById('fType').disabled=!on;}
+
+/* ===================== CONTROLES 3D ===================== */
+let fp=false;
+let theta=Math.atan2(CAM0.x-TGT0.x,CAM0.z-TGT0.z),phi=Math.acos((CAM0.y-TGT0.y)/CAM0.distanceTo(TGT0)),radius=CAM0.distanceTo(TGT0);
+let dragging=false,panning=false,lx=0,ly=0,down=null;
+function updateCam(){camera.position.x=target.x+radius*Math.sin(phi)*Math.sin(theta);camera.position.y=target.y+radius*Math.cos(phi);camera.position.z=target.z+radius*Math.sin(phi)*Math.cos(theta);camera.lookAt(target);}
+function recenter(){target=TGT0.clone();theta=Math.atan2(CAM0.x-TGT0.x,CAM0.z-TGT0.z);phi=Math.acos((CAM0.y-TGT0.y)/CAM0.distanceTo(TGT0));radius=CAM0.distanceTo(TGT0);updateCam();}
+canvas.addEventListener('mousedown',e=>{if(fp)return;dragging=true;panning=(e.button===2);lx=e.clientX;ly=e.clientY;down=[e.clientX,e.clientY];});
+window.addEventListener('mouseup',()=>{dragging=false;panning=false;});
+window.addEventListener('mousemove',e=>{if(fp||!dragging)return;const dx=e.clientX-lx,dy=e.clientY-ly;lx=e.clientX;ly=e.clientY;if(panning){const ps=radius*.0016;const right=new THREE.Vector3(Math.cos(theta),0,-Math.sin(theta));target.addScaledVector(right,-dx*ps);target.y+=dy*ps;}else{theta-=dx*.006;phi=Math.max(.2,Math.min(Math.PI/2.05,phi-dy*.006));}updateCam();});
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+canvas.addEventListener('wheel',e=>{if(fp)return;e.preventDefault();radius=Math.max(16,Math.min(140,radius*(1+Math.sign(e.deltaY)*.08)));updateCam();},{passive:false});
+let ltd=0;canvas.addEventListener('touchstart',e=>{if(fp)return;if(e.touches.length===1){dragging=true;lx=e.touches[0].clientX;ly=e.touches[0].clientY;down=[lx,ly];}else if(e.touches.length===2)ltd=tdist(e);},{passive:true});
+canvas.addEventListener('touchmove',e=>{if(fp)return;if(e.touches.length===1&&dragging){const dx=e.touches[0].clientX-lx,dy=e.touches[0].clientY-ly;lx=e.touches[0].clientX;ly=e.touches[0].clientY;theta-=dx*.006;phi=Math.max(.2,Math.min(Math.PI/2.05,phi-dy*.006));updateCam();}else if(e.touches.length===2){const d=tdist(e);radius=Math.max(16,Math.min(140,radius*(ltd/d)));ltd=d;updateCam();}},{passive:true});
+canvas.addEventListener('touchend',()=>dragging=false);
+function tdist(e){const a=e.touches[0],b=e.touches[1];return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);}
+const ray=new THREE.Raycaster();ray.params.Line={threshold:.7};const mouse=new THREE.Vector2();
+canvas.addEventListener('click',e=>{
+  if(fp)return;
+  if(down&&(Math.abs(e.clientX-down[0])>5||Math.abs(e.clientY-down[1])>5))return;
+  const r=canvas.getBoundingClientRect();mouse.x=((e.clientX-r.left)/r.width)*2-1;mouse.y=-((e.clientY-r.top)/r.height)*2+1;
+  ray.setFromCamera(mouse,camera);const hits=ray.intersectObjects(pickables,true);
+  if(hits.length){let o=hits[0].object;while(o&&o.userData.id===undefined)o=o.parent;if(o&&o.userData.id){if(mode==="maniobra"&&DEV[o.userData.id]){DEV[o.userData.id].open=!DEV[o.userData.id].open;refresh();logManiobra(o.userData.id);}else selectComponent(o.userData.id);}}
+});
+
+/* ===================== PRIMERA PERSONA ===================== */
+const player={pos:new THREE.Vector3(-33.5,2.0,7),yaw:Math.PI,pitch:-0.05};
+const EYE=2.0,WSPEED=8.5,PR=0.6;let locked=false,reading=false,fpTarget=null;
+const fpMove={f:false,b:false,l:false,r:false};
+const COL=[];
+postX.forEach(x=>COL.push({t:'c',x:x,z:0,r:0.6}));
+COL.push({t:'b',x:-38,z:-2,hx:6.2,hz:5.4});
+COL.push({t:'b',x:-33.5,z:0,hx:2.7,hz:2.2});
+COL.push({t:'b',x:24,z:8,hx:3.1,hz:2.7});
+COL.push({t:'b',x:2,z:-16,hx:1.9,hz:1.6});
+COL.push({t:'b',x:29,z:13,hx:3.4,hz:2.6});
+COL.push({t:'b',x:-6,z:8,hx:3.1,hz:2.7});
+COL.push({t:'b',x:12,z:-16,hx:4,hz:3.3});
+COL.push({t:'c',x:-15,z:3.2,r:1.3});
+function collide(p){
+  for(const c of COL){
+    if(c.t==='c'){const dx=p.x-c.x,dz=p.z-c.z,d=Math.hypot(dx,dz),rr=c.r+PR;if(d<rr&&d>1e-4){p.x=c.x+dx/d*rr;p.z=c.z+dz/d*rr;}}
+    else{const minx=c.x-c.hx-PR,maxx=c.x+c.hx+PR,minz=c.z-c.hz-PR,maxz=c.z+c.hz+PR;if(p.x>minx&&p.x<maxx&&p.z>minz&&p.z<maxz){const dl=p.x-minx,dr=maxx-p.x,dn=p.z-minz,df=maxz-p.z,m=Math.min(dl,dr,dn,df);if(m===dl)p.x=minx;else if(m===dr)p.x=maxx;else if(m===dn)p.z=minz;else p.z=maxz;}}
+  }
+  p.x=Math.max(-50,Math.min(35,p.x));p.z=Math.max(-21,Math.min(17,p.z));
+}
+let hoverId=null,hoverStore=[];
+function clearHover(){hoverStore.forEach(o=>{o.material.emissive.setHex(o._he);o.material.emissiveIntensity=o._hi;});hoverStore=[];hoverId=null;}
+function setHover(id){if(id===hoverId)return;clearHover();hoverId=id;if(!id)return;(groupsById[id]||[]).forEach(g=>g.traverse(o=>{if(o.isMesh&&o.material&&o.material.emissive){o._he=o.material.emissive.getHex();o._hi=o.material.emissiveIntensity;o.material.emissive.setHex(0x5fd08a);o.material.emissiveIntensity=Math.max(o._hi,0.35);hoverStore.push(o);}}));}
+let faultType='transitoria';
+function scenarioFor(id){if(id==='conductor_aereo')return'troncal';if(id==='cable_subterraneo')return'lateral';if(['red_bt','transformador','carga','medidor'].includes(id))return'ramal';return null;}
+function fpFlash(cls){const f=document.getElementById('fpFlash');if(!f)return;const col=cls==='trip'?'rgba(229,72,77,.5)':cls==='restore'?'rgba(59,178,115,.38)':'rgba(242,166,59,.38)';f.style.background='radial-gradient(circle at 50% 50%, transparent 34%, '+col+' 100%)';f.style.opacity='1';clearTimeout(f._t);f._t=setTimeout(()=>{f.style.opacity='0';},90);}
+function fpHudUpdate(){const st=document.getElementById('fpMode');if(st)st.textContent='Modo: '+(mode==='maniobra'?'Maniobrar':'Explorar')+(flowOn?' · Flujo ON':' · Flujo OFF');const ff=document.getElementById('fpFault');if(ff)ff.textContent='Falla: '+faultType;}
+const el3d=document.getElementById('view3d'),fpHud=document.getElementById('fpHud'),fpPrompt=document.getElementById('fpPrompt'),fpPause=document.getElementById('fpPause'),fpFichaWrap=document.getElementById('fpFichaWrap');
+function fpEnter(){fp=true;player.pos.set(-33.5,2.0,7);player.yaw=Math.PI;player.pitch=-0.05;el3d.classList.add('fp');fpHud.style.display='block';fpHudUpdate();resize();addLog("recorrido","Modo primera persona activado. WASD para caminar, E para interactuar.","head");if(canvas.requestPointerLock)canvas.requestPointerLock();}
+function fpExit(){fp=false;locked=false;reading=false;clearHover();fpPause.style.display='none';fpFichaWrap.style.display='none';if(document.exitPointerLock&&document.pointerLockElement)document.exitPointerLock();el3d.classList.remove('fp');fpHud.style.display='none';resize();recenter();}
+document.addEventListener('pointerlockchange',()=>{locked=(document.pointerLockElement===canvas);if(fp&&!locked&&!reading)fpPause.style.display='flex';else fpPause.style.display='none';});
+document.addEventListener('mousemove',e=>{if(!fp||!locked)return;player.yaw-=e.movementX*0.0022;player.pitch=Math.max(-1.25,Math.min(1.25,player.pitch-e.movementY*0.0022));});
+addEventListener('keydown',e=>{if(!fp)return;const k=e.key.toLowerCase();if(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();if(k==='w'||k==='arrowup')fpMove.f=true;if(k==='s'||k==='arrowdown')fpMove.b=true;if(k==='a'||k==='arrowleft')fpMove.l=true;if(k==='d'||k==='arrowright')fpMove.r=true;if(k==='e')fpInteract();if(k==='1')setMode('explore');if(k==='2')setMode('maniobra');if(k==='f'){flowOn=!flowOn;document.getElementById('flowToggle').setAttribute('aria-pressed',flowOn);refresh();fpHudUpdate();}if(k==='r')resetAll();if(k==='t'){faultType=faultType==='transitoria'?'permanente':'transitoria';fpHudUpdate();}if(k==='g'){const sc=scenarioFor(fpTarget);if(sc&&!playing)runSequence(sc,faultType);}if(k==='l')lightningStrike();if(k==='b')dropTree();});
+addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(k==='w'||k==='arrowup')fpMove.f=false;if(k==='s'||k==='arrowdown')fpMove.b=false;if(k==='a'||k==='arrowleft')fpMove.l=false;if(k==='d'||k==='arrowright')fpMove.r=false;});
+function fpUpdate(dt){
+  if(!locked)return;
+  const fwd=new THREE.Vector3(-Math.sin(player.yaw),0,-Math.cos(player.yaw)),rgt=new THREE.Vector3(Math.cos(player.yaw),0,-Math.sin(player.yaw));
+  let mx=0,mz=0;
+  if(fpMove.f){mx+=fwd.x;mz+=fwd.z;}if(fpMove.b){mx-=fwd.x;mz-=fwd.z;}
+  if(fpMove.r){mx+=rgt.x;mz+=rgt.z;}if(fpMove.l){mx-=rgt.x;mz-=rgt.z;}
+  const len=Math.hypot(mx,mz);if(len>0){player.pos.x+=mx/len*WSPEED*dt;player.pos.z+=mz/len*WSPEED*dt;collide(player.pos);}
+  player.pos.y=EYE;camera.position.copy(player.pos);
+  const dir=new THREE.Vector3(-Math.sin(player.yaw)*Math.cos(player.pitch),Math.sin(player.pitch),-Math.cos(player.yaw)*Math.cos(player.pitch));
+  camera.lookAt(player.pos.x+dir.x,player.pos.y+dir.y,player.pos.z+dir.z);
+  ray.setFromCamera(new THREE.Vector2(0,0),camera);const hits=ray.intersectObjects(pickables,true);
+  let id=null;if(hits.length&&hits[0].distance<24){let o=hits[0].object;while(o&&o.userData.id===undefined)o=o.parent;if(o&&o.userData.id)id=o.userData.id;}
+  fpTarget=id;setHover(id);
+  const cross=document.getElementById('fpCross');
+  if(id){const dev=DEV[id],sc=scenarioFor(id);let act=(mode==='maniobra'&&dev)?(dev.open?'E: cerrar':'E: abrir'):'E: ver ficha';if(sc)act+=' · G: falla';fpPrompt.textContent=(COMP[id]?COMP[id].nombre:id)+' · '+act;fpPrompt.style.opacity=1;cross.classList.add('active');}
+  else{fpPrompt.style.opacity=0;cross.classList.remove('active');}
+}
+function fpInteract(){if(!fpTarget||!locked)return;const id=fpTarget;clearHover();if(mode==='maniobra'&&DEV[id]){DEV[id].open=!DEV[id].open;refresh();logManiobra(id);}else{reading=true;if(document.exitPointerLock)document.exitPointerLock();selectComponent(id);document.getElementById('fpFicha').innerHTML=document.getElementById('ficha').innerHTML;fpFichaWrap.style.display='flex';}}
+document.getElementById('btnWalk').addEventListener('click',fpEnter);
+document.getElementById('fpResumeBtn').addEventListener('click',()=>{if(canvas.requestPointerLock)canvas.requestPointerLock();});
+document.getElementById('fpExitBtn').addEventListener('click',fpExit);
+document.getElementById('fpResume').addEventListener('click',()=>{reading=false;fpFichaWrap.style.display='none';if(canvas.requestPointerLock)canvas.requestPointerLock();});
+
+/* ===================== EFECTOS: RAYO Y ÁRBOL ===================== */
+let boltGroup=null,actx=null,treeFall={a:false,t:0,done:false};
+function treeUnit(x,z){const g=new THREE.Group();const trunk=C(.25,.42,4.6,new THREE.MeshStandardMaterial({color:0x5b4326,roughness:.9,metalness:0,envMapIntensity:.2}),8);trunk.position.set(0,2.3,0);g.add(trunk);const fol=new THREE.MeshStandardMaterial({color:0x3c6b32,roughness:.85,metalness:0,envMapIntensity:.3});[[0,5,0,2.2],[1.2,4.5,.4,1.5],[-1,4.7,-.5,1.6],[.3,6.1,.2,1.7]].forEach(p=>{const b=new THREE.Mesh(new THREE.SphereGeometry(p[3],12,10),fol);b.position.set(p[0],p[1],p[2]);b.castShadow=true;g.add(b);});g.position.set(x,0,z);setShadow(g);scene.add(g);return g;}
+function thunder(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const t=actx.currentTime,buf=actx.createBuffer(1,Math.floor(actx.sampleRate*1.3),actx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2);const src=actx.createBufferSource();src.buffer=buf;const lp=actx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=360;const g=actx.createGain();g.gain.setValueAtTime(.8,t);g.gain.exponentialRampToValueAtTime(.001,t+1.3);src.connect(lp);lp.connect(g);g.connect(actx.destination);src.start();}catch(e){}}
+function makeBolt(from,to){const pts=[from.clone()],n=11;for(let i=1;i<n;i++){const p=from.clone().lerp(to,i/n),j=(1-i/n)*2.4;p.x+=(Math.random()-.5)*j;p.z+=(Math.random()-.5)*j;pts.push(p);}pts.push(to.clone());const g=new THREE.Group(),cur=new THREE.CatmullRomCurve3(pts);
+  g.add(new THREE.Mesh(new THREE.TubeGeometry(cur,44,.19,6,false),new THREE.MeshBasicMaterial({color:0x8fbcff,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false})));
+  g.add(new THREE.Mesh(new THREE.TubeGeometry(cur,44,.08,6,false),new THREE.MeshBasicMaterial({color:0xeaf4ff,blending:THREE.AdditiveBlending,depthWrite:false})));
+  const bi=Math.floor(n*.6),bf=pts[bi].clone(),bt=bf.clone().add(new THREE.Vector3((Math.random()-.5)*7,-5,(Math.random()-.5)*7));
+  g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([bf,bf.clone().lerp(bt,.5).add(new THREE.Vector3((Math.random()-.5)*2,0,0)),bt]),18,.06,5,false),new THREE.MeshBasicMaterial({color:0xbfe0ff,blending:THREE.AdditiveBlending,depthWrite:false})));
+  scene.add(g);return g;}
+function clearBolt(){if(boltGroup){scene.remove(boltGroup);boltGroup.traverse(o=>{if(o.geometry)o.geometry.dispose();});boltGroup=null;}}
+function lightningStrike(){if(playing)return;const to=new THREE.Vector3(-21,AY-0.3,0),from=new THREE.Vector3(to.x+(Math.random()-.5)*7,46,to.z+(Math.random()-.5)*7);
+  const light=new THREE.PointLight(0xd4e8ff,0,70);light.position.set(to.x,to.y+8,to.z);scene.add(light);
+  const flash=document.getElementById('skyFlash');addLog("rayo","⚡ Descarga atmosférica sobre el troncal de MT.","reclose");
+  let seq=0;(function flick(){seq++;clearBolt();
+    if(seq<=3){boltGroup=makeBolt(from,to);light.intensity=seq%2?9:3;if(seq===1)thunder();if(flash){flash.style.opacity=seq%2?'0.9':'0.45';setTimeout(()=>{flash.style.opacity='0';},70);}setTimeout(flick,seq<3?95:170);}
+    else{clearBolt();light.intensity=0;scene.remove(light);setTimeout(()=>runSequence('troncal','transitoria'),220);}})();}
+function dropTree(){if(playing)return;if(treeObj)treeObj.rotation.x=0;treeFall={a:true,t:0,done:false};addLog("árbol","Árbol cayendo sobre la línea de distribución…","reclose");}
+function resetTree(){if(treeObj)treeObj.rotation.x=0;treeFall={a:false,t:0,done:false};}
+
+/* ===================== ETIQUETAS / LOOP ===================== */
+let labelsOn=true;
+function updateLabels(){labels.forEach(s=>s.visible=labelsOn||(selected&&s.userData.owner===selected));}
+updateLabels();
+function resize(){const w=wrap3d.clientWidth,h=wrap3d.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+window.addEventListener('resize',resize);resize();updateCam();
+let clock=0,lastT=performance.now();
+(function loop(now){requestAnimationFrame(loop);now=now||performance.now();const dt=Math.min(.05,(now-lastT)/1000);lastT=now;clock+=0.006;
+  if(fp)fpUpdate(dt);
+  if(treeFall.a&&treeObj){treeFall.t=Math.min(1,treeFall.t+dt*1.15);const e=treeFall.t*treeFall.t*(3-2*treeFall.t);treeObj.rotation.x=-1.45*e;if(treeFall.t>=1&&!treeFall.done){treeFall.done=true;treeFall.a=false;addLog("árbol","Árbol sobre el conductor: falla permanente.","trip");if(!playing)runSequence('troncal','permanente');}}
+  CONDS.forEach(cd=>{if(!cd.pulses.length)return;cd.pulses.forEach(p=>{if(!p.visible)return;let t=(clock+p.userData.off)%1;if(cd.rev)t=1-t;const v=sampleP(cd.pts,t);p.position.copy(v);});});
+  renderer.render(scene,camera);
+})();
+
+/* ===================== UI ===================== */
+const modeExplore=document.getElementById('modeExplore'),modeManiobra=document.getElementById('modeManiobra'),modeHint=document.getElementById('modeHint');
+function setMode(m){mode=m;modeExplore.setAttribute('aria-pressed',m==="explore");modeManiobra.setAttribute('aria-pressed',m==="maniobra");
+  modeHint.textContent=m==="explore"?"Modo Explorar: clic en un componente para ver su ficha.":"Modo Maniobrar: clic en un dispositivo (reconectador, seccionalizador, cortacircuitos, cabecera) para abrirlo/cerrarlo.";fpHudUpdate();}
+modeExplore.addEventListener('click',()=>setMode("explore"));
+modeManiobra.addEventListener('click',()=>setMode("maniobra"));
+document.getElementById('flowToggle').addEventListener('click',e=>{flowOn=!flowOn;e.currentTarget.setAttribute('aria-pressed',flowOn);refresh();fpHudUpdate();});
+document.getElementById('fRun').addEventListener('click',()=>runSequence(document.getElementById('fScenario').value,document.getElementById('fType').value));
+document.getElementById('btnReset').addEventListener('click',resetAll);
+document.getElementById('btnLabels').addEventListener('click',e=>{labelsOn=!labelsOn;e.currentTarget.setAttribute('aria-pressed',labelsOn);updateLabels();});
+document.getElementById('btnRecenter').addEventListener('click',recenter);
+function setView(v){if(fp)return;const B=document.getElementById('btnV3d'),P=document.getElementById('btnPlanta'),F=document.getElementById('btnPerfil');[B,P,F].forEach(b=>b&&b.setAttribute('aria-pressed','false'));
+  if(v==='planta'){target=new THREE.Vector3(-6,0,-3);theta=0;phi=0.055;radius=104;P&&P.setAttribute('aria-pressed','true');}
+  else if(v==='perfil'){target=new THREE.Vector3(-6,7,0);theta=0;phi=Math.PI/2-0.045;radius=96;F&&F.setAttribute('aria-pressed','true');}
+  else{target=TGT0.clone();theta=Math.atan2(CAM0.x-TGT0.x,CAM0.z-TGT0.z);phi=Math.acos((CAM0.y-TGT0.y)/CAM0.distanceTo(TGT0));radius=CAM0.distanceTo(TGT0);B&&B.setAttribute('aria-pressed','true');}
+  updateCam();}
+document.getElementById('btnV3d').addEventListener('click',()=>setView('3d'));
+document.getElementById('btnPlanta').addEventListener('click',()=>setView('planta'));
+document.getElementById('btnPerfil').addEventListener('click',()=>setView('perfil'));
+document.getElementById('btnBolt').addEventListener('click',lightningStrike);
+document.getElementById('btnTree').addEventListener('click',dropTree);
+document.getElementById('sheetClose').addEventListener('click',()=>document.getElementById('aside').classList.remove('open'));
+
+/* ===================== INICIO ===================== */
+refresh();
+addLog("init","Sistema en condición normal. Flujo de corriente desde la subestación hacia las cargas.","restore");
+setStatus("sistema en condición normal",false);
+selectComponent('reconectador');
+<\/script>
+</body>
+</html>
+</script>
+<script type="text/html" id="doc-planta"><!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vista en planta · Convenciones · Red de Distribución</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0b0f13;--paper:#f4f1e6;--paper-ink:#1b2129;--grid:#e3ddca;--line:#2a333e;
+    --mt:#c9302c;--sub:#8a5a2a;--bt:#1f7fa0;--der:#6b4fd0;--road:#c9c3b2;--walk:#ded8c6;--pvc:#9a9d92;--bldg:#dfe0d6;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'IBM Plex Mono',monospace;background:var(--ink);color:#E7ECF1;overflow:hidden}
+  .app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+  header{display:flex;align-items:center;gap:12px;padding:9px 16px;background:#0f151b;border-bottom:1px solid var(--line);flex:0 0 auto}
+  h1{font-family:'Space Grotesk';font-size:14.5px;font-weight:600}
+  .sub{font-size:10.5px;color:#9AA6B2}
+  .stage{flex:1 1 auto;min-height:0;background:var(--paper)}
+  #svg{display:block;width:100%;height:100%}
+  text{font-family:'IBM Plex Mono',monospace}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div>
+      <h1>Vista en planta · <span style="color:#c9302c">convenciones</span></h1>
+      <div class="sub">Plano cenital esquemático de la red · símbolos IEEE/ANSI · 4100730 · UNAL</div>
+    </div>
+  </header>
+  <div class="stage"><svg id="svg" viewBox="0 0 1330 650" preserveAspectRatio="xMidYMid meet"></svg></div>
+</div>
+<script>
+const NS="http://www.w3.org/2000/svg",svg=document.getElementById('svg');
+const C="#1b2129";
+function el(t,a){const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);return n;}
+function add(t,a){const n=el(t,a);svg.appendChild(n);return n;}
+// mapeo coordenadas físicas (X a lo largo de la línea, Z profundidad) -> plano
+const S=13, OX=49, OZ=23;
+function P(x,z){return [(x+OX)*S,(z+OZ)*S];}
+function line(x1,z1,x2,z2,attr){const[a,b]=P(x1,z1),[c,d]=P(x2,z2);return add('line',Object.assign({x1:a,y1:b,x2:c,y2:d},attr));}
+function rectZ(x,z,wx,wz,attr){const[a,b]=P(x-wx/2,z-wz/2);return add('rect',Object.assign({x:a,y:b,width:wx*S,height:wz*S},attr));}
+function txt(x,z,s,dx,dy,anchor,size){const[a,b]=P(x,z);const t=add('text',{x:a+(dx||0),y:b+(dy||0),'text-anchor':anchor||'middle','font-size':size||10,fill:'#4a4636'});t.textContent=s;return t;}
+
+/* fondo cuadriculado */
+(function(){const g=el('g',{});for(let i=0;i<=1330;i+=S)g.appendChild(el('line',{x1:i,y1:0,x2:i,y2:650,stroke:'#e3ddca','stroke-width':.5,opacity:.6}));for(let j=0;j<=650;j+=S)g.appendChild(el('line',{x1:0,y1:j,x2:1330,y2:j,stroke:'#e3ddca','stroke-width':.5,opacity:.6}));svg.appendChild(g);})();
+
+/* ---- Capa vial ---- */
+// calzadas (bandas grises) y andenes
+rectZ(-5,-6,86,5,{fill:'var(--road)',opacity:.85});                 // avenida principal (bajo ella va el cable MT)
+rectZ(-8,-16,28,4,{fill:'var(--road)',opacity:.85});                // calle secundaria
+rectZ(2,-11,4,12,{fill:'var(--road)',opacity:.85});                 // conector
+rectZ(-5,-2.6,86,2.2,{fill:'var(--walk)',opacity:.9});              // andén de la línea
+rectZ(-4,-13.6,34,2.6,{fill:'var(--walk)',opacity:.9});             // andén manzana subterránea
+// líneas centrales segmentadas
+line(-48,-6,38,-6,{stroke:'#d9c96a','stroke-width':1.4,'stroke-dasharray':'8 8',opacity:.8});
+line(-22,-16,6,-16,{stroke:'#d9c96a','stroke-width':1.4,'stroke-dasharray':'8 8',opacity:.8});
+
+/* ---- Edificaciones (huellas) ---- */
+function bldg(x,z,wx,wz,label){rectZ(x,z,wx,wz,{fill:'var(--bldg)',stroke:C,'stroke-width':1.2,opacity:.95});const t=txt(x,z,label,0,3,'middle',9);}
+bldg(-38,-2,12,10.5,'Subestación');
+bldg(-33.5,1,5,4,'Cuarto téc.');
+bldg(24,8,6,5,'Casa 1');
+bldg(-6,8,6,5,'Casa 2');
+bldg(12,-16,7.5,6,'Edificio adm.');
+bldg(28,13,7,3,'Solar FV');
+bldg(31.5,13,1.6,2.4,'Bat.');
+
+/* ---- Conductores ---- */
+// troncal aéreo MT (sobre postes, z=0)
+line(-36,0,2,0,{stroke:'var(--mt)','stroke-width':3.4,'stroke-linecap':'round'});
+line(-38,-2,-36,0,{stroke:'var(--mt)','stroke-width':2});           // salida S/E a cabecera (cuarto técnico)
+line(-33.5,1,-30,0,{stroke:'var(--mt)','stroke-width':2,'stroke-dasharray':'2 2'}); // tubería 4"+bajante celda 52 -> poste
+// banco de 4 tubos PVC (subterráneo) + cable XLPE
+function ductbank(x1,z1,x2,z2){for(let k=-1.5;k<=1.5;k+=1){const off=k*0.18;line(x1+ (z1===z2?0:off),z1+(z1===z2?off:0),x2+(z1===z2?0:off),z2+(z1===z2?off:0),{stroke:'var(--pvc)','stroke-width':1.6});}}
+ductbank(-18,-1,-18,-2.6);ductbank(-18,-2.6,-18,-13.6);ductbank(-18,-13.6,2,-16);
+line(-18,-1,-18,-2.6,{stroke:'var(--sub)','stroke-width':2,'stroke-dasharray':'5 3'});
+line(-18,-2.6,-18,-13.6,{stroke:'var(--sub)','stroke-width':2,'stroke-dasharray':'5 3'});
+line(-18,-13.6,2,-16,{stroke:'var(--sub)','stroke-width':2,'stroke-dasharray':'5 3'});
+// acometidas BT
+line(2,0.9,24,8,{stroke:'var(--bt)','stroke-width':2});             // trafo 1 -> casa 1
+line(-6,0.9,-6,8,{stroke:'var(--bt)','stroke-width':2});           // trafo 2 -> casa 2
+line(2,-16,12,-16,{stroke:'var(--bt)','stroke-width':2});          // padmount -> edificio
+line(24,8,28,13,{stroke:'var(--der)','stroke-width':2,'stroke-dasharray':'6 4'}); // DER
+
+/* ---- Símbolos IEEE/ANSI ---- */
+function sym(id,x,z,dim){const[cx,cy]=P(x,z);const g=add('g',{transform:`translate(${cx},${cy})`});const a=(t,at)=>g.appendChild(el(t,at));
+  switch(id){
+    case'breaker':a('rect',{x:-8,y:-8,width:16,height:16,fill:'#F4F1E6',stroke:C,'stroke-width':2});break;
+    case'reconectador':a('rect',{x:-9,y:-9,width:18,height:18,fill:'#F4F1E6',stroke:C,'stroke-width':2});{const t=el('text',{x:0,y:4,'text-anchor':'middle','font-size':11,'font-weight':600,fill:C});t.textContent='R';g.appendChild(t);}break;
+    case'seccionalizador':a('line',{x1:0,y1:10,x2:0,y2:3,stroke:C,'stroke-width':2});a('circle',{cx:0,cy:3,r:1.6,fill:C});a('line',{x1:0,y1:3,x2:8,y2:-7,stroke:C,'stroke-width':2});a('circle',{cx:0,cy:-8,r:1.6,fill:C});a('line',{x1:0,y1:-8,x2:0,y2:-11,stroke:C,'stroke-width':2});break;
+    case'fusible':a('rect',{x:-4,y:-10,width:8,height:20,fill:'#F4F1E6',stroke:C,'stroke-width':2});a('line',{x1:0,y1:-10,x2:0,y2:10,stroke:C,'stroke-width':1.3});break;
+    case'dps':a('rect',{x:-6,y:-8,width:12,height:14,fill:'#F4F1E6',stroke:C,'stroke-width':1.7});a('line',{x1:-3,y1:4,x2:4,y2:-4,stroke:C,'stroke-width':1.5});a('line',{x1:0,y1:6,x2:0,y2:10,stroke:C,'stroke-width':1.3});break;
+    case'trafo':a('circle',{cx:0,cy:-4,r:7,fill:'none',stroke:C,'stroke-width':1.6});a('circle',{cx:0,cy:4,r:7,fill:'none',stroke:C,'stroke-width':1.6});break;
+    case'medidor':a('circle',{cx:0,cy:0,r:8,fill:'#F4F1E6',stroke:C,'stroke-width':1.8});{const t=el('text',{x:0,y:4,'text-anchor':'middle','font-size':10,'font-weight':600,fill:C});t.textContent='M';g.appendChild(t);}break;
+    case'camara':a('rect',{x:-9,y:-9,width:18,height:18,fill:'#F4F1E6',stroke:C,'stroke-width':1.6});a('circle',{cx:0,cy:0,r:5,fill:'none',stroke:C,'stroke-width':1.3});break;
+    case'poste':a('circle',{cx:0,cy:0,r:3,fill:C});break;
+    case'tierra':a('line',{x1:0,y1:-8,x2:0,y2:0,stroke:C,'stroke-width':1.6});a('line',{x1:-8,y1:0,x2:8,y2:0,stroke:C,'stroke-width':2});a('line',{x1:-5,y1:3,x2:5,y2:3,stroke:C,'stroke-width':1.6});a('line',{x1:-2,y1:6,x2:2,y2:6,stroke:C,'stroke-width':1.6});break;
+    case'se':a('rect',{x:-10,y:-9,width:20,height:18,fill:'none',stroke:C,'stroke-width':1.6});a('circle',{cx:0,cy:-3,r:4,fill:'none',stroke:C,'stroke-width':1.2});a('circle',{cx:0,cy:3,r:4,fill:'none',stroke:C,'stroke-width':1.2});break;
+  }
+  return g;
+}
+// postes
+[-30,-24,-18,-12,-6,2].forEach(x=>sym('poste',x,0));
+// dispositivos
+sym('breaker',-33.5,1);txt(-33.5,1,'52',12,-8,'start',9);
+sym('reconectador',-24,0);txt(-24,0,'Recon.',0,-13,'middle',9);
+sym('dps',-18,0.95);txt(-18,0.95,'DPS',12,0,'start',9);
+sym('seccionalizador',-18,-1.0);txt(-18,-1.0,'Secc.',10,10,'start',9);
+sym('fusible',2,1.1);txt(2,1.1,'Fusible',10,-6,'start',9);
+sym('trafo',2,0.9);txt(2,0.9,'T',12,10,'start',9);
+sym('fusible',-6,1.1);txt(-6,1.1,'Fusible',10,-6,'start',9);
+sym('trafo',-6,0.9);txt(-6,0.9,'T2',12,10,'start',9);
+sym('tierra',-40,-2);
+sym('camara',-18,-2.6);txt(-18,-2.6,'Cámara 1',13,3,'start',9);
+sym('camara',-18,-13.6);txt(-18,-13.6,'Cámara 2',13,3,'start',9);
+sym('trafo',2,-16);txt(2,-16,'Padmount',11,3,'start',9);
+sym('medidor',21.4,10.3);sym('medidor',-8.6,10.3);
+
+/* ---- Norte + escala ---- */
+(function(){const g=add('g',{transform:'translate(60,560)'});
+  g.appendChild(el('line',{x1:0,y1:0,x2:0,y2:-34,stroke:C,'stroke-width':2}));
+  g.appendChild(el('path',{d:'M0,-34 L-5,-24 L5,-24 Z',fill:C}));
+  const t=el('text',{x:0,y:14,'text-anchor':'middle','font-size':11,'font-weight':600,fill:C});t.textContent='N';g.appendChild(t);
+})();
+(function(){const g=add('g',{transform:'translate(120,560)'});const len=10*S; // 10 m aprox
+  g.appendChild(el('line',{x1:0,y1:0,x2:len,y2:0,stroke:C,'stroke-width':2}));
+  g.appendChild(el('line',{x1:0,y1:-4,x2:0,y2:4,stroke:C,'stroke-width':2}));
+  g.appendChild(el('line',{x1:len,y1:-4,x2:len,y2:4,stroke:C,'stroke-width':2}));
+  const t=el('text',{x:len/2,y:16,'text-anchor':'middle','font-size':10,fill:'#4a4636'});t.textContent='escala relativa ~10 u';g.appendChild(t);
+})();
+
+/* ---- Recuadro de convenciones ---- */
+(function(){
+  const bx=1148,by=40,bw=176,rh=24;
+  const rows=[
+    ['ln-mt','Línea aérea MT'],['ln-sub','Red subterránea MT'],['ln-bt','Acometida BT'],['ln-der','Generación distribuida'],
+    ['duct','Banco 4 tubos PVC 4"'],['se','Subestación'],['breaker','Celda 52 (interruptor)'],['reconectador','Reconectador'],
+    ['seccionalizador','Seccionalizador'],['fusible','Cortacircuitos fusible'],['dps','Pararrayos (DPS)'],['trafo','Transformador'],
+    ['medidor','Medidor'],['camara','Cámara de paso'],['tierra','Puesta a tierra'],['road','Calzada / andén'],['bldg','Edificación']
+  ];
+  const g=add('g',{});
+  g.appendChild(el('rect',{x:bx,y:by,width:bw,height:32+rows.length*rh,fill:'#efeadd',stroke:'#4a4636','stroke-width':1.2,rx:5}));
+  const t=el('text',{x:bx+10,y:by+18,'font-size':10,'font-weight':700,fill:'#2b2a22'});t.textContent='CONVENCIONES · IEEE/ANSI';g.appendChild(t);
+  g.appendChild(el('line',{x1:bx+8,y1:by+24,x2:bx+bw-8,y2:by+24,stroke:'#c9c3ad','stroke-width':1}));
+  rows.forEach((r,i)=>{const ry=by+36+i*rh,sx=bx+20;const gg=el('g',{});g.appendChild(gg);
+    const put=(t,at)=>gg.appendChild(el(t,at));
+    if(r[0]==='ln-mt')put('line',{x1:sx-10,y1:ry,x2:sx+10,y2:ry,stroke:'#c9302c','stroke-width':3.2});
+    else if(r[0]==='ln-sub')put('line',{x1:sx-10,y1:ry,x2:sx+10,y2:ry,stroke:'#8a5a2a','stroke-width':2.4,'stroke-dasharray':'5 3'});
+    else if(r[0]==='ln-bt')put('line',{x1:sx-10,y1:ry,x2:sx+10,y2:ry,stroke:'#1f7fa0','stroke-width':2.4});
+    else if(r[0]==='ln-der')put('line',{x1:sx-10,y1:ry,x2:sx+10,y2:ry,stroke:'#6b4fd0','stroke-width':2.4,'stroke-dasharray':'6 4'});
+    else if(r[0]==='duct'){for(let k=-1;k<=1;k++)put('line',{x1:sx-10,y1:ry+k*2.2,x2:sx+10,y2:ry+k*2.2,stroke:'#9a9d92','stroke-width':1.4});}
+    else if(r[0]==='road'){put('rect',{x:sx-11,y:ry-5,width:22,height:6,fill:'#c9c3b2'});put('rect',{x:sx-11,y:ry+1,width:22,height:3,fill:'#ded8c6'});}
+    else if(r[0]==='bldg')put('rect',{x:sx-9,y:ry-6,width:18,height:12,fill:'#dfe0d6',stroke:C,'stroke-width':1});
+    else {const wrap=el('g',{transform:`translate(${sx},${ry}) scale(0.72)`});wrap.appendChild(sym2(r[0]));gg.appendChild(wrap);}
+    const tx=el('text',{x:bx+42,y:ry+4,'font-size':9,fill:'#3a382c'});tx.textContent=r[1];gg.appendChild(tx);
+  });
+})();
+// símbolo aislado para la leyenda (mismo trazo que sym pero sin mapear)
+function sym2(id){const g=el('g',{});const a=(t,at)=>g.appendChild(el(t,at));
+  switch(id){
+    case'breaker':a('rect',{x:-8,y:-8,width:16,height:16,fill:'#F4F1E6',stroke:C,'stroke-width':2});break;
+    case'reconectador':a('rect',{x:-9,y:-9,width:18,height:18,fill:'#F4F1E6',stroke:C,'stroke-width':2});{const t=el('text',{x:0,y:4,'text-anchor':'middle','font-size':11,'font-weight':600,fill:C});t.textContent='R';g.appendChild(t);}break;
+    case'seccionalizador':a('line',{x1:0,y1:10,x2:0,y2:3,stroke:C,'stroke-width':2});a('circle',{cx:0,cy:3,r:1.6,fill:C});a('line',{x1:0,y1:3,x2:8,y2:-7,stroke:C,'stroke-width':2});a('circle',{cx:0,cy:-8,r:1.6,fill:C});a('line',{x1:0,y1:-8,x2:0,y2:-11,stroke:C,'stroke-width':2});break;
+    case'fusible':a('rect',{x:-4,y:-10,width:8,height:20,fill:'#F4F1E6',stroke:C,'stroke-width':2});a('line',{x1:0,y1:-10,x2:0,y2:10,stroke:C,'stroke-width':1.3});break;
+    case'dps':a('rect',{x:-6,y:-8,width:12,height:14,fill:'#F4F1E6',stroke:C,'stroke-width':1.7});a('line',{x1:-3,y1:4,x2:4,y2:-4,stroke:C,'stroke-width':1.5});a('line',{x1:0,y1:6,x2:0,y2:10,stroke:C,'stroke-width':1.3});break;
+    case'trafo':a('circle',{cx:0,cy:-4,r:7,fill:'none',stroke:C,'stroke-width':1.6});a('circle',{cx:0,cy:4,r:7,fill:'none',stroke:C,'stroke-width':1.6});break;
+    case'medidor':a('circle',{cx:0,cy:0,r:8,fill:'#F4F1E6',stroke:C,'stroke-width':1.8});{const t=el('text',{x:0,y:4,'text-anchor':'middle','font-size':10,'font-weight':600,fill:C});t.textContent='M';g.appendChild(t);}break;
+    case'camara':a('rect',{x:-9,y:-9,width:18,height:18,fill:'#F4F1E6',stroke:C,'stroke-width':1.6});a('circle',{cx:0,cy:0,r:5,fill:'none',stroke:C,'stroke-width':1.3});break;
+    case'tierra':a('line',{x1:0,y1:-8,x2:0,y2:0,stroke:C,'stroke-width':1.6});a('line',{x1:-8,y1:0,x2:8,y2:0,stroke:C,'stroke-width':2});a('line',{x1:-5,y1:3,x2:5,y2:3,stroke:C,'stroke-width':1.6});a('line',{x1:-2,y1:6,x2:2,y2:6,stroke:C,'stroke-width':1.6});break;
+    case'se':a('rect',{x:-10,y:-9,width:20,height:18,fill:'none',stroke:C,'stroke-width':1.6});a('circle',{cx:0,cy:-3,r:4,fill:'none',stroke:C,'stroke-width':1.2});a('circle',{cx:0,cy:3,r:4,fill:'none',stroke:C,'stroke-width':1.2});break;
+  }
+  return g;
+}
+<\/script>
+</body>
+</html>
+</script>
+<script type="text/html" id="doc-smart"><!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Grid · Autorreparación · Distribución</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0b0f13; --panel:#12181e; --line:#2a333e; --line2:#39434f;
+    --text:#E7ECF1; --dim:#9AA6B2; --mut:#6C7885;
+    --paper:#e9e4d6; --paper-ink:#1b2129; --paper-grid:#d8d2c0;
+    --f1:#b3a0dd; --f2:#39cdea; --f3:#c3d24a; --f4:#6f61ad; --f5:#efd93f;
+    --dead:#c4bea9; --closed:#d63b32; --open:#2fae54; --fault:#f2c400; --ok:#3BB273; --amber:#F2A63B;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--ink);color:var(--text);overflow:hidden;-webkit-font-smoothing:antialiased}
+  .app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+  header{display:flex;align-items:center;gap:14px;padding:9px 16px;background:linear-gradient(180deg,#0f151b,#0b1015);border-bottom:1px solid var(--line);flex:0 0 auto}
+  .brand h1{font-family:'Space Grotesk';font-size:15px;font-weight:600}
+  .brand .sub{font-size:10.5px;color:var(--dim)}
+  .brand .accent{color:var(--f2)}
+  .badge{margin-left:auto;font-family:'IBM Plex Mono';font-size:11px;color:var(--text);background:var(--panel);border:1px solid var(--line2);border-radius:8px;padding:6px 12px}
+  .badge b{color:var(--amber)}
+
+  .toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:7px 16px;background:#0e141a;border-bottom:1px solid var(--line);flex:0 0 auto;font-family:'IBM Plex Mono';font-size:11px}
+  .seg{display:flex;border:1px solid var(--line2);border-radius:7px;overflow:hidden}
+  .seg button{background:transparent;color:var(--dim);border:0;padding:5px 11px;font:inherit;cursor:pointer}
+  .seg button[aria-pressed="true"]{background:#25313d;color:#fff}
+  .tb-btn{background:var(--panel);color:var(--text);border:1px solid var(--line2);border-radius:6px;padding:6px 11px;font:inherit;cursor:pointer}
+  .tb-btn:hover{border-color:var(--amber)}
+  .tb-btn.old{border-color:var(--closed)}
+  .tb-btn.smart{border-color:var(--open)}
+  .tb-btn.primary:disabled{opacity:.45;cursor:default}
+  .hint{color:var(--mut);margin-left:auto;font-size:10px}
+
+  .stage{flex:1 1 auto;min-height:0;position:relative;background:var(--ink);display:flex}
+  .diagram{flex:1 1 auto;min-width:0;background:var(--paper);position:relative}
+  #svg{display:block;width:100%;height:100%}
+  .sw{cursor:pointer}
+  .tr{cursor:pointer}
+  .flash{position:absolute;inset:0;background:#fff;opacity:0;transition:opacity .12s;pointer-events:none}
+
+  aside{flex:0 0 300px;background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+  .console-hd{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--line);font-family:'IBM Plex Mono';font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mut)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+  .dot.busy{background:var(--amber);animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.35}}
+  .counters{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+  .cbig{font-family:'Space Grotesk';font-size:15px}
+  .cbig .n{font-family:'IBM Plex Mono';font-weight:600}
+  .cbig .out{color:var(--closed)}
+  .cbig .res{color:var(--ok)}
+  .bar{height:9px;border-radius:5px;background:#243039;overflow:hidden}
+  .bar > i{display:block;height:100%;background:var(--closed);width:0;transition:width .4s}
+  .log{flex:1 1 auto;overflow-y:auto;padding:8px 14px;font-family:'IBM Plex Mono';font-size:11px;line-height:1.55}
+  .log .ln{display:flex;gap:9px;padding:2px 0}
+  .log .t{color:var(--mut);flex:0 0 74px}
+  .log .m{color:var(--dim)}
+  .log .ln.trip .m{color:var(--closed)}
+  .log .ln.iso .m{color:var(--amber)}
+  .log .ln.restore .m{color:var(--ok)}
+  .log .ln.head .m{color:var(--text);font-weight:600}
+
+  footer{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:7px 16px;background:#0d1319;border-top:1px solid var(--line);font-size:11px;color:var(--dim)}
+  .leg{display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono';font-size:10px}
+  .sw-s{width:14px;height:5px;border-radius:2px}
+  .foot-note{margin-left:auto;color:var(--mut);font-size:10px}
+  @media (max-width:940px){aside{flex-basis:240px}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+  :focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <h1>Smart Grid · <span class="accent">Autorreparación (FLISR)</span></h1>
+      <div class="sub">Distribución · reconfiguración ante falla · reproducción del esquema S&amp;C · <b style="color:#F2A63B">rayo + carro canasta (v2)</b></div>
+    </div>
+    <div class="badge">Alimentadores <b>1–5</b> · enlaces de transferencia normalmente abiertos</div>
+  </header>
+
+  <div class="toolbar">
+    <div class="seg" role="group" aria-label="Modo">
+      <button id="modeAuto" aria-pressed="true">Automático</button>
+      <button id="modeManual" aria-pressed="false">Maniobrar</button>
+    </div>
+    <span style="width:1px;height:20px;background:var(--line)"></span>
+    <button class="tb-btn old primary" id="btnOld">⚡ Falla · Red antigua</button>
+    <button class="tb-btn smart primary" id="btnSmart">⚡ Falla · Red inteligente</button>
+    <button class="tb-btn" id="btnReset">↺ Reiniciar</button>
+    <span class="hint" id="hint">Automático: pulsa un escenario. Maniobrar: clic en un interruptor para abrir/cerrar; clic en un transformador funde su fusible.</span>
+  </div>
+
+  <div class="stage">
+    <div class="diagram" id="diagram">
+      <svg id="svg" viewBox="0 0 1260 900" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="flash" id="flash"></div>
+    </div>
+    <aside>
+      <div class="console-hd"><span class="dot" id="stDot"></span>Consola · <span id="stText" style="text-transform:none;letter-spacing:0;color:var(--dim)">red en condición normal</span></div>
+      <div class="counters">
+        <div class="cbig">Clientes sin servicio: <span class="n out" id="cOut">0</span> / <span class="n" id="cTot">2000</span></div>
+        <div class="bar"><i id="cBar"></i></div>
+        <div class="cbig" style="font-size:12px">Restablecidos por reconfiguración: <span class="n res" id="cRes">0</span></div>
+      </div>
+      <div class="log" id="log"></div>
+    </aside>
+  </div>
+
+  <footer>
+    <span class="leg"><span class="sw-s" style="background:var(--closed)"></span>Seccionador cerrado</span>
+    <span class="leg"><span class="sw-s" style="background:var(--open);transform:rotate(-25deg)"></span>Enlace abierto</span>
+    <span class="leg"><span class="sw-s" style="background:var(--dead)"></span>Sin tensión</span>
+    <span class="leg"><span class="sw-s" style="background:var(--fault)"></span>Falla</span>
+    <span class="foot-note">Simulación cualitativa. Secuencia de autorreparación fiel al esquema S&amp;C de las imágenes; la del video puede variar.</span>
+  </footer>
+</div>
+
+<script>
+/* ===================== DATOS ===================== */
+const FCOL={1:'#b3a0dd',2:'#39cdea',3:'#c3d24a',4:'#6f61ad',5:'#efd93f',dead:'#c4bea9'};
+// nodos [x,y]
+const N={
+  src1:[150,90],t25:[250,90],t1:[430,90],j1:[490,90],t26:[690,90],src3:[790,90],
+  t12:[250,235],t2:[430,235],j2:[490,235],t14:[660,235],j2b:[740,235],n56:[880,235],t27:[1030,235],j4top:[1090,235],src4:[1170,235],
+  t3:[250,380],t18:[430,380],jcu:[490,380],
+  jll:[590,380],j3:[740,380],t5:[830,380],t17n:[590,455],
+  src2:[110,520],n2a:[180,520],n2b:[250,520],t10:[340,520],t9:[510,520],n20:[560,520],t20:[730,520],n17:[800,520],t6:[940,520],jf4:[1090,520],
+  t13:[1090,345],n58:[1090,450],
+  n35:[250,615],yA:[250,810],
+  j5by:[560,810],t11:[350,810],t23:[500,810],t8:[720,810],t29:[900,810],src5:[980,810]
+};
+// líneas (siempre conducen)
+const LINES=[
+  ['src1','t25'],['t1','j1'],['t26','src3'],
+  ['t2','j2'],['t14','j2b'],['t27','j4top'],['j4top','src4'],
+  ['t18','jcu'],
+  ['j3','t5'],['jll','t17n'],
+  ['src2','n2a'],['n2b','t10'],['t9','n20'],['t20','n17'],['t6','jf4'],
+  ['j4top','t13'],['n58','jf4'],
+  ['yA','t11'],['t23','j5by'],['t29','src5']
+];
+// interruptores {id,a,b,tie,open}
+const SW=[
+  {id:'SW51',a:'t25',b:'t1'},{id:'SW52',a:'j1',b:'t26',tie:1},
+  {id:'SW23',a:'j1',b:'j2'},
+  {id:'SW54',a:'t12',b:'t2'},{id:'SW55',a:'j2',b:'t14'},
+  {id:'SW56',a:'j2b',b:'n56',tie:1},{id:'SW57',a:'n56',b:'t27'},
+  {id:'SW18',a:'j2b',b:'j3'},{id:'SW1',a:'jll',b:'j3'},{id:'SW2',a:'jcu',b:'jll',tie:1},
+  {id:'SW3',a:'t3',b:'t18'},{id:'SW6',a:'t3',b:'n2b'},
+  {id:'SW33',a:'n2a',b:'n2b'},{id:'SW24',a:'t10',b:'t9'},{id:'SW20',a:'n20',b:'t20'},
+  {id:'SW17',a:'n17',b:'t6',tie:1},{id:'SW58',a:'t13',b:'n58'},
+  {id:'SW35',a:'n2b',b:'n35'},{id:'SW36',a:'n35',b:'yA',tie:1},{id:'SW39',a:'n20',b:'j5by',tie:1},
+  {id:'SW37',a:'t11',b:'t23'},{id:'SW38',a:'j5by',b:'t8'},{id:'SW40',a:'t8',b:'t29'}
+];
+SW.forEach(s=>{s.open=!!s.tie;});   // enlaces abiertos; seccionadores cerrados
+// transformadores con fusible {id,node,dir,cust}
+const TR=[
+  {id:'T25',node:'t25',dir:'u',cust:80},{id:'T1',node:'t1',dir:'d',cust:80},{id:'T26',node:'t26',dir:'d',cust:60},
+  {id:'T12',node:'t12',dir:'d',cust:80},{id:'T2',node:'t2',dir:'d',cust:90},{id:'T14',node:'t14',dir:'d',cust:90},{id:'T27',node:'t27',dir:'d',cust:60},
+  {id:'T3',node:'t3',dir:'l',cust:250},{id:'T18',node:'t18',dir:'d',cust:250},
+  {id:'T5',node:'t5',dir:'d',cust:90},{id:'T17',node:'t17n',dir:'d',cust:80},
+  {id:'T10',node:'t10',dir:'d',cust:400},{id:'T9',node:'t9',dir:'d',cust:400},{id:'T20',node:'t20',dir:'d',cust:350},{id:'T6',node:'t6',dir:'d',cust:100},
+  {id:'T13',node:'t13',dir:'r',cust:80},{id:'T22',node:'n35',dir:'r',cust:250},
+  {id:'T11',node:'t11',dir:'d',cust:90},{id:'T23',node:'t23',dir:'d',cust:90},{id:'T8',node:'t8',dir:'d',cust:90},{id:'T29',node:'t29',dir:'d',cust:60}
+];
+TR.forEach(t=>t.blown=false);
+const SRC=[
+  {f:1,node:'src1',cur:'120 A',on:true},{f:2,node:'src2',cur:'240 A',on:true},
+  {f:3,node:'src3',cur:'0 A',on:true},{f:4,node:'src4',cur:'40 A',on:true},{f:5,node:'src5',cur:'60 A',on:true}
+];
+const FAULT={edge:null};   // {a,b} arista fallada
+
+/* ===================== SVG ===================== */
+const NS="http://www.w3.org/2000/svg", svg=document.getElementById('svg');
+function el(t,a){const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);return n;}
+function mid(a,b){return [(N[a][0]+N[b][0])/2,(N[a][1]+N[b][1])/2];}
+function horiz(a,b){return Math.abs(N[a][1]-N[b][1])<Math.abs(N[a][0]-N[b][0]);}
+
+// fondo
+(function(){const g=el('g',{});for(let x=0;x<=1260;x+=42)g.appendChild(el('line',{x1:x,y1:0,x2:x,y2:900,stroke:'#d8d2c0','stroke-width':.5,opacity:.5}));for(let y=0;y<=900;y+=42)g.appendChild(el('line',{x1:0,y1:y,x2:1260,y2:y,stroke:'#d8d2c0','stroke-width':.5,opacity:.5}));svg.appendChild(g);})();
+
+// líneas + interruptores: capa base (líneas), luego marcadores
+const EDGES=[];   // {a,b,kind,ref,el}
+LINES.forEach(([a,b])=>{const ln=el('line',{x1:N[a][0],y1:N[a][1],x2:N[b][0],y2:N[b][1],stroke:FCOL.dead,'stroke-width':5,'stroke-linecap':'round'});svg.appendChild(ln);EDGES.push({a,b,kind:'line',el:ln});});
+SW.forEach(s=>{const ln=el('line',{x1:N[s.a][0],y1:N[s.a][1],x2:N[s.b][0],y2:N[s.b][1],stroke:FCOL.dead,'stroke-width':5,'stroke-linecap':'round'});svg.appendChild(ln);s.line=ln;EDGES.push({a:s.a,b:s.b,kind:'sw',ref:s,el:ln});});
+
+// marcadores de interruptor
+SW.forEach(s=>{
+  const [mx,my]=mid(s.a,s.b),h=horiz(s.a,s.b);
+  const g=el('g',{class:'sw',tabindex:0,role:'button','aria-label':s.id});
+  const bar=h?el('rect',{x:mx-3,y:my-10,width:6,height:20,rx:1}):el('rect',{x:mx-10,y:my-3,width:20,height:6,rx:1});
+  bar.setAttribute('fill',FCOL.closed);g.appendChild(bar);s.bar=bar;
+  const blade=h?el('line',{x1:mx-9,y1:my,x2:mx+6,y2:my-13}):el('line',{x1:mx,y1:my-9,x2:mx+13,y2:my+6});
+  blade.setAttribute('stroke',FCOL.open);blade.setAttribute('stroke-width',4);blade.setAttribute('stroke-linecap','round');g.appendChild(blade);s.blade=blade;
+  g.appendChild(el('circle',{cx:h?mx-9:mx,cy:h?my:my-9,r:2.4,fill:'#333'}));
+  const lb=el('text',{x:mx+(h?0:14),y:my+(h?24:4),'text-anchor':h?'middle':'start','font-family':"'IBM Plex Mono'",'font-size':11,fill:'#4a4636'});lb.textContent=s.id;g.appendChild(lb);
+  const act=()=>{if(mode!=='manual'||playing)return;s.open=!s.open;render();log('maniobra',s.id+': '+(s.open?'ABIERTO':'CERRADO'),s.open?'trip':'restore');};
+  g.addEventListener('click',e=>{e.stopPropagation();act();});
+  g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act();}});
+  svg.appendChild(g);
+});
+
+// transformadores con fusible
+TR.forEach(t=>{
+  const [x,y]=N[t.node];const d=t.dir;const L=34;
+  const dx=d==='l'?-L:d==='r'?L:0, dy=d==='d'?L:d==='u'?-L:0;
+  const g=el('g',{class:'tr',tabindex:0,role:'button','aria-label':t.id});
+  const stub=el('line',{x1:x,y1:y,x2:x+dx,y2:y+dy,stroke:FCOL.dead,'stroke-width':3});g.appendChild(stub);t.stub=stub;
+  // fusible (rectángulo con línea) a mitad del stub
+  const fx=x+dx*0.42, fy=y+dy*0.42;
+  const fuse=(dx!==0)?el('rect',{x:fx-6,y:fy-4,width:12,height:8,rx:1}):el('rect',{x:fx-4,y:fy-6,width:8,height:12,rx:1});
+  fuse.setAttribute('fill','#F4F1E6');fuse.setAttribute('stroke','#1b2129');fuse.setAttribute('stroke-width',1.6);g.appendChild(fuse);t.fuse=fuse;
+  // transformador (dos círculos)
+  const cx=x+dx, cy=y+dy;
+  const c1=el('circle',{cx:cx-(dx?0:0),cy:cy-(dx?4:4),r:6,fill:'none',stroke:'#1b2129','stroke-width':1.5});
+  const c2=el('circle',{cx:cx,cy:cy+4,r:6,fill:'none',stroke:'#1b2129','stroke-width':1.5});g.appendChild(c1);g.appendChild(c2);
+  const lb=el('text',{x:cx+(d==='r'?12:d==='l'?-12:9),y:cy+12,'text-anchor':d==='l'?'end':'start','font-family':"'IBM Plex Mono'",'font-size':10,fill:'#4a4636'});lb.textContent=t.id;g.appendChild(lb);
+  const act=()=>{if(mode!=='manual'||playing)return;t.blown=!t.blown;render();log('fusible',t.id+': fusible '+(t.blown?'FUNDIDO':'repuesto'),t.blown?'trip':'restore');};
+  g.addEventListener('click',e=>{e.stopPropagation();act();});
+  g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act();}});
+  svg.appendChild(g);
+});
+
+// fuentes (alimentadores)
+SRC.forEach(s=>{
+  const [x,y]=N[s.node];const g=el('g',{});
+  g.appendChild(el('rect',{x:x-16,y:y-16,width:32,height:32,rx:5,fill:FCOL[s.f],stroke:'#1b2129','stroke-width':1.6}));
+  const t=el('text',{x:x,y:y+6,'text-anchor':'middle','font-family':"'Space Grotesk'",'font-size':17,'font-weight':700,fill:'#1b2129'});t.textContent=s.f;g.appendChild(t);
+  const c=el('text',{x:x,y:y+30,'text-anchor':'middle','font-family':"'IBM Plex Mono'",'font-size':10,fill:'#4a4636'});c.textContent=s.cur;g.appendChild(c);
+  svg.appendChild(g);
+});
+
+// bolt de falla
+const boltEl=el('path',{d:'M0,0 L-9,16 L-2,15 L-6,30 L11,10 L2,11 L8,0 Z',fill:FCOL.fault,stroke:'#7a5a00','stroke-width':1.2,opacity:0});
+svg.appendChild(boltEl);
+function showBolt(a,b){const [mx,my]=mid(a,b);boltEl.setAttribute('transform',`translate(${mx-2},${my-34})`);boltEl.setAttribute('opacity','1');}
+function hideBolt(){boltEl.setAttribute('opacity','0');}
+
+/* ===================== RAYO (destello + sonido) ===================== */
+let boltG=null,actx=null;
+function thunder(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const t=actx.currentTime,buf=actx.createBuffer(1,Math.floor(actx.sampleRate*1.2),actx.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2);const src=actx.createBufferSource();src.buffer=buf;const lp=actx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=360;const g=actx.createGain();g.gain.setValueAtTime(.8,t);g.gain.exponentialRampToValueAtTime(.001,t+1.2);src.connect(lp);lp.connect(g);g.connect(actx.destination);src.start();}catch(e){}}
+function makeBoltG(x){let d='M'+x+',18',cy=18;for(let i=1;i<=8;i++){cy=18+(494-18)*i/8;const cx=(x+(Math.random()-0.5)*46*(1-i/8)).toFixed(0);d+=' L'+cx+','+cy.toFixed(0);}const g=el('g',{});g.appendChild(el('path',{d,fill:'none',stroke:'#8fbcff','stroke-width':7,opacity:.5,'stroke-linecap':'round'}));g.appendChild(el('path',{d,fill:'none',stroke:'#eaf4ff','stroke-width':2.6,'stroke-linecap':'round'}));svg.appendChild(g);return g;}
+function clearBoltG(){if(boltG){boltG.remove();boltG=null;}}
+function lightningStrike(a,b){return new Promise(res=>{const [mx]=mid(a,b),fl=document.getElementById('flash');thunder();let n=0;(function tick(){n++;clearBoltG();if(n<=5){boltG=makeBoltG(mx);if(fl){fl.style.opacity=n%2?'0.9':'0.45';setTimeout(()=>{if(fl)fl.style.opacity='0';},70);}setTimeout(tick,95);}else{clearBoltG();showBolt(a,b);setTimeout(res,160);}})();});}
+
+/* ===================== CARRO CANASTA ===================== */
+const truck=el('g',{opacity:0});svg.appendChild(truck);
+let truckArm,truckBkt;
+(function buildTruck(){const a=(t,at)=>truck.appendChild(el(t,at));
+  a('rect',{x:0,y:-16,width:38,height:12,rx:2,fill:'#e0a53a',stroke:'#1b2129','stroke-width':1.4});
+  a('rect',{x:38,y:-24,width:16,height:20,rx:2,fill:'#d9d3c4',stroke:'#1b2129','stroke-width':1.4});
+  a('rect',{x:40,y:-22,width:12,height:8,rx:1,fill:'#8fb8cc',stroke:'#1b2129','stroke-width':1});
+  a('circle',{cx:9,cy:0,r:5,fill:'#2a2f34',stroke:'#1b2129','stroke-width':1.2});
+  a('circle',{cx:30,cy:0,r:5,fill:'#2a2f34',stroke:'#1b2129','stroke-width':1.2});
+  a('circle',{cx:46,cy:0,r:5,fill:'#2a2f34',stroke:'#1b2129','stroke-width':1.2});
+  a('rect',{x:12,y:-22,width:6,height:8,rx:1,fill:'#c58f2a',stroke:'#1b2129','stroke-width':1});
+  truckArm=a('line',{x1:15,y1:-20,x2:34,y2:-18,stroke:'#b5842a','stroke-width':4,'stroke-linecap':'round'});
+  truckBkt=a('rect',{x:28,y:-24,width:10,height:8,rx:1.5,fill:'#f0d64a',stroke:'#1b2129','stroke-width':1.4});
+})();
+const easeS=k=>k*k*(3-2*k);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function tween(dur,fn){return new Promise(res=>{const t0=performance.now();(function fr(now){const k=Math.min(1,(now-t0)/dur);fn(k);if(k<1)requestAnimationFrame(fr);else res();})(performance.now());});}
+const TRUCK_STOP=232;   // se detiene junto a la falla (punto ~295 sobre la línea y=520)
+function setTruck(tx,ext){truck.setAttribute('transform','translate('+tx+',560)');
+  const bx=(1-ext)*34+ext*(295-tx),by=(1-ext)*(-18)+ext*(-40);
+  if(truckArm){truckArm.setAttribute('x2',bx);truckArm.setAttribute('y2',by);}
+  if(truckBkt){truckBkt.setAttribute('x',bx-5);truckBkt.setAttribute('y',by-4);}
+}
+function hideTruck(){truck.setAttribute('opacity','0');setTruck(-120,0);}
+function spark(){const s=el('circle',{cx:295,cy:520,r:3,fill:'#fff2a8',opacity:1});svg.appendChild(s);let o=1;const iv=setInterval(()=>{o-=0.12;s.setAttribute('opacity',Math.max(0,o));s.setAttribute('r',3+(1-o)*8);if(o<=0){clearInterval(iv);s.remove();}},40);}
+async function dispatchTruck(onRepair){
+  truck.setAttribute('opacity','1');setTruck(-120,0);
+  await tween(1500,k=>setTruck(-120+(TRUCK_STOP+120)*easeS(k),0));
+  await tween(800,k=>setTruck(TRUCK_STOP,easeS(k)));
+  spark();if(onRepair)onRepair();render();
+  await sleep(800);
+  await tween(600,k=>setTruck(TRUCK_STOP,1-easeS(k)));
+  await tween(1500,k=>setTruck(TRUCK_STOP+(1400-TRUCK_STOP)*easeS(k),0));
+  truck.setAttribute('opacity','0');
+}
+
+/* ===================== RECUADRO DE CONVENCIONES ===================== */
+(function legend(){
+  const bx=1050,by=560,bw=196,rh=22,rows=[
+    ['src','Alimentador (fuente)'],['closed','Seccionador cerrado'],['open','Enlace / seccionador abierto'],
+    ['trf','Transformador con fusible'],['fault','Punto de falla'],['dead','Tramo sin tensión']
+  ];
+  const g=el('g',{});
+  g.appendChild(el('rect',{x:bx,y:by,width:bw,height:30+rows.length*rh,fill:'#efeadd',stroke:'#4a4636','stroke-width':1.2,rx:5}));
+  const t=el('text',{x:bx+10,y:by+18,'font-family':"'IBM Plex Mono'",'font-size':10,'font-weight':700,fill:'#2b2a22'});t.textContent='CONVENCIONES · IEEE/ANSI';g.appendChild(t);
+  g.appendChild(el('line',{x1:bx+8,y1:by+24,x2:bx+bw-8,y2:by+24,stroke:'#c9c3ad','stroke-width':1}));
+  rows.forEach((r,i)=>{const ry=by+36+i*rh,sx=bx+18;
+    if(r[0]==='src'){g.appendChild(el('rect',{x:sx-8,y:ry-8,width:16,height:16,rx:3,fill:FCOL[1],stroke:'#1b2129','stroke-width':1.4}));}
+    else if(r[0]==='closed'){g.appendChild(el('rect',{x:sx-3,y:ry-8,width:6,height:16,rx:1,fill:FCOL.closed}));}
+    else if(r[0]==='open'){g.appendChild(el('line',{x1:sx-8,y1:ry+3,x2:sx+6,y2:ry-9,stroke:FCOL.open,'stroke-width':3.5,'stroke-linecap':'round'}));}
+    else if(r[0]==='trf'){g.appendChild(el('rect',{x:sx-9,y:ry-3,width:8,height:6,fill:'#F4F1E6',stroke:'#1b2129','stroke-width':1.2}));g.appendChild(el('circle',{cx:sx+5,cy:ry-2,r:4,fill:'none',stroke:'#1b2129','stroke-width':1.3}));g.appendChild(el('circle',{cx:sx+5,cy:ry+3,r:4,fill:'none',stroke:'#1b2129','stroke-width':1.3}));}
+    else if(r[0]==='fault'){g.appendChild(el('path',{d:`M${sx},${ry-9} L${sx-5},${ry+1} L${sx-1},${ry} L${sx-4},${ry+9} L${sx+6},${ry-3} L${sx+1},${ry-2} L${sx+4},${ry-9} Z`,fill:FCOL.fault,stroke:'#7a5a00','stroke-width':1}));}
+    else{g.appendChild(el('line',{x1:sx-8,y1:ry,x2:sx+8,y2:ry,stroke:FCOL.dead,'stroke-width':4,'stroke-linecap':'round'}));}
+    const tx=el('text',{x:bx+40,y:ry+4,'font-family':"'IBM Plex Mono'",'font-size':9.5,fill:'#3a382c'});tx.textContent=r[1];g.appendChild(tx);
+  });
+  svg.appendChild(g);
+})();
+
+/* ===================== ENERGIZACIÓN ===================== */
+function energize(){
+  const adj={};
+  const add=(a,b)=>{(adj[a]=adj[a]||[]).push(b);(adj[b]=adj[b]||[]).push(a);};
+  EDGES.forEach(e=>{
+    if(FAULT.edge&&((FAULT.edge.a===e.a&&FAULT.edge.b===e.b)||(FAULT.edge.a===e.b&&FAULT.edge.b===e.a)))return;
+    const cond=e.kind==='line'||(e.kind==='sw'&&!e.ref.open);
+    if(cond)add(e.a,e.b);
+  });
+  const nf={};
+  SRC.forEach(s=>{ if(!s.on||nf[s.node])return; const q=[s.node];nf[s.node]=s.f;
+    while(q.length){const u=q.shift();(adj[u]||[]).forEach(v=>{if(!nf[v]){nf[v]=s.f;q.push(v);}});} });
+  return nf;
+}
+function render(){
+  const nf=energize();
+  EDGES.forEach(e=>{
+    const cond=e.kind==='line'||(e.kind==='sw'&&!e.ref.open);
+    const faulted=FAULT.edge&&((FAULT.edge.a===e.a&&FAULT.edge.b===e.b)||(FAULT.edge.a===e.b&&FAULT.edge.b===e.a));
+    let col=FCOL.dead;
+    if(cond&&!faulted){const f=nf[e.a]||nf[e.b];if(f)col=FCOL[f];}
+    e.el.setAttribute('stroke',col);
+  });
+  SW.forEach(s=>{s.bar.setAttribute('opacity',s.open?'0':'1');s.blade.setAttribute('opacity',s.open?'1':'0');});
+  TR.forEach(t=>{const live=!!nf[t.node]&&!t.blown;t.stub.setAttribute('stroke',live?FCOL[nf[t.node]]:FCOL.dead);t.fuse.setAttribute('fill',t.blown?FCOL.closed:'#F4F1E6');});
+  updateCounters(nf);
+}
+function updateCounters(nf){
+  let out=0,res=0;
+  TR.forEach(t=>{const live=!!nf[t.node]&&!t.blown;if(!live)out+=t.cust;else if(t.baseDead)res+=t.cust;});
+  document.getElementById('cOut').textContent=out;
+  document.getElementById('cRes').textContent=res;
+  document.getElementById('cBar').style.width=Math.min(100,out/2000*100)+'%';
+}
+
+/* ===================== SECUENCIAS ===================== */
+let mode='auto',playing=false,timer=null,runId=0;
+const logEl=document.getElementById('log'),stDot=document.getElementById('stDot'),stText=document.getElementById('stText');
+function log(t,m,cls){const d=document.createElement('div');d.className='ln'+(cls?' '+cls:'');d.innerHTML=`<span class="t">${t}</span><span class="m">${m}</span>`;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight;}
+function clearLog(){logEl.innerHTML='';}
+function status(txt,busy){stText.textContent=txt;stDot.classList.toggle('busy',!!busy);}
+function setControls(on){document.getElementById('btnOld').disabled=!on;document.getElementById('btnSmart').disabled=!on;}
+function markBaseDead(){const off={...SRC.find(s=>s.f===2)};SRC.find(s=>s.f===2).on=false;const nf=energize();SRC.find(s=>s.f===2).on=true;TR.forEach(t=>t.baseDead=!nf[t.node]);} // transformadores que quedarían muertos si cae el alim. 2
+
+function seqOld(){
+  return [
+    {m:'Falla en el tramo SW33–T10 del alimentador 2.',c:'trip',bolt:['n2b','t10'],do:()=>{FAULT.edge={a:'n2b',b:'t10'};}},
+    {m:'El interruptor del alimentador 2 dispara. Sin recierre exitoso.',c:'trip',do:()=>{SRC.find(s=>s.f===2).on=false;}},
+    {m:'Todo el alimentador 2 queda sin servicio (~2000 clientes).',c:'trip'},
+    {m:'Se despacha cuadrilla: el carro canasta se desplaza al punto de falla.',c:'iso',truck:true,onRepair:()=>{FAULT.edge=null;SRC.find(s=>s.f===2).on=true;}},
+    {m:'Reparado en sitio. Alimentador 2 restablecido tras la intervención manual (horas).',c:'restore'}
+  ];
+}
+function seqSmart(){
+  const S=id=>SW.find(s=>s.id===id);
+  return [
+    {m:'Falla en el tramo SW33–T10 del alimentador 2.',c:'trip',bolt:['n2b','t10'],do:()=>{FAULT.edge={a:'n2b',b:'t10'};}},
+    {m:'El interruptor del alimentador 2 dispara (momentáneo).',c:'trip',do:()=>{SRC.find(s=>s.f===2).on=false;}},
+    {m:'Localización: la automatización identifica el tramo fallado entre SW33 y SW24.',c:'iso'},
+    {m:'Aislamiento: abre SW33 y SW24.',c:'iso',do:()=>{S('SW33').open=true;S('SW24').open=true;}},
+    {m:'Separa ramales sanos del tramo fallado: abre SW6 y SW35.',c:'iso',do:()=>{S('SW6').open=true;S('SW35').open=true;}},
+    {m:'Restaura ramal aéreo (T3, T18) desde el alimentador 1: cierra SW2.',c:'restore',do:()=>{S('SW2').open=false;}},
+    {m:'Restaura ramal de T22 desde el alimentador 5: cierra SW36.',c:'restore',do:()=>{S('SW36').open=false;}},
+    {m:'Restaura la sección aguas abajo (T9, T20) desde el alimentador 4: cierra SW17.',c:'restore',do:()=>{S('SW17').open=false;}},
+    {m:'El alimentador 2 recierra sobre su sección sana aguas arriba.',c:'restore',do:()=>{SRC.find(s=>s.f===2).on=true;}},
+    {m:'Solo el tramo SW33–T10 (T10) queda sin servicio; el resto ya está restablecido en segundos.',c:'restore'},
+    {m:'El carro canasta repara el tramo fallado (T10); no fue necesario esperar para restaurar al resto.',c:'iso',truck:true,onRepair:()=>{FAULT.edge=null;S('SW33').open=false;S('SW24').open=false;S('SW6').open=false;S('SW35').open=false;S('SW2').open=true;S('SW36').open=true;S('SW17').open=true;}},
+    {m:'Configuración normal restablecida. Cero clientes sin servicio.',c:'restore'}
+  ];
+}
+async function run(seq,label){
+  if(playing)return;playing=true;const my=++runId;setControls(false);resetState();markBaseDead();clearLog();
+  log('evento','Escenario: '+label,'head');status('ejecutando…',true);
+  for(let i=0;i<seq.length;i++){if(my!==runId)return;const s=seq[i];if(s.do)s.do();render();log('t+'+(i+1)+'s',s.m,s.c);
+    if(s.bolt)await lightningStrike(s.bolt[0],s.bolt[1]);
+    if(s.truck)await dispatchTruck(s.onRepair);
+    if(my!==runId)return;await sleep(s.bolt||s.truck?300:1300);
+  }
+  if(my!==runId)return;playing=false;setControls(true);status('secuencia finalizada — pulsa Reiniciar',false);
+}
+function resetState(){SW.forEach(s=>s.open=!!s.tie);TR.forEach(t=>{t.blown=false;t.baseDead=false;});SRC.forEach(s=>s.on=true);FAULT.edge=null;hideBolt();clearBoltG();hideTruck();}
+function resetAll(){runId++;if(timer)clearTimeout(timer);playing=false;setControls(true);resetState();render();clearLog();log('init','Red restablecida a condición normal.','restore');status('red en condición normal',false);}
+
+/* ===================== UI ===================== */
+document.getElementById('modeAuto').addEventListener('click',()=>setMode('auto'));
+document.getElementById('modeManual').addEventListener('click',()=>setMode('manual'));
+function setMode(m){mode=m;document.getElementById('modeAuto').setAttribute('aria-pressed',m==='auto');document.getElementById('modeManual').setAttribute('aria-pressed',m==='manual');
+  document.getElementById('hint').textContent=m==='auto'?'Automático: pulsa un escenario de falla.':'Maniobrar: clic en un interruptor para abrir/cerrar; clic en un transformador funde/repone su fusible.';}
+document.getElementById('btnOld').addEventListener('click',()=>run(seqOld(),'Red antigua'));
+document.getElementById('btnSmart').addEventListener('click',()=>run(seqSmart(),'Red inteligente (self-healing)'));
+document.getElementById('btnReset').addEventListener('click',resetAll);
+
+/* ===================== INICIO ===================== */
+markBaseDead();render();
+log('init','Red en condición normal. Enlaces de transferencia abiertos.','restore');
+status('red en condición normal',false);
+<\/script>
+</body>
+</html>
+</script>
+
+<script>
+const CFG={
+  fisico:{doc:'doc-fisico',allow:'pointer-lock; fullscreen; autoplay'},
+  planta:{doc:'doc-planta',allow:''},
+  smart:{doc:'doc-smart',allow:'autoplay'}
+};
+const loaded={};
+function ensureFrame(view){
+  if(loaded[view]||view==='home')return;
+  const cont=document.getElementById('v-'+view);const spin=cont.querySelector('[data-spin]');
+  const raw=document.getElementById(CFG[view].doc).textContent.replace(/<\\\/script>/g,'<'+'/script>');
+  const f=document.createElement('iframe');
+  f.setAttribute('title',view);
+  if(CFG[view].allow)f.setAttribute('allow',CFG[view].allow);
+  f.addEventListener('load',()=>{if(spin)spin.style.display='none';});
+  cont.appendChild(f);
+  f.srcdoc=raw;
+  loaded[view]=true;
+}
+function select(view){
+  document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.view===view));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='v-'+view));
+  ensureFrame(view);
+}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>select(b.dataset.view)));
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>select(b.dataset.go)));
+</script>
+</body>
+</html>

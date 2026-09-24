@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistemas de Distribución · 4100730 · UNAL Manizales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--unal:#00693C;--unal-d:#02502f;--ink:#1b2129;--dim:#5b6572;--mut:#8a94a1;--bg:#f6f7f4;--card:#fff;--line:#e4e7e1;--chip:#eef2ee}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  a{color:var(--unal);text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 18px}
+  header{background:linear-gradient(120deg,#02502f,#00693C);color:#fff;padding:22px 20px}
+  .top{display:flex;align-items:center;gap:14px}
+  .escudo{width:44px;height:44px;border-radius:9px;border:1.5px solid rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono';font-size:11px;font-weight:600}
+  header h1{font-family:'Space Grotesk';font-size:22px;font-weight:600;line-height:1.15}
+  header .sub{font-size:12.5px;opacity:.9;margin-top:2px}
+  .hero{margin-top:16px;font-size:14px;max-width:780px;opacity:.95}
+  .btns{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono';font-size:13px;background:#fff;color:var(--unal-d);border-radius:9px;padding:9px 15px;font-weight:600}
+  .btn.ghost{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.4)}
+  main{padding:24px 0 60px}
+  h2.sec{font-family:'Space Grotesk';font-size:16px;color:var(--unal-d);margin:22px 0 10px}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;font-family:'IBM Plex Mono';font-size:11px;color:var(--dim);margin:2px 0 12px}
+  .tag{font-family:'IBM Plex Mono';font-size:9.5px;font-weight:600;padding:2px 6px;border-radius:5px;background:var(--chip);color:var(--unal-d)}
+  .tag.P{background:#e7f0fb;color:#245b93}.tag.D{background:#efe7fb;color:#5b3f9a}.tag.S{background:#fde9e9;color:#a5322f}.tag.IA{background:#fff2df;color:#95661b}
+  .units{display:flex;flex-direction:column;gap:12px}
+  .unit{background:var(--card);border:1px solid var(--line);border-radius:13px;overflow:hidden}
+  .unit-h{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none}
+  .unit-h:hover{background:#fafbf9}
+  .unum{flex:0 0 auto;width:34px;height:34px;border-radius:8px;background:var(--unal);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;font-size:15px}
+  .unit-h h3{font-family:'Space Grotesk';font-size:15.5px;font-weight:600;flex:1 1 auto}
+  .unit-h .meta{font-family:'IBM Plex Mono';font-size:11px;color:var(--mut)}
+  .caret{transition:transform .2s;color:var(--mut)}
+  .unit.open .caret{transform:rotate(90deg)}
+  .body{display:none;border-top:1px solid var(--line)}
+  .unit.open .body{display:block}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;background:#fbfcfa;border-bottom:1px solid var(--line)}
+  .chip{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono';font-size:11.5px;font-weight:600;padding:6px 11px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--unal-d)}
+  .chip:hover{border-color:var(--unal)}
+  .chip.mat{background:var(--unal);color:#fff;border-color:var(--unal)}
+  .note{padding:10px 16px;font-size:12px;color:var(--dim);border-bottom:1px solid var(--line);background:#fffdf6}
+  .cl{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);font-size:13.5px}
+  .cl:last-child{border-bottom:0}
+  .cl .cn{font-family:'IBM Plex Mono';font-size:11.5px;color:var(--mut);flex:0 0 34px}
+  .cl .ct{flex:1 1 auto}
+  .tags{display:flex;gap:4px;flex:0 0 auto}
+  .st{flex:0 0 auto;font-family:'IBM Plex Mono';font-size:11px}
+  .st a{font-weight:600}.st.soon{color:var(--mut)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:15px}
+  .card h4{font-family:'Space Grotesk';font-size:14.5px;margin-bottom:5px}
+  .card p{font-size:12.5px;color:var(--dim);margin-bottom:10px}
+  .card a.go{font-family:'IBM Plex Mono';font-size:12px;font-weight:600}
+  footer{border-top:1px solid var(--line);padding:20px 0;color:var(--mut);font-size:11.5px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="top">
+    <div class="escudo">UNAL</div>
+    <div>
+      <h1>Sistemas de Distribución</h1>
+      <div class="sub">Código 4100730 · 2026-I · Departamento de Ingeniería Eléctrica, Electrónica y Computación · Sede Manizales</div>
+    </div>
+  </div>
+  <p class="hero">Curso organizado en 8 capítulos que combinan teoría (interactiva en HTML y en PDF), calculadoras de ingeniería, simulación 3D/unifilar y talleres computacionales, con anclaje normativo colombiano (RETIE, NTC 2050, CREG) y generalidades internacionales.</p>
+  <div class="btns">
+    <a class="btn" href="material-interactivo.html">📘 Material interactivo</a>
+    <a class="btn ghost" href="simulador.html">▶ Simulador</a>
+    <a class="btn ghost" href="material-interactivo.html#factores">🔢 Calculadoras</a>
+    <a class="btn ghost" href="plan-maestro-4100730.pdf">Plan maestro (PDF)</a>
+  </div>
+</div></header>
+
+<main class="wrap">
+  <h2 class="sec">Contenido por capítulos</h2>
+  <div class="legend">
+    Actividad: <span class="tag">T</span> teoría · <span class="tag P">P</span> Python · <span class="tag D">D</span> DIgSILENT/OpenDSS · <span class="tag S">S</span> simulador · <span class="tag IA">IA</span> con IA
+  </div>
+  <div class="units" id="units"></div>
+
+  <h2 class="sec">Recursos</h2>
+  <div class="cards">
+    <div class="card"><h4>Material interactivo</h4><p>8 capítulos con teoría, ~20 calculadoras, gráficos, ejercicios paso a paso y autoevaluación.</p><a class="go" href="material-interactivo.html">Abrir →</a></div>
+    <div class="card"><h4>Simulador</h4><p>Vista 3D física (planta y perfil), planta de convenciones IEEE/ANSI y SmartGrid con autorreparación.</p><a class="go" href="simulador.html">Abrir →</a></div>
+    <div class="card"><h4>Notebooks (Python)</h4><p>Talleres con pandapower/OpenDSS en Google Colab. Se publican con cada capítulo.</p><a class="go" href="notebooks/">Ver →</a></div>
+  </div>
+</main>
+
+<footer><div class="wrap">Material docente · Universidad Nacional de Colombia — Sede Manizales · Símbolos IEEE/ANSI · Contenido en construcción, se publica por capítulos. Calculadoras auditadas y corregidas (ver material interactivo).</div></footer>
+
+<script>
+const CLASSES={
+ 1:{t:'Ubicación y conformación de un sistema de distribución',tags:['T','S'],pdf:'clases/clase-01.pdf'},
+ 2:{t:'El proyecto integral de distribución',tags:['T'],pdf:'clases/clase-02.pdf'},
+ 3:{t:'Clasificación de sistemas y cargas; confiabilidad',tags:['T','IA'],pdf:'clases/clase-03.pdf'},
+ 4:{t:'Densidad de carga y demanda',tags:['T']},
+ 5:{t:'Curvas de carga (diaria, anual, de duración)',tags:['P']},
+ 6:{t:'Factores de demanda, utilización, diversidad, contribución',tags:['T']},
+ 7:{t:'Curvas de diversidad y demanda máxima diversificada',tags:['T']},
+ 8:{t:'Pérdidas y relación factor de pérdidas–factor de carga',tags:['P','IA']},
+ 9:{t:'Materiales y tipos de conductores',tags:['T']},
+ 10:{t:'Resistencia de conductores',tags:['T']},
+ 11:{t:'Inductancia y reactancia inductiva',tags:['T','S']},
+ 12:{t:'Capacitancia y clasificación de líneas por longitud',tags:['P']},
+ 13:{t:'Impedancias de secuencia positiva y cero',tags:['T']},
+ 14:{t:'Regulación con condiciones de recepción',tags:['T']},
+ 15:{t:'Regulación con condiciones de envío; factores de distribución',tags:['T']},
+ 16:{t:'Límites de regulación y cálculo de redes CC',tags:['T']},
+ 17:{t:'Taller de flujo de carga (pandapower + PowerFactory)',tags:['P','D']},
+ 18:{t:'Pérdidas en líneas con carga concentrada y distribuida',tags:['T']},
+ 19:{t:'Niveles normalizados de pérdidas y bases económicas',tags:['T']},
+ 20:{t:'Modelamiento para análisis de pérdidas',tags:['P']},
+ 21:{t:'Selección del calibre económico',tags:['T','IA']},
+ 22:{t:'Pérdidas en transformadores; gestión de redes',tags:['T','S']},
+ 23:{t:'Límites térmicos en conductores y cables',tags:['T']},
+ 24:{t:'Pérdidas en pantallas; cobre vs aluminio',tags:['T']},
+ 25:{t:'Sobrecargas, cortocircuitos y tensiones inducidas',tags:['D']},
+ 26:{t:'Redes primarias aéreas: generalidades y ruta',tags:['T']},
+ 27:{t:'Cálculos de regulación y pérdidas',tags:['T','P']},
+ 28:{t:'Normas técnicas, estructuras y materiales',tags:['S']},
+ 29:{t:'Ejemplos de cálculo (caso integrador)',tags:['T','IA']},
+ 30:{t:'Subterráneas: generalidades; ductos, bandejas, enterrados',tags:['S']},
+ 31:{t:'Radios de curvatura, instalación, aislamientos y cubiertas',tags:['T']},
+ 32:{t:'Metodología de pérdidas y normas de construcción',tags:['T','P']},
+ 33:{t:'Mantenimiento y localización de fallas',tags:['T','S']},
+ 34:{t:'Secundarias: generalidades y diseño',tags:['T']},
+ 35:{t:'Cálculo de calibres y diseño',tags:['T','P']},
+ 36:{t:'Normas técnicas y materiales',tags:['T']},
+ 37:{t:'Subestaciones: definiciones y tipos',tags:['S']},
+ 38:{t:'Celdas y componentes básicos',tags:['T','S']},
+ 39:{t:'Plantas de emergencia y componentes',tags:['T']},
+ 40:{t:'Mallas de tierra',tags:['T','P']}
+};
+const CH=[
+ {n:1,t:'Introducción a los sistemas de distribución',mat:'cap1',sim:1,quiz:1,cl:[1,2,3]},
+ {n:2,t:'Cargas eléctricas',mat:'cap2',calc:1,quiz:1,cl:[4,5,6,7,8]},
+ {n:3,t:'Planeación de expansión',mat:'cap3',calc:1,cl:[],note:'Teoría y calculadoras de crecimiento en el material interactivo. Clases LaTeX en preparación; ver también C2 (proyecto integral).'},
+ {n:4,t:'Transformadores de distribución',mat:'cap4',calc:1,cl:[22]},
+ {n:5,t:'Flujo de carga',mat:'cap5',calc:1,cl:[9,10,11,12,13,14,15,16,17],note:'Incluye los parámetros de línea (C9–C12) como base del cálculo de flujo y regulación.'},
+ {n:6,t:'Subtransmisión y subestaciones',mat:'cap6',sim:1,calc:1,cl:[23,24,25,37,38,39,40]},
+ {n:7,t:'Sistemas primarios',mat:'cap7',sim:1,calc:1,cl:[18,19,20,21,26,27,28,29,30,31,32,33],note:'Reúne pérdidas y calibre económico (C18–C21), redes primarias aéreas (C26–C29) y subterráneas (C30–C33).'},
+ {n:8,t:'Sistemas secundarios',mat:'cap8',sim:1,calc:1,cl:[34,35,36]}
+];
+const cont=document.getElementById('units');
+CH.forEach((c,i)=>{
+  const done=c.cl.filter(n=>CLASSES[n].pdf).length;
+  const acts=['<a class="chip mat" href="material-interactivo.html#'+c.mat+'">📘 Material interactivo</a>'];
+  if(c.calc)acts.push('<a class="chip" href="material-interactivo.html#factores">🔢 Calculadoras</a>');
+  if(c.sim)acts.push('<a class="chip" href="simulador.html">▶ Simulador</a>');
+  if(c.quiz)acts.push('<a class="chip" href="material-interactivo.html#quiz">🧪 Autoevaluación</a>');
+  const div=document.createElement('div');div.className='unit'+(i===0?' open':'');
+  div.innerHTML='<div class="unit-h"><div class="unum">'+c.n+'</div><h3>Cap. '+c.n+' — '+c.t+'</h3>'+
+    '<span class="meta">'+(c.cl.length? c.cl.length+' clases · '+done+' PDF':'material interactivo')+'</span><span class="caret">▶</span></div>'+
+    '<div class="body"><div class="actions">'+acts.join('')+'</div>'+
+    (c.note?'<div class="note">'+c.note+'</div>':'')+
+    c.cl.map(n=>{const k=CLASSES[n];return '<div class="cl"><span class="cn">C'+n+'</span><span class="ct">'+k.t+'</span>'+
+      '<span class="tags">'+k.tags.map(t=>'<span class="tag '+t+'">'+t+'</span>').join('')+'</span>'+
+      (k.pdf?'<span class="st"><a href="'+k.pdf+'">PDF ↗</a></span>':'<span class="st soon">Próximamente</span>')+'</div>';}).join('')+
+    '</div>';
+  div.querySelector('.unit-h').addEventListener('click',()=>div.classList.toggle('open'));
+  cont.appendChild(div);
+});
+</script>
+</body>
+</html>

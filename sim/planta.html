@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vista en planta · Convenciones · Red de Distribución</title>
+
+
+<style>
+  :root{--ink:#0b0f13;--paper:#f4f1e6;--paper-ink:#1b2129;--grid:#e3ddca;--line:#2a333e;
+    --mt:#c9302c;--sub:#8a5a2a;--bt:#1f7fa0;--der:#6b4fd0;--road:#c9c3b2;--walk:#ded8c6;--pvc:#9a9d92;--bldg:#dfe0d6;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'IBM Plex Mono',monospace;background:var(--ink);color:#E7ECF1;overflow:hidden}
+  .app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+  header{display:flex;align-items:center;gap:12px;padding:9px 16px;background:#0f151b;border-bottom:1px solid var(--line);flex:0 0 auto}
+  h1{font-family:'Space Grotesk';font-size:14.5px;font-weight:600}
+  .sub{font-size:10.5px;color:#9AA6B2}
+  .stage{flex:1 1 auto;min-height:0;background:var(--paper)}
+  #svg{display:block;width:100%;height:100%}
+  text{font-family:'IBM Plex Mono',monospace}
+</style>
+<style>@font-face{font-family:Ancizar;src:url('../assets/unal/ancizar-sans-regular.woff')}@font-face{font-family:Ancizar;src:url('../assets/unal/ancizar-sans-bold.woff');font-weight:700}body,button,select,input,h1,h2,h3{font-family:Ancizar,Arial,sans-serif!important}body{--bg:#f4f6f0;--panel:#fff;--accent:#466b3f;--line:#c9d1bf;--ink:#303431}header{background:#606060!important;color:white!important;border-bottom:4px solid #94b43b!important}header h1,header p{color:white!important}.logo{display:none!important}button,select{min-height:42px!important;font-size:15px!important}button:focus-visible,[tabindex]:focus-visible{outline:3px solid #466b3f;outline-offset:3px}.toolbar{flex-wrap:wrap!important}.log{font-size:14px!important}.foot-note{font-size:13px!important}.course-scope{background:#edf1e5;color:#303431;padding:8px 16px;font:15px Ancizar,Arial,sans-serif;border-bottom:1px solid #c9d1bf}.course-scope a{color:#355d30}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}canvas{touch-action:none}</style><script src="../network-state.js"></script><link rel="stylesheet" href="theme.css"></head>
+<body><div class="course-scope">Modelo educativo de conectividad · tiempos ilustrativos · sin flujo AC ni validación de capacidad. <a href="../simulador.html" target="_top">Volver al laboratorio</a></div>
+<div class="app">
+  <header>
+    <div>
+      <h1>Vista en planta · <span style="color:#c9302c">convenciones</span></h1>
+      <div class="sub">Plano cenital esquemático de la red · símbolos IEEE/ANSI · 4100730 · UNAL</div>
+    </div>
+  </header>
+  <div class="stage"><svg id="svg" viewBox="0 0 1330 650" preserveAspectRatio="xMidYMid meet"></svg></div>
+</div>
+<script>
+const NS="http://www.w3.org/2000/svg",svg=document.getElementById('svg');
+const C="#1b2129";
+function el(t,a){const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);return n;}
+function add(t,a){const n=el(t,a);svg.appendChild(n);return n;}
+// mapeo coordenadas físicas (X a lo largo de la línea, Z profundidad) -> plano
+const S=13, OX=49, OZ=23;
+function P(x,z){return [(x+OX)*S,(z+OZ)*S];}
+function line(x1,z1,x2,z2,attr){const[a,b]=P(x1,z1),[c,d]=P(x2,z2);return add('line',Object.assign({x1:a,y1:b,x2:c,y2:d},attr));}
+function rectZ(x,z,wx,wz,attr){const[a,b]=P(x-wx/2,z-wz/2);return add('rect',Object.assign({x:a,y:b,width:wx*S,height:wz*S},attr));}
+function txt(x,z,s,dx,dy,anchor,size){const[a,b]=P(x,z);const t=add('text',{x:a+(dx||0),y:b+(dy||0),'text-anchor':anchor||'middle','font-size':size||10,fill:'#4a4636'});t.textContent=s;return t;}
+
+/* fondo cuadriculado */
+(function(){const g=el('g',{});for(let i=0;i<=1330;i+=S)g.appendChild(el('line',{x1:i,y1:0,x2:i,y2:650,stroke:'#e3ddca','stroke-width':.5,opacity:.6}));for(let j=0;j<=650;j+=S)g.appendChild(el('line',{x1:0,y1:j,x2:1330,y2:j,stroke:'#e3ddca','stroke-width':.5,opacity:.6}));svg.appendChild(g);})();
+
+/* ---- Capa vial ---- */
+// calzadas (bandas grises) y andenes
+rectZ(-5,-6,86,5,{fill:'var(--road)',opacity:.85});                 // avenida principal (bajo ella va el cable MT)
+rectZ(-8,-16,28,4,{fill:'var(--road)',opacity:.85});                // calle secundaria
+rectZ(2,-11,4,12,{fill:'var(--road)',opacity:.85});                 // conector
+rectZ(-5,-2.6,86,2.2,{fill:'var(--walk)',opacity:.9});              // andén de la línea
+rectZ(-4,-13.6,34,2.6,{fill:'var(--walk)',opacity:.9});             // andén manzana subterránea
+// líneas centrales segmentadas
+line(-48,-6,38,-6,{stroke:'#d9c96a','stroke-width':1.4,'stroke-dasharray':'8 8',opacity:.8});
+line(-22,-16,6,-16,{stroke:'#d9c96a','stroke-width':1.4,'stroke-dasharray':'8 8',opacity:.8});
+
+/* ---- Edificaciones (huellas) ---- */
+function bldg(x,z,wx,wz,label){rectZ(x,z,wx,wz,{fill:'var(--bldg)',stroke:C,'stroke-width':1.2,opacity:.95});const t=txt(x,z,label,0,3,'middle',9);}
+bldg(-38,-2,12,10.5,'Subestación');
+bldg(-33.5,1,5,4,'Cuarto téc.');
+bldg(24,8,6,5,'Casa 1');
+bldg(-6,8,6,5,'Casa 2');
+bldg(12,-16,7.5,6,'Edificio adm.');
+bldg(28,13,7,3,'Solar FV');
+bldg(31.5,13,1.6,2.4,'Bat.');
+
+/* ---- Conductores ---- */
+// troncal aéreo MT (sobre postes, z=0)
+line(-36,0,2,0,{stroke:'var(--mt)','stroke-width':3.4,'stroke-linecap':'round'});
+line(-38,-2,-36,0,{stroke:'var(--mt)','stroke-width':2});           // salida S/E a cabecera (cuarto técnico)
+line(-33.5,1,-30,0,{stroke:'var(--mt)','stroke-width':2,'stroke-dasharray':'2 2'}); // tubería 4"+bajante celda 52 -> poste
+// banco de 4 tubos PVC (subterráneo) + cable XLPE
+function ductbank(x1,z1,x2,z2){for(let k=-1.5;k<=1.5;k+=1){const off=k*0.18;line(x1+ (z1===z2?0:off),z1+(z1===z2?off:0),x2+(z1===z2?0:off),z2+(z1===z2?off:0),{stroke:'var(--pvc)','stroke-width':1.6});}}
+ductbank(-18,-1,-18,-2.6);ductbank(-18,-2.6,-18,-13.6);ductbank(-18,-13.6,2,-16);
+line(-18,-1,-18,-2.6,{stroke:'var(--sub)','stroke-width':2,'stroke-dasharray':'5 3'});
+line(-18,-2.6,-18,-13.6,{stroke:'var(--sub)','stroke-width':2,'stroke-dasharray':'5 3'});
+line(-18,-13.6,2,-16,{stroke:'var(--sub)','stroke-width':2,'stroke-dasharray':'5 3'});
+// acometidas BT
+line(2,0.9,24,8,{stroke:'var(--bt)','stroke-width':2});             // trafo 1 -> casa 1
+line(-6,0.9,-6,8,{stroke:'var(--bt)','stroke-width':2});           // trafo 2 -> casa 2
+line(2,-16,12,-16,{stroke:'var(--bt)','stroke-width':2});          // padmount -> edificio
+line(24,8,28,13,{stroke:'var(--der)','stroke-width':2,'stroke-dasharray':'6 4'}); // DER
+
+/* ---- Símbolos IEEE/ANSI ---- */
+function sym(id,x,z,dim){const[cx,cy]=P(x,z);const g=add('g',{transform:`translate(${cx},${cy})`});const a=(t,at)=>g.appendChild(el(t,at));
+  switch(id){
+    case'breaker':a('rect',{x:-8,y:-8,width:16,height:16,fill:'#F4F1E6',stroke:C,'stroke-width':2});break;
+    case'reconectador':a('rect',{x:-9,y:-9,width:18,height:18,fill:'#F4F1E6',stroke:C,'stroke-width':2});{const t=el('text',{x:0,y:4,'text-anchor':'middle','font-size':11,'font-weight':600,fill:C});t.textContent='R';g.appendChild(t);}break;
+    case'seccionalizador':a('line',{x1:0,y1:10,x2:0,y2:3,stroke:C,'stroke-width':2});a('circle',{cx:0,cy:3,r:1.6,fill:C});a('line',{x1:0,y1:3,x2:8,y2:-7,stroke:C,'stroke-width':2});a('circle',{cx:0,cy:-8,r:1.6,fill:C});a('line',{x1:0,y1:-8,x2:0,y2:-11,stroke:C,'stroke-width':2});break;
+    case'fusible':a('rect',{x:-4,y:-10,width:8,height:20,fill:'#F4F1E6',stroke:C,'stroke-width':2});a('line',{x1:0,y1:-10,x2:0,y2:10,stroke:C,'stroke-width':1.3});break;
+    case'dps':a('rect',{x:-6,y:-8,width:12,height:14,fill:'#F4F1E6',stroke:C,'stroke-width':1.7});a('line',{x1:-3,y1:4,x2:4,y2:-4,stroke:C,'stroke-width':1.5});a('line',{x1:0,y1:6,x2:0,y2:10,stroke:C,'stroke-width':1.3});break;
+    case'trafo':a('circle',{cx:0,cy:-4,r:7,fill:'none',stroke:C,'stroke-width':1.6});a('circle',{cx:0,cy:4,r:7,fill:'none',stroke:C,'stroke-width':1.6});break;
+    case'medidor':a('circle',{cx:0,cy:0,r:8,fill:'#F4F1E6',stroke:C,'stroke-width':1.8});{const t=el('text',{x:0,y:4,'text-anchor':'middle','font-size':10,'font-weight':600,fill:C});t.textContent='M';g.appendChild(t);}break;
+    case'camara':a('rect',{x:-9,y:-9,width:18,height:18,fill:'#F4F1E6',stroke:C,'stroke-width':1.6});a('circle',{cx:0,cy:0,r:5,fill:'none',stroke:C,'stroke-width':1.3});break;
+    case'poste':a('circle',{cx:0,cy:0,r:3,fill:C});break;
+    case'tierra':a('line',{x1:0,y1:-8,x2:0,y2:0,stroke:C,'stroke-width':1.6});a('line',{x1:-8,y1:0,x2:8,y2:0,stroke:C,'stroke-width':2});a('line',{x1:-5,y1:3,x2:5,y2:3,stroke:C,'stroke-width':1.6});a('line',{x1:-2,y1:6,x2:2,y2:6,stroke:C,'stroke-width':1.6});break;
+    case'se':a('rect',{x:-10,y:-9,width:20,height:18,fill:'none',stroke:C,'stroke-width':1.6});a('circle',{cx:0,cy:-3,r:4,fill:'none',stroke:C,'stroke-width':1.2});a('circle',{cx:0,cy:3,r:4,fill:'none',stroke:C,'stroke-width':1.2});break;
+  }
+  return g;
+}
+// postes
+[-30,-24,-18,-12,-6,2].forEach(x=>sym('poste',x,0));
+// dispositivos
+sym('breaker',-33.5,1);txt(-33.5,1,'52',12,-8,'start',9);
+sym('reconectador',-24,0);txt(-24,0,'Recon.',0,-13,'middle',9);
+sym('dps',-18,0.95);txt(-18,0.95,'DPS',12,0,'start',9);
+sym('seccionalizador',-18,-1.0);txt(-18,-1.0,'Secc.',10,10,'start',9);
+sym('fusible',2,1.1);txt(2,1.1,'Fusible',10,-6,'start',9);
+sym('trafo',2,0.9);txt(2,0.9,'T',12,10,'start',9);
+sym('fusible',-6,1.1);txt(-6,1.1,'Fusible',10,-6,'start',9);
+sym('trafo',-6,0.9);txt(-6,0.9,'T2',12,10,'start',9);
+sym('tierra',-40,-2);
+sym('camara',-18,-2.6);txt(-18,-2.6,'Cámara 1',13,3,'start',9);
+sym('camara',-18,-13.6);txt(-18,-13.6,'Cámara 2',13,3,'start',9);
+sym('trafo',2,-16);txt(2,-16,'Padmount',11,3,'start',9);
+sym('medidor',21.4,10.3);sym('medidor',-8.6,10.3);
+
+/* ---- Norte + escala ---- */
+(function(){const g=add('g',{transform:'translate(60,560)'});
+  g.appendChild(el('line',{x1:0,y1:0,x2:0,y2:-34,stroke:C,'stroke-width':2}));
+  g.appendChild(el('path',{d:'M0,-34 L-5,-24 L5,-24 Z',fill:C}));
+  const t=el('text',{x:0,y:14,'text-anchor':'middle','font-size':11,'font-weight':600,fill:C});t.textContent='N';g.appendChild(t);
+})();
+(function(){const g=add('g',{transform:'translate(120,560)'});const len=10*S; // 10 m aprox
+  g.appendChild(el('line',{x1:0,y1:0,x2:len,y2:0,stroke:C,'stroke-width':2}));
+  g.appendChild(el('line',{x1:0,y1:-4,x2:0,y2:4,stroke:C,'stroke-width':2}));
+  g.appendChild(el('line',{x1:len,y1:-4,x2:len,y2:4,stroke:C,'stroke-width':2}));
+  const t=el('text',{x:len/2,y:16,'text-anchor':'middle','font-size':10,fill:'#4a4636'});t.textContent='escala relativa ~10 u';g.appendChild(t);
+})();
+
+/* ---- Recuadro de convenciones ---- */
+(function(){
+  const bx=1148,by=40,bw=176,rh=24;
+  const rows=[
+    ['ln-mt','Línea aérea MT'],['ln-sub','Red subterránea MT'],['ln-bt','Acometida BT'],['ln-der','Generación distribuida'],
+    ['duct','Banco 4 tubos PVC 4"'],['se','Subestación'],['breaker','Celda 52 (interruptor)'],['reconectador','Reconectador'],
+    ['seccionalizador','Seccionalizador'],['fusible','Cortacircuitos fusible'],['dps','Pararrayos (DPS)'],['trafo','Transformador'],
+    ['medidor','Medidor'],['camara','Cámara de paso'],['tierra','Puesta a tierra'],['road','Calzada / andén'],['bldg','Edificación']
+  ];
+  const g=add('g',{});
+  g.appendChild(el('rect',{x:bx,y:by,width:bw,height:32+rows.length*rh,fill:'#efeadd',stroke:'#4a4636','stroke-width':1.2,rx:5}));
+  const t=el('text',{x:bx+10,y:by+18,'font-size':10,'font-weight':700,fill:'#2b2a22'});t.textContent='CONVENCIONES · IEEE/ANSI';g.appendChild(t);
+  g.appendChild(el('line',{x1:bx+8,y1:by+24,x2:bx+bw-8,y2:by+24,stroke:'#c9c3ad','stroke-width':1}));
+  rows.forEach((r,i)=>{const ry=by+36+i*rh,sx=bx+20;const gg=el('g',{});g.appendChild(gg);
+    const put=(t,at)=>gg.appendChild(el(t,at));
+    if(r[0]==='ln-mt')put('line',{x1:sx-10,y1:ry,x2:sx+10,y2:ry,stroke:'#c9302c','stroke-width':3.2});
+    else if(r[0]==='ln-sub')put('line',{x1:sx-10,y1:ry,x2:sx+10,y2:ry,stroke:'#8a5a2a','stroke-width':2.4,'stroke-dasharray':'5 3'});
+    else if(r[0]==='ln-bt')put('line',{x1:sx-10,y1:ry,x2:sx+10,y2:ry,stroke:'#1f7fa0','stroke-width':2.4});
+    else if(r[0]==='ln-der')put('line',{x1:sx-10,y1:ry,x2:sx+10,y2:ry,stroke:'#6b4fd0','stroke-width':2.4,'stroke-dasharray':'6 4'});
+    else if(r[0]==='duct'){for(let k=-1;k<=1;k++)put('line',{x1:sx-10,y1:ry+k*2.2,x2:sx+10,y2:ry+k*2.2,stroke:'#9a9d92','stroke-width':1.4});}
+    else if(r[0]==='road'){put('rect',{x:sx-11,y:ry-5,width:22,height:6,fill:'#c9c3b2'});put('rect',{x:sx-11,y:ry+1,width:22,height:3,fill:'#ded8c6'});}
+    else if(r[0]==='bldg')put('rect',{x:sx-9,y:ry-6,width:18,height:12,fill:'#dfe0d6',stroke:C,'stroke-width':1});
+    else {const wrap=el('g',{transform:`translate(${sx},${ry}) scale(0.72)`});wrap.appendChild(sym2(r[0]));gg.appendChild(wrap);}
+    const tx=el('text',{x:bx+42,y:ry+4,'font-size':9,fill:'#3a382c'});tx.textContent=r[1];gg.appendChild(tx);
+  });
+})();
+// símbolo aislado para la leyenda (mismo trazo que sym pero sin mapear)
+function sym2(id){const g=el('g',{});const a=(t,at)=>g.appendChild(el(t,at));
+  switch(id){
+    case'breaker':a('rect',{x:-8,y:-8,width:16,height:16,fill:'#F4F1E6',stroke:C,'stroke-width':2});break;
+    case'reconectador':a('rect',{x:-9,y:-9,width:18,height:18,fill:'#F4F1E6',stroke:C,'stroke-width':2});{const t=el('text',{x:0,y:4,'text-anchor':'middle','font-size':11,'font-weight':600,fill:C});t.textContent='R';g.appendChild(t);}break;
+    case'seccionalizador':a('line',{x1:0,y1:10,x2:0,y2:3,stroke:C,'stroke-width':2});a('circle',{cx:0,cy:3,r:1.6,fill:C});a('line',{x1:0,y1:3,x2:8,y2:-7,stroke:C,'stroke-width':2});a('circle',{cx:0,cy:-8,r:1.6,fill:C});a('line',{x1:0,y1:-8,x2:0,y2:-11,stroke:C,'stroke-width':2});break;
+    case'fusible':a('rect',{x:-4,y:-10,width:8,height:20,fill:'#F4F1E6',stroke:C,'stroke-width':2});a('line',{x1:0,y1:-10,x2:0,y2:10,stroke:C,'stroke-width':1.3});break;
+    case'dps':a('rect',{x:-6,y:-8,width:12,height:14,fill:'#F4F1E6',stroke:C,'stroke-width':1.7});a('line',{x1:-3,y1:4,x2:4,y2:-4,stroke:C,'stroke-width':1.5});a('line',{x1:0,y1:6,x2:0,y2:10,stroke:C,'stroke-width':1.3});break;
+    case'trafo':a('circle',{cx:0,cy:-4,r:7,fill:'none',stroke:C,'stroke-width':1.6});a('circle',{cx:0,cy:4,r:7,fill:'none',stroke:C,'stroke-width':1.6});break;
+    case'medidor':a('circle',{cx:0,cy:0,r:8,fill:'#F4F1E6',stroke:C,'stroke-width':1.8});{const t=el('text',{x:0,y:4,'text-anchor':'middle','font-size':10,'font-weight':600,fill:C});t.textContent='M';g.appendChild(t);}break;
+    case'camara':a('rect',{x:-9,y:-9,width:18,height:18,fill:'#F4F1E6',stroke:C,'stroke-width':1.6});a('circle',{cx:0,cy:0,r:5,fill:'none',stroke:C,'stroke-width':1.3});break;
+    case'tierra':a('line',{x1:0,y1:-8,x2:0,y2:0,stroke:C,'stroke-width':1.6});a('line',{x1:-8,y1:0,x2:8,y2:0,stroke:C,'stroke-width':2});a('line',{x1:-5,y1:3,x2:5,y2:3,stroke:C,'stroke-width':1.6});a('line',{x1:-2,y1:6,x2:2,y2:6,stroke:C,'stroke-width':1.6});break;
+    case'se':a('rect',{x:-10,y:-9,width:20,height:18,fill:'none',stroke:C,'stroke-width':1.6});a('circle',{cx:0,cy:-3,r:4,fill:'none',stroke:C,'stroke-width':1.2});a('circle',{cx:0,cy:3,r:4,fill:'none',stroke:C,'stroke-width':1.2});break;
+  }
+  return g;
+}
+</script>
+</body>
+</html>
